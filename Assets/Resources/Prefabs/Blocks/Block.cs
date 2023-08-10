@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Battle;
 
-public class Block : MonoBehaviour//, IPointerEnterHandler
+public class Block : MonoBehaviour
 {
     [field: SerializeField] public bool Traversable { get; private set; }
     [field: SerializeField] public TerrainType Type { get; private set; }
@@ -12,6 +12,5 @@ public class Block : MonoBehaviour//, IPointerEnterHandler
 
     void Awake()
     {
-        
     }
 }

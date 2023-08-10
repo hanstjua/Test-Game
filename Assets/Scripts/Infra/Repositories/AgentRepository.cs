@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Battle;
 using Battle.Common;
+using Battle.Common.Armours;
+using Battle.Common.Weapons;
 using Battle.Services.Actions;
 using UnityEngine;
 
@@ -38,7 +40,9 @@ public class AgentRepository : IAgentRepository
             10,
             position,
             new Dictionary<Item, int>(),
-            3
+            3,
+            new Longsword(),
+            new LeatherArmour()
         );
 
         _agentSet[id] = agent;
@@ -48,8 +52,6 @@ public class AgentRepository : IAgentRepository
     public Agent CreateGenericEnemyByName(string name, Position position)
     {
         var character = CharacterFactory.GetGeneric(name);
-
-        Debug.Log($"{position.X} {position.Y} {position.Z}");
 
         var id = new AgentId(Guid.NewGuid().ToString());
         var agent = new Agent(
@@ -61,7 +63,9 @@ public class AgentRepository : IAgentRepository
             character.Mp, 
             position, 
             character.Items, 
-            character.Movements
+            character.Movements,
+            character.Weapon,
+            character.Armour
         );
 
         _agentSet[id] = agent;

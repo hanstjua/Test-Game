@@ -13,12 +13,13 @@ namespace Battle.Actions
             _unitOfWork = unitOfWork;
         }
 
-        public ActionOutcome[] Execute(string actorId, string targetId)
+        public ActionOutcome[] Execute(AgentId actorId, AgentId targetId, BattleId battleId)
         {
-            var actor = _unitOfWork.AgentRepository.Get(new AgentId(actorId));
-            var target = _unitOfWork.AgentRepository.Get(new AgentId(targetId));
+            var actor = _unitOfWork.AgentRepository.Get(actorId);
+            var target = _unitOfWork.AgentRepository.Get(targetId);
+            var battle = _unitOfWork.BattleRepository.Get(battleId);
 
-            return Attack.Execute(actor, target);
+            return Attack.Execute(actor, target, battle, _unitOfWork);
         }
     }
 }

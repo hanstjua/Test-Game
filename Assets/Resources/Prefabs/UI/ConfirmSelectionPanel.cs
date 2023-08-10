@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FloorSoil : MonoBehaviour
+public class ConfirmSelectionPanel : MonoBehaviour
 {
-    // Start is called before the first frame updates
+    // Start is called before the first frame update
     void Start()
     {
         

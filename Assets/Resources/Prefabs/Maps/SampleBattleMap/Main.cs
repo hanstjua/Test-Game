@@ -10,6 +10,8 @@ public class Main : MonoBehaviour
 {
     [SerializeField] public UnitOfWorkObject unitOfWork;
     [SerializeField] public GameObject uiObjects;
+    [SerializeField] public BattleEvents battleEvents;
+    [SerializeField] public GameObject cursor;
 
     private SampleBattleMap _sampleBattleMap;
     private Cursor _cursor;
@@ -39,7 +41,7 @@ public class Main : MonoBehaviour
         foreach (var id in battle.EnemyIds)
         {
             var enemy = unitOfWork.obj.AgentRepository.Get(id);
-            var obj = Instantiate((GameObject) Resources.Load("Prefabs/Characters/Stair"), _map.ToUIPosition(enemy.Position) + new Vector3(0, 0.1f, 0), Quaternion.identity);
+            var obj = Character.Create(id, "Prefabs/Characters/Stair", _map.ToUIPosition(enemy.Position));
 
             _characters.Add(id, obj);
         }
@@ -47,7 +49,7 @@ public class Main : MonoBehaviour
         foreach (var id in battle.PlayerIds)
         {
             var player = unitOfWork.obj.AgentRepository.Get(id);
-            var obj = Instantiate((GameObject) Resources.Load("Prefabs/Characters/Stair"), _map.ToUIPosition(player.Position) + new Vector3(0, 0.1f, 0), Quaternion.identity);
+            var obj = Character.Create(id, "Prefabs/Characters/Stair", _map.ToUIPosition(player.Position));
 
             _characters.Add(id, obj);
         }
@@ -73,7 +75,8 @@ public class Main : MonoBehaviour
                 _map,
                 _battleId,
                 _cursor,
-                uiObjects
+                uiObjects,
+                battleEvents
             )
         );
     }
@@ -82,16 +85,14 @@ public class Main : MonoBehaviour
     {
         uiObjects.transform.Find("CameraCanvas").Find("RawImage").Find("ConfirmSelectionPanel").gameObject.SetActive(false);
 
-        _cursor = GetComponent<Cursor>();
-
         _sampleBattleMap = uiObjects.GetComponentInChildren<SampleBattleMap>();
 
         _characters = new();
 
         _mainCamera = Camera.main;
 
-        _map = GetComponent<Map>();
-        _map.CalculateOffset(_sampleBattleMap.gameObject);
-        _map.CalculateScale(_sampleBattleMap.gameObject);
+        _map = _sampleBattleMap.GetComponent<Map>();
+
+        _cursor = Cursor.Create(cursor, _map);
     }
 }

@@ -6,23 +6,29 @@ using Battle;
 
 public class Cursor : MonoBehaviour
 {
+    [SerializeField] public BattleEvents battleEvents;
+    
     [field: SerializeField] public UnitOfWorkObject UnitOfWork { get; private set; }
-    [field: SerializeField] public GameObject CursorPrefab { get; private set; }
 
     public BattleFieldId BattleFieldId { get; set; }
-
-    public UnityEvent<Position, Position> SelectionChanged { get; private set; }
 
     private Camera _mainCamera;
     private Map _map;
     private Position _selection;
 
+    public static Cursor Create(GameObject prefab, Map map)
+    {
+        var gameObject = Instantiate(prefab, new Vector3(-1, -1, -1), prefab.transform.rotation);
+        var cursor = gameObject.GetComponent<Cursor>();
+        cursor.Init(map);
+
+        return cursor;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        CursorPrefab = Instantiate(CursorPrefab, new Vector3(-1, -1, -1), CursorPrefab.transform.rotation);
-        SelectionChanged = new();
-        SelectionChanged.AddListener(ShowCursor);
+        
     }
 
     // Update is called once per frame
@@ -34,7 +40,13 @@ public class Cursor : MonoBehaviour
     void Awake()
     {
         _mainCamera = Camera.main;
-        _map = GetComponent<Map>();
+    }
+
+    public void Init(Map map)
+    {
+        _map = map;
+
+        battleEvents.cursorSelectionChanged.AddListener(ShowCursor);
     }
 
     public Position Selection
@@ -45,7 +57,7 @@ public class Cursor : MonoBehaviour
         {
             if (!Selection.Equals(value))
             {
-                SelectionChanged.Invoke(_selection, value);
+                battleEvents.cursorSelectionChanged.Invoke(Selection, value);
                 _selection = value;
             }
         }
@@ -53,12 +65,12 @@ public class Cursor : MonoBehaviour
 
     public void ActivateSelection()
     {
-        CursorPrefab.transform.Rotate(new Vector3(0, 0, 45));
+        transform.Rotate(new Vector3(0, 0, 45));
     }
 
     public void DeactivateSelection()
     {
-        CursorPrefab.transform.Rotate(new Vector3(0, 0, -45));
+        transform.Rotate(new Vector3(0, 0, -45));
     }
 
     public void Reset()
@@ -91,6 +103,6 @@ public class Cursor : MonoBehaviour
 
     private void ShowCursor(Position oldPosition, Position newPosition)
     {
-        CursorPrefab.transform.position = _map.ToUIPosition(newPosition) + new Vector3(0, 0.2f, 0);
+        transform.position = _map.ToUIPosition(newPosition) + new Vector3(0, 0.2f, 0);
     }
 }

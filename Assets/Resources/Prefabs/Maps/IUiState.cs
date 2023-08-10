@@ -16,7 +16,8 @@ public record BattleProperties(
     Map map,
     BattleId battleId,
     Cursor cursor,
-    GameObject uiObjects
+    GameObject uiObjects,
+    BattleEvents battleEvents
 );
 
 public interface IUiState

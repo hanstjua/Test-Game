@@ -18,21 +18,19 @@ public class CharacterSelection : IUiState
 
     private void Init(BattleProperties battleProperties)
     {
-        _characterPanelUpdater = new((_, newPos) => UpdateCharacterPanel(battleProperties, newPos));
-        battleProperties.cursor.SelectionChanged.AddListener(_characterPanelUpdater);
-
-        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").gameObject;
-        characterPanel.SetActive(true);
+        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
+        _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanel(battleProperties, newPos));
+        battleProperties.battleEvents.cursorSelectionChanged.AddListener(_characterPanelUpdater);
 
         _hasInit = true;
     }
 
     private void Uninit(BattleProperties battleProperties)
     {
-        battleProperties.cursor.SelectionChanged.RemoveListener(_characterPanelUpdater);
+        battleProperties.battleEvents.cursorSelectionChanged.RemoveListener(_characterPanelUpdater);
 
-        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").gameObject;
-        characterPanel.SetActive(false);
+        battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").gameObject.SetActive(false);
+        battleProperties.cursor.Selection = new Position(-1, -1, -1);
 
         _hasInit = false;
     }
@@ -104,39 +102,23 @@ public class CharacterSelection : IUiState
         switch (key)
         {
             case KeyCode.Return:
-            Debug.Log("enter pressed");
             Uninit(battleProperties);
             return new CharacterSelectionConfirmation(battleProperties.uiObjects,this);
             
             case KeyCode.UpArrow:
-            Debug.Log("Up pressed");
             return this;
 
             case KeyCode.DownArrow:
-            Debug.Log("Down pressed");
             return this;
 
             case KeyCode.LeftArrow:
-            Debug.Log("Left pressed");
             return this;
 
             case KeyCode.RightArrow:
-            Debug.Log("Arrow pressed");
             return this;
 
             default:
             return this;
-        }
-    }
-
-    private void UpdateCharacterPanel(BattleProperties battleProperties, Position position)
-    {
-        var agentRepository = battleProperties.unitOfWork.AgentRepository;
-        var agent = agentRepository.GetFirstBy(a => a.Position.Equals(position));
-
-        if (agent != null)
-        {
-            battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>().Character = agent;
         }
     }
 }

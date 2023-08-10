@@ -5,7 +5,7 @@ using UnityEngine;
 public class Gravel : MonoBehaviour
 {
     public GameObject obj;
-    // Start is called before the first frame update
+    // Start is called before the first frame updates
     void Start()
     {
 

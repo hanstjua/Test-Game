@@ -23,6 +23,12 @@ public class Map : MonoBehaviour
         
     }
 
+    void Awake()
+    {
+        CalculateOffset(gameObject);
+        CalculateScale(gameObject);
+    }
+
     public Position ToDomainPosition(Vector3 position)
     {
         var coords = position - _offset;

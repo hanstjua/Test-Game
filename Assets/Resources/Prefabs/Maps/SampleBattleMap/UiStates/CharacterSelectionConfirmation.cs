@@ -10,32 +10,52 @@ public class CharacterSelectionConfirmation : IUiState
 {
     private int _isConfirm = -1;
     private IUiState _previousState;
+    private GameObject _uiObjects;
+    private bool _hasInit = false;
     private static GameObject _confirmSelectionPanel;
 
     public CharacterSelectionConfirmation(GameObject uiObjects, IUiState previousState)
     {
         _previousState = previousState;
+        _uiObjects = uiObjects;        
+    }
 
-        if (_confirmSelectionPanel == null) _confirmSelectionPanel = uiObjects.transform.Find("CameraCanvas/RawImage/ConfirmSelectionPanel").gameObject;
+    private void Init()
+    {
+        if (_confirmSelectionPanel == null) _confirmSelectionPanel = _uiObjects.transform.Find("CameraCanvas/RawImage/ConfirmSelectionPanel").gameObject;
 
         _confirmSelectionPanel.SetActive(true);
 
         _confirmSelectionPanel.transform.Find("Yes").GetComponent<Button>().onClick.AddListener(() => _isConfirm = 1);
         _confirmSelectionPanel.transform.Find("No").GetComponent<Button>().onClick.AddListener(() => _isConfirm = 0);
+
+        _hasInit = true;
+    }
+
+    private void Uninit(BattleProperties battleProperties)
+    {
+        _confirmSelectionPanel.SetActive(false);
+
+        battleProperties.map.ClearHighlights();
+
+        _hasInit = false;
     }
 
     public IUiState Update(BattleProperties battleProperties)
     {
+        if (!_hasInit)
+        {
+            Init();
+        }
+
         switch (_isConfirm)
         {
             case 1:
-            Debug.Log("yes");
-            _confirmSelectionPanel.SetActive(false);
+            Uninit(battleProperties);
             return new BattleCommencement(battleProperties.uiObjects);
 
             case 0:
-            Debug.Log("no");
-            _confirmSelectionPanel.SetActive(false);
+            Uninit(battleProperties);
             return _previousState;
 
             default:

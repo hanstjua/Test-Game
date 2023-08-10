@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Battle.Common;
+using Battle.Common.Armours;
+using Battle.Common.Weapons;
+using Codice.Client.Common.WebApi;
 
 namespace Battle
 {
@@ -21,6 +24,8 @@ namespace Battle
             Position position,
             Dictionary<Item, int> items,
             int movements,
+            IWeapon weapon,
+            IArmour armour,
             double turnGauge = 0.0,
             Direction direction = Direction.North
         )
@@ -37,6 +42,9 @@ namespace Battle
             TurnGauge = turnGauge;
             Movements = movements;
             Direction = direction;
+            Weapon = weapon;
+            Armour = armour;
+
         }
 
         public override object Id() {
@@ -54,6 +62,8 @@ namespace Battle
         public double TurnGauge { get; private set; }
         public int Movements { get; private set; }
         public Direction Direction { get; private set; }
+        public IWeapon Weapon { get; private set; }
+        public IArmour Armour { get; private set; }
 
         public int GetStrength() { return Stats.Strength; }
         public int GetDefense() { return Stats.Defense; }
