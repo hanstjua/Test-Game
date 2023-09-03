@@ -4,7 +4,7 @@ using System.Collections;
 namespace Battle
 {
     [Serializable]
-    public class Position : ValueObject<ValueTuple<int, int, int>>
+    public class Position : ValueObject<(int, int, int)>
     {
         public Position(
             int x,
@@ -17,7 +17,7 @@ namespace Battle
             Z = z;
         }
 
-        public override ValueTuple<int, int, int> Value()
+        public override (int, int, int) Value()
         {
             return (X, Y, Z);
         }
@@ -47,6 +47,11 @@ namespace Battle
         public Position RelativeTo(Position target)
         {
             return new Position(X - target.X, Y - target.Y, Z - target.Z);
+        }
+
+        public Position TranslateBy(Position amount)
+        {
+            return new Position(X + amount.X, Y + amount.Y, Z + amount.Z);
         }
     }
 }

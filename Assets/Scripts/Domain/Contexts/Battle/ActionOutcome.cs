@@ -1,44 +1,16 @@
-using System;
-using System.Collections.Generic;
-
 namespace Battle
 {
-    public class ActionOutcome : ValueObject<(string, int?, int?, Status[], Status[])>
+    public class ActionOutcome
     {
-        public enum FailureType
-        {
-            Missed,
-            Parry,
-            Block,
-            Immune
-        }
+        public AgentId By { get; private set; }
+        public ActionType Cause { get; private set; }
+        public ActionEffect[] Effects { get; private set; }
 
-        public ActionOutcome(
-            AgentId on,
-            int hpDamage = 0,
-            int mpDamage = 0,
-            Status[] addStatuses = null,
-            Status[] removeStatuses = null,
-            FailureType? failure = null
-        )
+        public ActionOutcome(AgentId by, ActionType cause, ActionEffect[] effects)
         {
-            On = on;
-            HpDamage = hpDamage;
-            MpDamage = mpDamage;
-            AddStatuses = addStatuses;
-            RemoveStatuses = removeStatuses;
-        }
-
-        public AgentId On { get; private set; }
-        public int HpDamage { get; private set; }
-        public int MpDamage { get; private set; }
-        public Status[] AddStatuses { get; private set; }
-        public Status[] RemoveStatuses { get; private set; }
-        public FailureType? Failure { get; private set; }
-
-        public override (string, int?, int?, Status[], Status[]) Value()
-        {
-            return (On.Value(), HpDamage, MpDamage, AddStatuses, RemoveStatuses);
+            By = by;
+            Cause = cause;
+            Effects = effects;
         }
     }
 }

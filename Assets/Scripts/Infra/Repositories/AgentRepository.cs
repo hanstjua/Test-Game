@@ -35,12 +35,10 @@ public class AgentRepository : IAgentRepository
             id,
             name,
             new List<Battle.Action> { new Attack(), new Defend() },
-            new Stats(1, 1, 1, 1, 1, 1, 1, 1),
-            10,
-            10,
+            new Stats(1, 1, 1, 1, 1, 1, 1, 1, 3, 1),
             position,
             new Dictionary<Item, int>(),
-            3,
+            2,
             new Longsword(),
             new LeatherArmour()
         );
@@ -59,8 +57,6 @@ public class AgentRepository : IAgentRepository
             name, 
             character.Actions, 
             character.Stats, 
-            character.Hp, 
-            character.Mp, 
             position, 
             character.Items, 
             character.Movements,

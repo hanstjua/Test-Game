@@ -9,10 +9,8 @@ public interface ICharacter
 {
     public List<Battle.Action> Actions { get; }
     public Stats Stats { get; }
-    public int Hp { get; }
-    public int Mp { get; }
     public Dictionary<Item, int> Items { get; }
     public int Movements { get; }
-    public IWeapon Weapon { get; }
-    public IArmour Armour { get; }
+    public Weapon Weapon { get; }
+    public Armour Armour { get; }
 }

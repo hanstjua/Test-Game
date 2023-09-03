@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Battle.Common;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
-using Codice.Client.Common.WebApi;
+using Battle.Statuses;
+
 
 namespace Battle
 {
@@ -13,19 +15,20 @@ namespace Battle
     {
         private AgentId _id;
         private Position _position;
+        private List<Action> _actions;
+        private Dictionary<Item, int> _items;
+        private HashSet<Status> _statuses;
 
         public Agent(
             AgentId agentId,
             string name,
             List<Action> actions,
             Stats stats,
-            int hp,
-            int mp,
             Position position,
             Dictionary<Item, int> items,
             int movements,
-            IWeapon weapon,
-            IArmour armour,
+            Weapon weapon,
+            Armour armour,
             double turnGauge = 0.0,
             Direction direction = Direction.North
         )
@@ -34,8 +37,8 @@ namespace Battle
             Name = name;
             Actions = actions;
             Stats = stats;
-            Hp = hp;
-            Mp = mp;
+            Hp = stats.MaxHp;
+            Mp = stats.MaxMp;
             Position = position;
             Items = items;
             Statuses = new HashSet<Status>();
@@ -52,34 +55,38 @@ namespace Battle
         }
 
         public string Name { get; private set; }
-        public List<Action> Actions { get; private set; }
-        private Stats Stats { get; set; }
+        public List<Action> Actions 
+        { 
+            get => new(_actions); 
+            private set => _actions = value; 
+        }
+        public Stats Stats { get; private set; }
         public int Hp { get; private set; }
         public int Mp { get; private set; }
-        public Position Position { get => _position; set => _position = value; }
-        private Dictionary<Item, int> Items { get; set; }
-        private HashSet<Status> Statuses { get; set; }
+        public Position Position 
+        { 
+            get => _position; 
+            set => _position = value; 
+        }
+        public Dictionary<Item, int> Items 
+        { 
+            get => new(_items);
+            private set => _items = value;
+        }
+        public HashSet<Status> Statuses
+        { 
+            get => new(_statuses);
+            private set => _statuses = value;
+        }
         public double TurnGauge { get; private set; }
         public int Movements { get; private set; }
         public Direction Direction { get; private set; }
-        public IWeapon Weapon { get; private set; }
-        public IArmour Armour { get; private set; }
-
-        public int GetStrength() { return Stats.Strength; }
-        public int GetDefense() { return Stats.Defense; }
-        public int GetMagic() { return Stats.Magic; }
-        public int GetMagicDefense() { return Stats.MagicDefense; }
-        public int GetAgility() { return Stats.Agility; }
-        public int GetAccuracy() { return Stats.Accuracy; }
-        public int GetEvasion() { return Stats.Evasion; }
-        public int GetLuck() { return Stats.Luck; }
-        public int GetX() { return Position.X; }
-        public int GetY() { return Position.Y; }
-        public int GetZ() { return Position.Z; }
+        public Weapon Weapon { get; private set; }
+        public Armour Armour { get; private set; }
 
         public Agent ReduceHp(int damage)
         {
-            Hp -= damage;
+            Hp = damage > Hp ? 0 : Hp - damage;
             return this;
         }
 
@@ -91,7 +98,7 @@ namespace Battle
 
         public Agent ReduceMp(int damage)
         {
-            Mp -= damage;
+            Mp = damage > Mp ? 0 : Mp - damage;
             return this;
         }
 
@@ -165,21 +172,21 @@ namespace Battle
 
         public Agent AddStatus(Status status)
         {
-            Statuses.Add(status);
+            _statuses.Add(status);
 
             return this;
         }
 
         public Agent RemoveStatus(Status status)
         {
-            Statuses.Remove(status);
+            _statuses.Remove(status);
 
             return this;
         }
 
-        public bool HasStatus(Status status)
+        public bool HasStatus(Type status)
         {
-            return Statuses.Contains(status);
+            return Statuses.Any(s => s.GetType() == status);
         }
 
         public double TurnGaugeIncrement
@@ -198,6 +205,13 @@ namespace Battle
             {
                 TurnGauge -= 100;
             }
+        }
+
+        public Agent UpdateStats(Stats stats)
+        {
+            Stats = stats;
+
+            return this;
         }
     }
 }

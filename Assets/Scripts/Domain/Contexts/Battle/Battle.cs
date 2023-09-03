@@ -7,7 +7,6 @@ namespace Battle
 	public class Battle : Entity
 	{
 		private BattleId _id;
-		private int _turnCount;
 
 		public Battle(
 			BattleId id,
@@ -22,7 +21,7 @@ namespace Battle
 			EnemyIds = enemies;
 			BattleFieldId = battleFieldId;
 			Phase = phase;
-			_turnCount = turnCount;
+			TurnCount = turnCount;
 		}
 
 		public override object Id()
@@ -40,10 +39,12 @@ namespace Battle
 
 		public AgentId ActiveAgent { get; private set; }
 
+		public int TurnCount { get; private set; }
+
 		public Battle NextTurn(AgentId nextAgent)
 		{
 			ActiveAgent = nextAgent;
-			_turnCount += 1;
+			TurnCount += 1;
 
 			return this;
 		}

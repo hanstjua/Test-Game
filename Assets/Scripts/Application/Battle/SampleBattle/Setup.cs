@@ -32,6 +32,8 @@ namespace Battle.SampleBattle
 				}
 
 				_unitOfWork.BattleRepository.Update(battle.Id() as BattleId, battle.NextTurn(activeAgent.Id() as AgentId));
+				
+				_unitOfWork.Save();
 			}
 
 			return new InProgress(_unitOfWork);
@@ -76,7 +78,7 @@ namespace Battle.SampleBattle
 
         private List<Agent> GenerateEnemies(Terrain[][] terrains)
 		{
-			int enemiesCount = _random.Next(4, 50);
+			int enemiesCount = _random.Next(1, 2);
 
 			var flatTerrains = terrains
 			.Aggregate(new List<Terrain> {}, (acc, arr) => acc.Concat(arr).ToList())

@@ -1,15 +1,23 @@
+using System.Linq;
+
 namespace Battle.Common.Armours
 {
-    public class LeatherArmour : IArmour
+    public class LeatherArmour : Armour
     {
-        public int CalculateResistance(Agent attacker, Agent defender, Battle battle, UnitOfWork unitOfWork)
+        public override ActionOutcome[] ApplyPostExecutionReactorEffects(ActionOutcome[] outcomes, Agent actor, Agent target, Battle battle, UnitOfWork unitOfWork)
         {
-            return 3;
+            return outcomes.Append(
+                new ActionOutcome(
+                    target.Id() as AgentId,
+                    ArmourType.LeatherArmour,
+                    new ActionEffect[] {new HpDamage(target.Id() as AgentId, -3)}
+                )).ToArray();
         }
 
-        public ActionOutcome[] CalculateSideEffects(Agent attacker, Agent defender, Battle battle, UnitOfWork unitOfWork)
+
+        public override int CalculateResistance(Agent attacker, Agent defender, Battle battle, UnitOfWork unitOfWork)
         {
-            return new ActionOutcome[] {new ActionOutcome(defender.Id() as AgentId, hpDamage: -3)};
+            return 3;
         }
     }
 }

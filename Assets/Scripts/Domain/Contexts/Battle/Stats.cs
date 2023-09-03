@@ -4,6 +4,20 @@ using System.Collections;
 [Serializable]
 public class Stats : ValueObject<int[]>
 {
+    public enum Type
+    {
+        Strength,
+        Defense,
+        Magic,
+        MagicDefense,
+        Agility,
+        Accuracy,
+        Evasion,
+        Luck,
+        MaxHp,
+        MaxMp
+    }
+
     public Stats(
         int strength,
         int defense,
@@ -12,7 +26,9 @@ public class Stats : ValueObject<int[]>
         int agility,
         int accuracy,
         int evasion,
-        int luck
+        int luck,
+        int maxHp,
+        int maxMp
     )
     {
         Strength = strength;
@@ -23,6 +39,8 @@ public class Stats : ValueObject<int[]>
         Accuracy = accuracy;
         Evasion = evasion;
         Luck = luck;
+        MaxHp = maxHp;
+        MaxMp = maxMp;
     }
 
     public override int[] Value()
@@ -35,7 +53,9 @@ public class Stats : ValueObject<int[]>
             Agility,
             Accuracy,
             Evasion,
-            Luck
+            Luck,
+            MaxHp,
+            MaxMp
         };
     }
 
@@ -47,4 +67,54 @@ public class Stats : ValueObject<int[]>
     public int Accuracy { get; private set; }
     public int Evasion { get; private set; }
     public int Luck { get; private set; }
+    public int MaxHp { get; private set; }
+    public int MaxMp { get; private set; }
+
+    public Stats ModifyStat(Type type, int value)
+    {
+        switch (type)
+        {
+            case Type.Strength:
+            Strength = value;
+            break;
+
+            case Type.Defense:
+            Defense = value;
+            break;
+
+            case Type.Magic:
+            Magic = value;
+            break;
+
+            case Type.MagicDefense:
+            MagicDefense = value;
+            break;
+
+            case Type.Agility:
+            Agility =  value;
+            break;
+
+            case Type.Accuracy:
+            Accuracy = value;
+            break;
+
+            case Type.Evasion:
+            Evasion = value;
+            break;
+
+            case Type.Luck:
+            Luck = value;
+            break;
+
+            case Type.MaxHp:
+            MaxHp = value < 0 ? 0 : value;
+            break;
+
+            case Type.MaxMp:
+            MaxMp = value < 0 ? 0 : value;
+            break;
+        }
+
+        return this;
+    }
 }

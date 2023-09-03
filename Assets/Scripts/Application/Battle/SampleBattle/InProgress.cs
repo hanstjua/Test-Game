@@ -22,6 +22,10 @@ namespace Battle.SampleBattle
             {
                 return new Victory(_unitOfWork);
             }
+            else if (battle.TurnCount > 5)
+            {
+                return new Victory(_unitOfWork);
+            }
             else
             {
                 using (_unitOfWork)
@@ -46,6 +50,8 @@ namespace Battle.SampleBattle
                     }
 
                     _unitOfWork.BattleRepository.Update(battle.Id() as BattleId, battle.NextTurn(activeAgent.Id() as AgentId));
+
+                    _unitOfWork.Save();
                 }
 
                 return this;

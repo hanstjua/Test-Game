@@ -34,7 +34,7 @@ namespace Battle
             public Position Position { get; private set; }
         }
 
-        public Position[] Execute(Agent agent, BattleField field)
+        public Position[] Execute(Agent agent, BattleField field, Position[] allyPositions, Position[] adversaryPositions)
         {
             var agentPos = agent.Position;
             var edges = new List<Node> {new Node(agentPos, 0)};
@@ -54,11 +54,15 @@ namespace Battle
                     var x = current.Position.X + delta.Item1;
                     var y = current.Position.Y + delta.Item2;
                     
-                    // check that xy-coord is valid and the terrain is traversable
-                    if ((x >= 0 && x < field.Width) && (y >= 0  && y < field.Height) && field.Terrains[x][y].Traversable)
+                    // check that xy-coord is valid and the terrain is traversable and not already processed
+                    if (x >= 0 && x < field.Width
+                    && y >= 0  && y < field.Height
+                    && field.Terrains[x][y].Traversable
+                    && !adversaryPositions.Contains(field.Terrains[x][y].Position)
+                    && !inners.Exists(n => n.Position.X == x && n.Position.Y == y))
                     {
                         var curPos = field.Terrains[x][y].Position;
-                        var cost = curPos.Distance(agentPos);
+                        var cost = curPos.MovementCost(agentPos);
 
                         // position is movable
                         if (cost <= agent.Movements)
@@ -70,7 +74,8 @@ namespace Battle
                 }
             }
 
-            return inners.Select(e => e.Position).ToArray();
+            var otherAgentPositions = allyPositions.Concat(adversaryPositions);
+            return inners.Select(e => e.Position).Where(e => !otherAgentPositions.Contains(e)).ToArray();
         }
     }
 }

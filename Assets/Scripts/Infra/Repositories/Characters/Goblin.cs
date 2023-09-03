@@ -20,12 +20,13 @@ public class Goblin : ICharacter
         1,
         1,
         1,
+        1,
+        3,
         1
     );
-    public int Hp => 3;
-    public int Mp => 0;
+
     public Dictionary<Item, int> Items => new Dictionary<Item, int>();
-    public int Movements => 3;
-    public IWeapon Weapon => new Longsword();
-    public IArmour Armour => new LeatherArmour();
+    public int Movements => 2;
+    public Weapon Weapon => new Longsword();
+    public Armour Armour => new LeatherArmour();
 }

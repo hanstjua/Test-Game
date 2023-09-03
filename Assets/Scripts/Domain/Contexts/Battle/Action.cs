@@ -14,11 +14,13 @@ namespace Battle
             return Name;
         }
 
-        public abstract Position[] AreaOfEffect { get; }
+        public abstract AreaOfEffect AreaOfEffect { get; }
+
+        public abstract ActionType Type { get; }
 
         public bool IsTargetValid(Position targetPosition, Position actorPosition)
         {
-            return AreaOfEffect.Contains(targetPosition.RelativeTo(actorPosition));
+            return AreaOfEffect.RelativePositions.Contains(targetPosition.RelativeTo(actorPosition));
         }
     }
 }

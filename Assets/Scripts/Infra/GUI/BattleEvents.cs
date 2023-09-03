@@ -8,5 +8,7 @@ using Battle;
 public class BattleEvents : ScriptableObject
 {
     public readonly UnityEvent<ActionOutcome[]> actionExecuted = new();
+    public readonly UnityEvent<ActionOutcome[]> statusApplied = new();
+    public readonly UnityEvent<AgentId, Position> characterMoved = new(); 
     public readonly UnityEvent<Position, Position> cursorSelectionChanged = new();
 }

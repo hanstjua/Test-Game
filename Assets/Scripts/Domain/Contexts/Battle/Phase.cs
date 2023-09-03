@@ -5,7 +5,7 @@ namespace Battle
     [Serializable]
     public abstract class Phase : ValueObject<string>
     {
-        public static string  Name { get; private set; }
+        public string  Name { get; private set; }
         
         public Phase(string name)
         {
