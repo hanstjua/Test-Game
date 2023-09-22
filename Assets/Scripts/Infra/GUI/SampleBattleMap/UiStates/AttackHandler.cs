@@ -11,7 +11,7 @@ public class AttackHandler : ActionHandler
     private IUiState _onCancelState;
     private IUiState _onProceedState;
 
-    public AttackHandler() : base(new Attack()) {}
+    public override Battle.Action Service => new Attack();
 
     public override IUiState Handle(BattleProperties battleProperties, IUiState onCancelState, IUiState onProceedState)
     {
@@ -46,7 +46,7 @@ public class AttackHandler : ActionHandler
         var battle = _battleProperties.unitOfWork.BattleRepository.Get(_battleProperties.battleId);
         var actor = _battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent);
 
-        var outcomes = new ActionOutcome[] {new Attack().Execute(actor, target, battle, _battleProperties.unitOfWork)};
+        var outcomes = Service.Execute(actor, new Agent[] {target}, battle, _battleProperties.unitOfWork);
 
         _battleProperties.battleEvents.actionExecuted.Invoke(outcomes);
 

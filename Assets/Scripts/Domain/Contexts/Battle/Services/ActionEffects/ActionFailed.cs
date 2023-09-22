@@ -25,5 +25,10 @@ namespace Battle
         {
             return string.Format("{0}", (On.Value(), Name, (int) Type));
         }
+
+        public override void Apply(UnitOfWork unitOfWork)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

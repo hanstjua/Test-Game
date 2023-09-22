@@ -31,7 +31,7 @@ public class TransitionBattlePhase : IUiState
         if (statuses.Count > 0)
         {
             var outcomes = statuses
-            .Select(s => s.OnApply(_activeAgent, battleProperties.unitOfWork.BattleRepository.Get(battleProperties.battleId), battleProperties.unitOfWork))
+            .Select(s => s.Apply(_activeAgent, battleProperties.unitOfWork.BattleRepository.Get(battleProperties.battleId), battleProperties.unitOfWork))
             .Aggregate((acc, next) => acc.Concat(next).ToArray());
 
             battleProperties.battleEvents.statusApplied.Invoke(outcomes);

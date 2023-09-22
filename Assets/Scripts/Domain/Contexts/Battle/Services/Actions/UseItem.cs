@@ -7,26 +7,12 @@ namespace Battle.Services.Actions
 {
     public class UseItem : Action
     {
-        public override AreaOfEffect AreaOfEffect => throw new NotImplementedException();
-        public override string Name => "Item";
-        public override ActionType Type => ActionType.UseItem;
-
-        public ActionOutcome[] PreExecute(Agent actor, Agent target, Item item, Battle battle, UnitOfWork unitOfWork)
+        public UseItem() : base("Item")
         {
-            ActionOutcome[] ret = {};
-
-            var actorWeaponEffects = actor.Weapon.ApplyPreExecutionInitiatorEffects(ret, actor, target, battle, unitOfWork);
-            var actorArmourEffects = actor.Armour.ApplyPreExecutionInitiatorEffects(ret, actor, target, battle, unitOfWork);
-
-            var targetWeaponEffects = target.Weapon.ApplyPreExecutionReactorEffects(ret, actor, target, battle, unitOfWork);
-            var targetArmourEffects = target.Armour.ApplyPreExecutionReactorEffects(ret, actor, target, battle, unitOfWork);
-
-            return actorWeaponEffects
-            .Concat(actorArmourEffects)
-            .Concat(targetWeaponEffects)
-            .Concat(targetArmourEffects)
-            .ToArray();
         }
+
+        public override AreaOfEffect AreaOfEffect => throw new NotImplementedException();
+        public override ActionType Type => ActionType.UseItem;
 
         public ActionEffect[] Execute(Agent actor, Agent target, Item item)
         {
@@ -74,21 +60,14 @@ namespace Battle.Services.Actions
             return new ActionEffect[] { new ItemLost(actor.Id() as AgentId, item, 1), effectOnTarget };
         }
 
-        public ActionOutcome[] PostExecute(Agent actor, Agent target, Battle battle, UnitOfWork unitOfWork)
+        protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
-            ActionOutcome[] ret = {};
+            throw new NotImplementedException();
+        }
 
-            var actorWeaponEffects = actor.Weapon.ApplyPostExecutionInitiatorEffects(ret, actor, target, battle, unitOfWork);
-            var actorArmourEffects = actor.Armour.ApplyPostExecutionInitiatorEffects(ret, actor, target, battle, unitOfWork);
-
-            var targetWeaponEffects = target.Weapon.ApplyPostExecutionReactorEffects(ret, actor, target, battle, unitOfWork);
-            var targetArmourEffects = target.Armour.ApplyPostExecutionReactorEffects(ret, actor, target, battle, unitOfWork);
-
-            return actorWeaponEffects
-            .Concat(actorArmourEffects)
-            .Concat(targetWeaponEffects)
-            .Concat(targetArmourEffects)
-            .ToArray();
+        protected override bool ShouldExecute(Agent target, Agent actor)
+        {
+            throw new NotImplementedException();
         }
     }
 }

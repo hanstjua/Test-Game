@@ -6,14 +6,17 @@ namespace Battle.Statuses
         
         public override StatusType Type => StatusType.Poison;
 
-        public override ActionOutcome[] OnApply(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected override ActionOutcome[] OnApply(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return new ActionOutcome[] {
-                new ActionOutcome(agent.Id() as AgentId,
-                Type,
-                new ActionEffect[] {
-                    new HpDamage(agent.Id() as AgentId, (int) (agent.Hp * 0.1))
-                })
+                new ActionOutcome(
+                    agent.Id() as AgentId,
+                    new AgentId[] {agent.Id() as AgentId},
+                    Type,
+                    new ActionEffect[] {
+                        new HpDamage(agent.Id() as AgentId, (int) (agent.Hp * 0.1))
+                    }
+                )
             };
         }
     }

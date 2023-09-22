@@ -15,5 +15,16 @@ namespace Battle
         {
             return string.Format("{0}", (On.Value(), Name, Amount));
         }
+
+        public override void Apply(UnitOfWork unitOfWork)
+        {
+            using (unitOfWork)
+            {
+                var agent = unitOfWork.AgentRepository.Get(On);
+                agent = Amount > 0 ? agent.ReduceHp(Amount) : agent.RestoreHp(Amount);
+                unitOfWork.AgentRepository.Update(agent.Id() as AgentId, agent);
+                unitOfWork.Save();
+            }
+        }
     }
 }

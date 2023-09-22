@@ -4,14 +4,14 @@ namespace Battle.Common.Armours
 {
     public class LeatherArmour : Armour
     {
-        public override ActionOutcome[] ApplyPostExecutionReactorEffects(ActionOutcome[] outcomes, Agent actor, Agent target, Battle battle, UnitOfWork unitOfWork)
+        protected override ActionOutcome OnApplyPostExecutionReactorEffects(ActionOutcome outcome, Agent actor, Agent holder, Battle battle, UnitOfWork unitOfWork)
         {
-            return outcomes.Append(
-                new ActionOutcome(
-                    target.Id() as AgentId,
-                    ArmourType.LeatherArmour,
-                    new ActionEffect[] {new HpDamage(target.Id() as AgentId, -3)}
-                )).ToArray();
+            return holder.IsAlive() ? new ActionOutcome(
+                holder.Id() as AgentId,
+                new AgentId[] {holder.Id() as AgentId},
+                ArmourType.LeatherArmour,
+                new ActionEffect[] {new HpDamage(holder.Id() as AgentId, -3)}
+            ) : null;
         }
 
 

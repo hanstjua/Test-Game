@@ -6,13 +6,13 @@ namespace Battle.Statuses
         
         public override StatusType Type => StatusType.Guard;
 
-        public override Agent OnAdd(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected override Agent OnAdd(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             var agentDefense = agent.Stats.Defense;
             return agent.UpdateStats(agent.Stats.ModifyStat(Stats.Type.Defense, agentDefense + 3));
         }
 
-        public override Agent OnRemove(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected override Agent OnRemove(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             var agentDefense = agent.Stats.Defense;
             return agent.UpdateStats(agent.Stats.ModifyStat(Stats.Type.Defense, agentDefense - 3));

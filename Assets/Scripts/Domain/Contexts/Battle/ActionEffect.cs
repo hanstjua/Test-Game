@@ -9,5 +9,7 @@ namespace Battle
         {
             On = on;
         }
+
+        public abstract void Apply(UnitOfWork unitOfWork);
     }
 }

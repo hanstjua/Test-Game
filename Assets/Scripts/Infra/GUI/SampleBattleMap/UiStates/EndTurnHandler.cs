@@ -2,9 +2,7 @@ using Battle;
 
 public class EndTurnHandler : ActionHandler
 {
-    public EndTurnHandler() : base(null)
-    {
-    }
+    public override Action Service => null;
 
     public override IUiState CancelAction()
     {
@@ -20,7 +18,7 @@ public class EndTurnHandler : ActionHandler
     {
         var battle = battleProperties.unitOfWork.BattleRepository.Get(battleProperties.battleId);
         var agent = battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent);
-        
+
         return new SelectDirection(battle.ActiveAgent, agent.Position, _ => onCancelState);
     }
 

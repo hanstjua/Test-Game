@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace Battle.Statuses{
     public abstract class Status : ValueObject<(string, int)>
     {
@@ -16,19 +18,41 @@ namespace Battle.Statuses{
             return (Name, Duration);
         }
 
-        public virtual Agent OnAdd(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected virtual Agent OnAdd(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return agent;
         }
 
-        public virtual ActionOutcome[] OnApply(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected virtual ActionOutcome[] OnApply(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return new ActionOutcome[] {};
         }
 
-        public virtual Agent OnRemove(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        protected virtual Agent OnRemove(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return agent;
+        }
+
+        public Agent Add(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        {
+            return OnAdd(agent.AddStatus(this), battle, unitOfWork);
+        }
+
+        public ActionOutcome[] Apply(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        {
+            var outcomes = OnApply(agent, battle, unitOfWork);
+
+            foreach (var outcome in outcomes)
+            {
+                ApplyActionOutcomeService.Execute(outcome, unitOfWork);
+            }
+
+            return outcomes;
+        }
+
+        public Agent Remove(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        {
+            return OnRemove(agent, battle, unitOfWork);
         }
 
         public Status ProlongBy(int turns)

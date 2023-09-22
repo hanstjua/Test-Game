@@ -15,5 +15,10 @@ namespace Battle
         {
             return string.Format("{0}", (On.Value(), Name, Amount));
         }
+
+        public override void Apply(UnitOfWork unitOfWork)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
