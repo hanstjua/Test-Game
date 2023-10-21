@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class AttackAnimation : StateMachineBehaviour
+public class PoisonAnimation : StateMachineBehaviour
 {
     private TMP_Text _text;
-    private AttackAnimationParameters _parameters;
+    private PoisonAnimationParameters _parameters;
     private Vector3 _textOriginalPosition;
     private CanvasGroup _textCanvasGroup;
     private Vector2 _renderTextureSize;
@@ -19,7 +19,7 @@ public class AttackAnimation : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _parameters = animator.GetComponent<AttackAnimationParameters>();
+        _parameters = animator.GetComponent<PoisonAnimationParameters>();
         _text = _parameters.battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/DamageText").GetComponent<TMP_Text>();
         _text.text = "0";
 
@@ -50,7 +50,7 @@ public class AttackAnimation : StateMachineBehaviour
 
         _textCanvasGroup.alpha = _parameters.textAlphaScaler;
 
-        animator.SetBool("play", true);        
+        animator.SetBool("play", true); 
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

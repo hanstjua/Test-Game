@@ -16,15 +16,6 @@ namespace Battle.Services.Actions
         );
         public override ActionType Type => ActionType.Defend;
 
-        // public ActionEffect Execute(Agent actor)
-        // {
-        //     if (actor.IsAlive())
-        //     {
-        //         return new AddStatus(actor.Id() as AgentId, new Guard(3));
-        //     }
-        //     else return null;
-        // }
-
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
             return new ActionOutcome(

@@ -38,7 +38,7 @@ public class AttackHandler : ActionHandler
         var isNotSelf = target.Id() as AgentId != battle.ActiveAgent;
         var isInRange = aoe.RelativePositions.Any(isWithinAreaOfEffect);
 
-        return isNotSelf && isInRange;  // cannot attack self
+        return isNotSelf && isInRange && Service.IsTargetValid(target, actor);  // cannot attack self
     }
 
     public override IUiState ExecuteAction(Agent target)
@@ -48,9 +48,7 @@ public class AttackHandler : ActionHandler
 
         var outcomes = Service.Execute(actor, new Agent[] {target}, battle, _battleProperties.unitOfWork);
 
-        _battleProperties.battleEvents.actionExecuted.Invoke(outcomes);
-
-        return new AttackExecution(outcomes, _onProceedState);
+        return ExecutionStateDispatcher.Dispatch(outcomes, _onProceedState);
     }
 
     public override IUiState CancelAction()

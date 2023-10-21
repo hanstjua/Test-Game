@@ -32,21 +32,21 @@ namespace Battle.SampleBattle
                 {
                     // reset current active agent's turn gauge
                     var currentAgent = _unitOfWork.AgentRepository.Get(battle.ActiveAgent);
-                    currentAgent.ResetTurnGauge();
+                    currentAgent.ConsumeTurnGauge();
                     _unitOfWork.AgentRepository.Update(battle.ActiveAgent, currentAgent);
 
                     // find next active agent
                     var agents = _unitOfWork.AgentRepository.GetAll().OrderByDescending(a => a.TurnGauge).ToArray();
 
-                    var activeAgent = agents.FirstOrDefault(a => a.TurnGauge >= 100);
+                    var activeAgent = agents.Where(a => a.IsAlive()).FirstOrDefault(a => a.TurnGauge >= 100);
                     while (activeAgent == null)
                     {
                         foreach(var a in agents)
                         {
-                            a.RaiseTurnGauge();
+                            if (a.IsAlive()) a.RaiseTurnGauge();
                         }
 
-                        activeAgent = agents.FirstOrDefault(a => a.TurnGauge >= 100);
+                        activeAgent = agents.Where(a => a.IsAlive()).FirstOrDefault(a => a.TurnGauge >= 100);
                     }
 
                     _unitOfWork.BattleRepository.Update(battle.Id() as BattleId, battle.NextTurn(activeAgent.Id() as AgentId));

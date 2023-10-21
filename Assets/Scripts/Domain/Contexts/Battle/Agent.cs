@@ -195,17 +195,28 @@ namespace Battle
             get { return (double) Stats.Agility; }
         }
 
-        public void RaiseTurnGauge()
+        public Agent RaiseTurnGauge()
         {
             TurnGauge += TurnGaugeIncrement;
+
+            return this;
         }
 
-        public void ResetTurnGauge()
+        public Agent ConsumeTurnGauge()
         {
             if (TurnGauge >= 100)
             {
                 TurnGauge -= 100;
             }
+
+            return this;
+        }
+
+        public Agent ResetTurnGauge()
+        {
+            TurnGauge = 0;
+
+            return this;
         }
 
         public Agent UpdateStats(Stats stats)

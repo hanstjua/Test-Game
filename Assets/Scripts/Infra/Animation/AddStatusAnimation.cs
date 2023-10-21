@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class AttackAnimation : StateMachineBehaviour
+public class AddStatusAnimation : StateMachineBehaviour
 {
     private TMP_Text _text;
-    private AttackAnimationParameters _parameters;
-    private Vector3 _textOriginalPosition;
+    private AddStatusAnimationParameters _parameters;
     private CanvasGroup _textCanvasGroup;
     private Vector2 _renderTextureSize;
     private Vector2 _screenSize;
@@ -19,9 +18,9 @@ public class AttackAnimation : StateMachineBehaviour
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _parameters = animator.GetComponent<AttackAnimationParameters>();
-        _text = _parameters.battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/DamageText").GetComponent<TMP_Text>();
-        _text.text = "0";
+        _parameters = animator.GetComponent<AddStatusAnimationParameters>();
+        _text = _parameters.battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/StatusAnim").GetComponent<TMP_Text>();
+        _text.text = _parameters.effect.Status.Name;
 
         _textCanvasGroup = _text.GetComponent<CanvasGroup>();
 
@@ -31,35 +30,27 @@ public class AttackAnimation : StateMachineBehaviour
         _renderTextureSize = new Vector2(targetTexture.width, targetTexture.height);
         _screenSize = new Vector2(Screen.width, Screen.height);
 
-        var target = _parameters.battleProperties.characters[_parameters.hpDamage.On];
+        var target = _parameters.battleProperties.characters[_parameters.effect.On];
         var targetScreenPosition = _mainCamera.WorldToScreenPoint(target.transform.position + new Vector3(0, WORLD_HEIGHT_OFFSET, 0));
 
-        _textOriginalPosition = new Vector3(
+        _text.transform.position = new Vector3(
             targetScreenPosition.x * (float)_screenSize.x / (float)_renderTextureSize.x,
             targetScreenPosition.y * (float)_screenSize.y / (float)_renderTextureSize.y,
             0
         );
-        _text.transform.position = _textOriginalPosition;
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callback
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        _text.text = ((int)(_parameters.hpDamage.Amount * _parameters.damageNumberScaler)).ToString();
-        _text.transform.position = _textOriginalPosition + new Vector3(0, _parameters.textPositionScaler * HEIGHT_INCREASE, 0);
-
         _textCanvasGroup.alpha = _parameters.textAlphaScaler;
-
-        animator.SetBool("play", true);        
+        animator.SetBool("play", true);
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
        animator.SetBool("play", false);
-       _text.text = "0";
-       _text.transform.position = _textOriginalPosition;
-
        _textCanvasGroup.alpha = 0;
     }
 

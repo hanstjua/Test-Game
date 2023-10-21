@@ -1,7 +1,6 @@
 using System;
 using Battle;
 using Battle.Services;
-using Battle.Actions;
 using UnityEngine;
 using Battle.Services.Actions;
 
@@ -11,7 +10,7 @@ public class DefendHandler : ActionHandler
     private IUiState _onCancelState;
     private IUiState _onProceedState;
 
-    public DefendHandler() : base(new Defend()) {}
+    public override Battle.Action Service => new Defend();
 
     public override IUiState Handle(BattleProperties battleProperties, IUiState onCancelState, IUiState onProceedState)
     {
@@ -34,11 +33,9 @@ public class DefendHandler : ActionHandler
         var battle = _battleProperties.unitOfWork.BattleRepository.Get(_battleProperties.battleId);
         var actor = _battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent);
 
-        var outcomes = Defend.Execute(actor);
+        var outcomes = Service.Execute(actor, new Agent[] {actor}, battle, _battleProperties.unitOfWork);
 
-        _battleProperties.battleEvents.actionExecuted.Invoke(outcomes);
-
-        return new DefendExecution(outcomes[0], _onProceedState);
+        return new DefendExecution(outcomes[0].Effects[0], _onProceedState);
     }
 
     public override IUiState CancelAction()

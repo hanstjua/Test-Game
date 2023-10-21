@@ -1,24 +1,18 @@
 using Battle;
-using Battle.Services.Actions;
-using System;
-using System.Collections.Generic;
+using Battle.Statuses;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
-
-public class ActionExecution : IUiState
+public class RemoveStatusExecution : IUiState
 {
-    private readonly ActionOutcome[] _outcomes;
+    private readonly RemoveStatus _effect;
     private bool _hasInit = false;
     private readonly IUiState _nextState;
     private AnimatorObject _animatorObject;
     private AnimationExecutor _executor;
 
-    public ActionExecution(ActionOutcome[] outcomes, IUiState nextState)
+    public RemoveStatusExecution(RemoveStatus effect, IUiState nextState)
     {
-        _outcomes = outcomes;
+        _effect = effect;
         _nextState = nextState;
     }
 
@@ -26,7 +20,7 @@ public class ActionExecution : IUiState
     {
         if (!_hasInit)
         {
-            _executor = AnimationExecutorFactory.Get(_outcomes[0].Cause, battleProperties, _outcomes.Take(1).ToArray());
+            _executor = new RemoveStatusAnimationExecutor(_effect, battleProperties);
             _animatorObject = battleProperties.uiObjects.transform.Find("AnimatorObject").GetComponent<AnimatorObject>();
             _animatorObject.Animate(_executor);
 
@@ -35,14 +29,7 @@ public class ActionExecution : IUiState
 
         if (!_animatorObject.IsAnimating(_executor))  // animation complete
         {
-            if (_outcomes.Count() == 1)
-            {
-                return _nextState;
-            }
-            else            
-            {
-                return new ActionExecution(_outcomes.Skip(1).ToArray(), _nextState);
-            }
+            return _nextState;
         }
         else
         {

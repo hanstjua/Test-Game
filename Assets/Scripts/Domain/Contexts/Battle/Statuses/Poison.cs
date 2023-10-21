@@ -1,3 +1,5 @@
+using System;
+
 namespace Battle.Statuses
 {
     public class Poison : Status
@@ -14,7 +16,7 @@ namespace Battle.Statuses
                     new AgentId[] {agent.Id() as AgentId},
                     Type,
                     new ActionEffect[] {
-                        new HpDamage(agent.Id() as AgentId, (int) (agent.Hp * 0.1))
+                        new HpDamage(agent.Id() as AgentId, (int) Math.Ceiling(agent.Stats.MaxHp * 0.1))
                     }
                 )
             };

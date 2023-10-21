@@ -10,15 +10,15 @@ using TMPro;
 
 public class AttackExecution : IUiState
 {
-    private readonly ActionOutcome[] _outcomes;
+    private readonly ActionOutcome _outcome;
     private bool _hasInit = false;
     private readonly IUiState _nextState;
     private AnimatorObject _animatorObject;
     private AttackAnimationExecutor _executor;
 
-    public AttackExecution(ActionOutcome[] outcomes, IUiState nextState)
+    public AttackExecution(ActionOutcome outcome, IUiState nextState)
     {
-        _outcomes = outcomes;
+        _outcome = outcome;
         _nextState = nextState;
     }
 
@@ -26,7 +26,7 @@ public class AttackExecution : IUiState
     {
         if (!_hasInit)
         {
-            _executor = new AttackAnimationExecutor(battleProperties, _outcomes);
+            _executor = new AttackAnimationExecutor(battleProperties, new ActionOutcome[] {_outcome});
             _animatorObject = battleProperties.uiObjects.transform.Find("AnimatorObject").GetComponent<AnimatorObject>();
             _animatorObject.Animate(_executor);
 
@@ -35,14 +35,7 @@ public class AttackExecution : IUiState
 
         if (!_animatorObject.IsAnimating(_executor))  // animation complete
         {
-            if (_outcomes.Count() == 1)
-            {
-                return _nextState;
-            }
-            else            
-            {
-                return new AttackExecution(_outcomes.Skip(1).ToArray(), _nextState);
-            }
+            return _nextState;
         }
         else
         {
