@@ -42,7 +42,7 @@ public class Main : MonoBehaviour
         foreach (var id in battle.EnemyIds)
         {
             var enemy = uow.AgentRepository.Get(id);
-            var obj = Character.Create(id, _map, "Prefabs/Characters/Stair", _map.ToUIPosition(enemy.Position));
+            var obj = Character.Create(id, _map, "Prefabs/Characters/Box", _map.ToUIPosition(enemy.Position));
 
             _characters.Add(id, obj);
         }
@@ -50,7 +50,7 @@ public class Main : MonoBehaviour
         foreach (var id in battle.PlayerIds)
         {
             var player = uow.AgentRepository.Get(id);
-            var obj = Character.Create(id, _map, "Prefabs/Characters/Stair", _map.ToUIPosition(player.Position));
+            var obj = Character.Create(id, _map, "Prefabs/Characters/Box", _map.ToUIPosition(player.Position));
 
             _characters.Add(id, obj);
         }

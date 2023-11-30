@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Battle;
 using UnityEngine;
 
-public class AttackAnimationParameters : MonoBehaviour
+public class InflictDamageAnimationParameters : MonoBehaviour
 {
     public float damageNumberScaler;
     public float textPositionScaler;

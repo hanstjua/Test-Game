@@ -2,6 +2,8 @@ namespace Battle.Common.Armours
 {
     public class ArmourType : ActionType
     {
-        public static readonly ArmourType LeatherArmour = new();
+        public ArmourType(string name) : base(name) {}
+
+        public static readonly ArmourType LeatherArmour = new("LeatherArmour");
     }
 }

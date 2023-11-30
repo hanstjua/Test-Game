@@ -35,7 +35,7 @@ public class DefendHandler : ActionHandler
 
         var outcomes = Service.Execute(actor, new Agent[] {actor}, battle, _battleProperties.unitOfWork);
 
-        return new DefendExecution(outcomes[0].Effects[0], _onProceedState);
+        return ExecutionStateDispatcher.Dispatch(outcomes, _onProceedState);
     }
 
     public override IUiState CancelAction()

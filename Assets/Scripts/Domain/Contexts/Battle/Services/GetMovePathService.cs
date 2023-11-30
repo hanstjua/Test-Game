@@ -21,7 +21,7 @@ namespace Battle
             public double FCost => GCost + HCost;
             public Position Previous { get; private set; }
         }
-        public Position[] Execute(Position start, Position end, BattleField field)
+        public Position[] Execute(Position start, Position end, BattleField field, Position[] adversaryPositions)
         {
             var edges = new List<Node> {new Node(start, 0, start.Distance(end), null)};
             var inners = new List<Node>();
@@ -34,19 +34,6 @@ namespace Battle
                 edges.Remove(current);
                 inners.Add(current);
 
-                // var neighbours = GetNeighbourNodes(current, field, start, end);
-
-                // if (neighbours.Exists(n => n.Position == end))
-                // {
-                //     inners.Add(neighbours.Find(n => n.Position == end));
-                //     break;
-                // }
-                // else if (neighbours.Exists(n => edges.Exists(e => e.Position == n.Position)))
-                // {
-                //     var newNodes = neighbours.FindAll(n => edges.Exists(e => e.Position == n.Position));
-                //     // TODO
-                // }
-
                 // check neighbours
                 foreach (var delta in new List<(int, int)> {(0, 1), (1, 0), (0, -1), (-1, 0)})
                 {
@@ -54,11 +41,16 @@ namespace Battle
                     var y = current.Position.Y + delta.Item2;
                     
                     // check that xy-coord is valid and the terrain is traversable
-                    if ((x >= 0 && x < field.Width) && (y >= 0  && y < field.Height) && field.Terrains[x][y].Traversable)
+                    if (x >= 0 
+                    && x < field.Width 
+                    && y >= 0  
+                    && y < field.Height 
+                    && field.Terrains[x][y].Traversable
+                    && !adversaryPositions.Contains(field.Terrains[x][y].Position))
                     {
                         var neighbourPosition = field.Terrains[x][y].Position;
 
-                        if (neighbourPosition == end)
+                        if (neighbourPosition.Equals(end))
                         {
                             inners.Add(new Node(end, -1, -1, current.Position));
                             break;
@@ -72,7 +64,7 @@ namespace Battle
                         var hCost = neighbourPosition.Distance(end);
                         var newNode = new Node(neighbourPosition, gCost, hCost, current.Position);
 
-                        if (edges.Exists(e => e.Position == neighbourPosition))
+                        if (edges.Exists(e => e.Position.Equals(neighbourPosition)))
                         {
                             var existingNode = edges.Find(e => e.Position == neighbourPosition);
                             if (existingNode.FCost > newNode.FCost)
@@ -94,7 +86,7 @@ namespace Battle
         private List<Position> TracePath(List<Node> nodes, Position start, Position end)
         {
             var ret = new List<Position>();
-            var current = nodes.Find(n => n.Position == end);
+            var current = nodes.Find(n => n.Position.Equals(end));
 
             while (true)
             {

@@ -59,6 +59,7 @@ namespace Battle
                     && y >= 0  && y < field.Height
                     && field.Terrains[x][y].Traversable
                     && !adversaryPositions.Contains(field.Terrains[x][y].Position)
+                    && !field.Terrains[x][y].Position.Equals(agent.Position)
                     && !inners.Exists(n => n.Position.X == x && n.Position.Y == y))
                     {
                         var curPos = field.Terrains[x][y].Position;

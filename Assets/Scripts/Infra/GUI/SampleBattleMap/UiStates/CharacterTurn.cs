@@ -18,15 +18,17 @@ public class CharacterTurn : IUiState
     private bool _hasMoved = false;
     private bool _hasActed = false;
     private Position _initialPosition;
+    private Direction _initialDirection;
     private Transform _actionPanel;
     private Position[] _movablePositions;
 
-    public CharacterTurn(AgentId agentId, bool hasMoved, bool hasActed, Position initialPosition)
+    public CharacterTurn(AgentId agentId, bool hasMoved, bool hasActed, Position initialPosition, Direction initialDirection)
     {
         _agentId = agentId;
         _hasMoved = hasMoved;
         _hasActed = hasActed;
         _initialPosition = initialPosition;
+        _initialDirection = initialDirection;
     }
 
     private void Init(BattleProperties battleProperties)
@@ -108,9 +110,9 @@ public class CharacterTurn : IUiState
             Uninit(battleProperties);
 
             var handler = _actionDispatcher.Dispatch(_chosenAction);
-            IUiState onProceedState = _hasMoved ? new SelectDirection(_agentId) : new CharacterTurn(_agentId, false, true, _initialPosition);
+            IUiState onProceedState = _hasMoved ? new SelectDirection(_agentId) : new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
 
-            return handler.Handle(battleProperties, new CharacterTurn(_agentId, _hasMoved, false, _initialPosition), onProceedState);
+            return handler.Handle(battleProperties, new CharacterTurn(_agentId, _hasMoved, false, _initialPosition, _initialDirection), onProceedState);
         }
         else if (Input.GetMouseButtonDown(0))
         {
@@ -145,45 +147,42 @@ public class CharacterTurn : IUiState
     {
         if (_hasMoved)
         {
-            battleProperties.characters[_agentId].GetComponent<Character>().MoveCharacter(_agentId, _initialPosition);
+            battleProperties.characters[_agentId]
+            .GetComponent<Character>()
+            .SetPosition(_agentId, _initialPosition)
+            .SetDirection(_agentId, _initialDirection);
         }
 
         Uninit(battleProperties);
 
-        return new CharacterTurn(_agentId, false, _hasActed, _initialPosition);
+        return new CharacterTurn(_agentId, false, _hasActed, _initialPosition, _initialDirection);
     }
 
     private IUiState OnMouseClick(BattleProperties battleProperties)
     {
-        if (_hasActed)
-        {
-            if (_movablePositions.Contains(battleProperties.cursor.Selection))
-            {
-                battleProperties.battleEvents.characterMoved.Invoke(_agentId, battleProperties.cursor.Selection);
+        IUiState ret = this;
 
-                Uninit(battleProperties);
-                
-                return new SelectDirection(_agentId, _initialPosition, OnCancelMove);
-            }
-            else
-            {
-                return this;
-            }
-        }
-        else
+        if (_hasActed && _movablePositions.Contains(battleProperties.cursor.Selection))
         {
-            if (_movablePositions.Contains(battleProperties.cursor.Selection))
-            {
-                battleProperties.battleEvents.characterMoved.Invoke(_agentId, battleProperties.cursor.Selection);
+            Uninit(battleProperties);
                 
-                Uninit(battleProperties);
-
-                return new CharacterTurn(_agentId, true, _hasActed, _initialPosition);
-            }
-            else
-            {
-                return this;
-            }
+            ret = new CharacterMovement(
+                _agentId, 
+                battleProperties.cursor.Selection, 
+                new SelectDirection(_agentId, _initialPosition, OnCancelMove)
+            );
         }
+        else if (_movablePositions.Contains(battleProperties.cursor.Selection))
+        {
+            Uninit(battleProperties);
+
+            ret = new CharacterMovement(
+                _agentId,
+                battleProperties.cursor.Selection,
+                new CharacterTurn(_agentId, true, _hasActed, _initialPosition, _initialDirection)
+            );
+        }
+
+        return ret;
     }
 }

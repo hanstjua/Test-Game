@@ -1,30 +1,34 @@
-using UnityEngine;
+using Battle;
 
-public class BattleCommencement : IUiState
+public class InflictDamageExecution : IUiState
 {
+    private readonly HpDamage _effect;
     private bool _hasInit = false;
-    private BattleCommenceAnimationExecutor _executor;
+    private readonly IUiState _nextState;
     private AnimatorObject _animatorObject;
+    private AnimationExecutor _executor;
+    private readonly ActionOutcome _outcome;
 
-    public BattleCommencement(GameObject uiObjects)
+    public InflictDamageExecution(HpDamage effect, IUiState nextState)
     {
-
+        _effect = effect;
+        _nextState = nextState;
     }
 
     public IUiState Update(BattleProperties battleProperties)
     {
         if (!_hasInit)
         {
-            _executor = new BattleCommenceAnimationExecutor(battleProperties);
+            _executor = new InflictDamageAnimationExecutor(_effect, battleProperties);
             _animatorObject = battleProperties.uiObjects.transform.Find("AnimatorObject").GetComponent<AnimatorObject>();
             _animatorObject.Animate(_executor);
 
             _hasInit = true;
-        }
+        }  
 
         if (!_animatorObject.IsAnimating(_executor))  // animation complete
         {
-            return new TransitionBattlePhase();
+            return _nextState;
         }
         else
         {

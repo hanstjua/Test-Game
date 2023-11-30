@@ -122,7 +122,7 @@ public class SelectDirection : IUiState
             }
             else
             {
-                battleProperties.characters[_agentId].GetComponent<Character>().MoveCharacter(_agentId, _prevPosition);
+                battleProperties.characters[_agentId].GetComponent<Character>().SetPosition(_agentId, _prevPosition);
                 return _onCancel(battleProperties);
             }
 

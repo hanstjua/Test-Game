@@ -10,14 +10,16 @@ using TMPro;
 
 public class DefendExecution : IUiState
 {
-    private ActionEffect _outcome;
+    private ActionOutcome _outcome;
     private GameObject _anim;
     private float _elapsed = 0;
     private float _period = 1;
     private bool _hasInit = false;
     private IUiState _nextState;
+    private AnimatorObject _animatorObject;
+    private DefendAnimationExecutor _executor;
 
-    public DefendExecution(ActionEffect outcome, IUiState nextState)
+    public DefendExecution(ActionOutcome outcome, IUiState nextState)
     {
         _outcome = outcome;
         _nextState = nextState;
@@ -27,35 +29,20 @@ public class DefendExecution : IUiState
     {
         if (!_hasInit)
         {
-            _anim = GameObject.Find("CameraCanvas/RawImage/DefendAnim");
-
-            var text = _anim.GetComponent<TMP_Text>();
-            text.text = "";
-
-            text.text += battleProperties.unitOfWork.AgentRepository.Get(_outcome.On).Name + "\n";
-            text.text += "Defend\n";
-
-            _anim.GetComponent<CanvasGroup>().alpha = 1;
+            _executor = new DefendAnimationExecutor(battleProperties, new ActionOutcome[] {_outcome});
+            _animatorObject = battleProperties.uiObjects.transform.Find("AnimatorObject").GetComponent<AnimatorObject>();
+            _animatorObject.Animate(_executor);
 
             _hasInit = true;
         }  
 
-        if (Animate())  // animation complete
+        if (!_animatorObject.IsAnimating(_executor))  // animation complete
         {
-            return _nextState;
+            return new AddStatusExecution((AddStatus) _outcome.Effects[0], _nextState);
         }
         else
         {
             return this;
         }
-    }
-
-    private bool Animate()
-    {
-        _elapsed += Time.deltaTime;
-        var angle = 2 * Mathf.PI / _period * _elapsed;
-        _anim.GetComponent<TMP_Text>().alpha = Mathf.Sin(angle);
-
-        return angle >= Mathf.PI;
     }
 }

@@ -1,15 +1,9 @@
 using System.Linq;
 using Battle;
-using UnityEngine;
-using TMPro;
-
 
 public class TransitionBattlePhase : IUiState
 {
-    private GameObject _anim;
     private ActionOutcome[] _statusOutcomes;
-    private float _elapsed = 0;
-    private float _period = 2;
     private bool _hasInit = false;
     private Agent _activeAgent;
 
@@ -24,7 +18,6 @@ public class TransitionBattlePhase : IUiState
             unitOfWork.Save();
         }
 
-        _anim = GameObject.Find("CameraCanvas/RawImage/GenericStatusAnim");
         var statuses = _activeAgent.Statuses;
 
         if (statuses.Count > 0)
@@ -51,7 +44,7 @@ public class TransitionBattlePhase : IUiState
             nextState = new VictoryScreen();
         }
         // handle when phase is victory/game over 
-        else nextState = new CharacterTurn(_activeAgent.Id() as AgentId, false, false, _activeAgent.Position);
+        else nextState = new CharacterTurn(_activeAgent.Id() as AgentId, false, false, _activeAgent.Position, _activeAgent.Direction);
 
         return _statusOutcomes == null ? nextState : new ActionExecution(_statusOutcomes, nextState);
     }
