@@ -19,7 +19,7 @@ public class SelectActionTarget : IUiState
     private void Init(BattleProperties battleProperties)
     {
         var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
-        _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanel(battleProperties, newPos));
+        _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
         battleProperties.battleEvents.cursorSelectionChanged.AddListener(_characterPanelUpdater);
 
         // highlight map
@@ -55,6 +55,8 @@ public class SelectActionTarget : IUiState
     public IUiState Update(BattleProperties battleProperties)
     {
         if (!_hasInit) Init(battleProperties);
+
+        Camera.main.GetComponent<CameraControl>().HandleCameraInput();
 
         battleProperties.cursor.UpdateSelection();
 

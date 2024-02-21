@@ -7,14 +7,14 @@ using Battle.Common;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
 using Battle.Statuses;
-
+using UnityEngine.iOS;
 
 namespace Battle
 {
     [Serializable]
     public class Agent : Entity
     {
-        private AgentId _id;
+        private readonly AgentId _id;
         private Position _position;
         private List<Action> _actions;
         private Dictionary<Item, int> _items;
@@ -55,7 +55,7 @@ namespace Battle
             return _id;
         }
 
-        public string Name { get; private set; }
+        public string Name;
         public List<Action> Actions 
         { 
             get => new(_actions); 

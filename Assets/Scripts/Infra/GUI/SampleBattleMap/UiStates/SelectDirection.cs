@@ -9,6 +9,7 @@ public class SelectDirection : IUiState
     private bool _hasInit = false;
     private Position _prevPosition;
     private Func<BattleProperties, IUiState> _onCancel;
+    private GameObject _directions;
 
     public SelectDirection(AgentId agentId, Position prevPosition = null, Func<BattleProperties, IUiState> onCancel = null)
     {
@@ -25,12 +26,18 @@ public class SelectDirection : IUiState
         var map = battleProperties.map;
         map.Highlight(map.ToUIPosition(agent.Position));
 
+        _directions = Directions.Create("Prefabs/Maps/Directions", map.ToUIPosition(agent.Position), battleProperties.characters[_agentId].transform.rotation);
+
+        Camera.main.GetComponent<CameraControl>().FocusAt(battleProperties.map.ToUIPosition(agent.Position));
+
         _hasInit = true;
     }
-
+ 
     private void Uninit(BattleProperties battleProperties)
     {
         battleProperties.map.ClearHighlights();
+
+        GameObject.Destroy(_directions);
 
         _hasInit = false;
     }
@@ -52,6 +59,8 @@ public class SelectDirection : IUiState
 
     public IUiState OnKeyPress(KeyCode key, BattleProperties battleProperties)
     {
+        Vector3 eulerAngles;
+
         switch (key)
         {
             case KeyCode.Return:
@@ -97,22 +106,34 @@ public class SelectDirection : IUiState
             
             case KeyCode.UpArrow:
             _currentDirection = Direction.North;
-            battleProperties.characters[_agentId].transform.eulerAngles = new Vector3(0, 0, 0);
+            eulerAngles = new Vector3(0, 0, 0);
+            battleProperties.characters[_agentId].transform.eulerAngles = eulerAngles;
+            _directions.transform.eulerAngles = eulerAngles;
+
             return this;
 
             case KeyCode.DownArrow:
             _currentDirection = Direction.South;
-            battleProperties.characters[_agentId].transform.eulerAngles = new Vector3(0, 180, 0);
+            eulerAngles = new Vector3(0, 180, 0);
+            battleProperties.characters[_agentId].transform.eulerAngles = eulerAngles;
+            _directions.transform.eulerAngles = eulerAngles;
+
             return this;
 
             case KeyCode.LeftArrow:
             _currentDirection = Direction.West;
-            battleProperties.characters[_agentId].transform.eulerAngles = new Vector3(0, -90, 0);
+            eulerAngles = new Vector3(0, -90, 0);
+            battleProperties.characters[_agentId].transform.eulerAngles = eulerAngles;
+            _directions.transform.eulerAngles = eulerAngles;
+
             return this;
 
             case KeyCode.RightArrow:
             _currentDirection = Direction.East;
-            battleProperties.characters[_agentId].transform.eulerAngles = new Vector3(0, 90, 0);
+            eulerAngles = new Vector3(0, 90, 0);
+            battleProperties.characters[_agentId].transform.eulerAngles = eulerAngles;
+            _directions.transform.eulerAngles = eulerAngles;
+
             return this;
 
             case KeyCode.Escape:

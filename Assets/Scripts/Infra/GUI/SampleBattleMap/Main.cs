@@ -5,6 +5,8 @@ using Battle;
 using Battle.SampleBattle;
 using UnityEngine.UI;
 using TMPro;
+using System.Text.Json;
+using Unity.Plastic.Newtonsoft.Json;
 
 public class Main : MonoBehaviour
 {
@@ -17,7 +19,7 @@ public class Main : MonoBehaviour
     private BattleId _battleId;
     private BattleFieldId _battleFieldId;
     private Camera _mainCamera;
-    private Dictionary<AgentId, GameObject> _characters = new Dictionary<AgentId, GameObject>();
+    private Dictionary<AgentId, GameObject> _characters = new();
     private Map _map;
     private IUiState _uiState;
 
@@ -42,17 +44,22 @@ public class Main : MonoBehaviour
         foreach (var id in battle.EnemyIds)
         {
             var enemy = uow.AgentRepository.Get(id);
-            var obj = Character.Create(id, _map, "Prefabs/Characters/Box", _map.ToUIPosition(enemy.Position));
+            var ser = JsonUtility.ToJson(enemy);
+            Debug.Log($"main {ser}");
+            Debug.Log($"{JsonUtility.FromJson<Agent>(ser).Name}");
+            var character = Character.Create(id, _map, "Prefabs/Characters/Character", _map.ToUIPosition(enemy.Position), battleEvents, unitOfWork.obj);
+            character.LoadSprites(enemy.Name);
 
-            _characters.Add(id, obj);
+            _characters.Add(id, character.gameObject);
         }
 
         foreach (var id in battle.PlayerIds)
         {
             var player = uow.AgentRepository.Get(id);
-            var obj = Character.Create(id, _map, "Prefabs/Characters/Box", _map.ToUIPosition(player.Position));
+            var character = Character.Create(id, _map, "Prefabs/Characters/Character", _map.ToUIPosition(player.Position), battleEvents, unitOfWork.obj);
+            character.LoadSprites(player.Name);
 
-            _characters.Add(id, obj);
+            _characters.Add(id, character.gameObject);
         }
 
         foreach (var p in uow.BattleFieldRepository.Get(_battleFieldId).PlayerStartingPositions)

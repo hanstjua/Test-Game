@@ -9,18 +9,19 @@ using UnityEngine.SceneManagement;
 
 public class Character : MonoBehaviour
 {
-    [SerializeField] public BattleEvents battleEvents;
-    [SerializeField] public UnitOfWorkObject unitOfWorkObject;
-
     public AgentId agentId;
     public Map map;
+
+    private BattleEvents _battleEvents;
+    private UnitOfWork _unitOfWork;
     
     // Start is called before the first frame update
     void Start()
     {
-        battleEvents.characterMoved.AddListener((a, b) => SetPosition(a, b));
+        // if (agentId == null) throw new Exception("agentId has not been set.");
 
-        if (agentId == null) throw new Exception("agentId has not been set.");
+        // for demo purposes
+
     }
 
     // Update is called once per frame
@@ -29,27 +30,31 @@ public class Character : MonoBehaviour
         
     }
 
-    public static GameObject Create(AgentId id, Map map, string resourcePath, Vector3 position)
+    public static Character Create(AgentId id, Map map, string resourcePath, Vector3 position, BattleEvents battleEvents, UnitOfWork unitOfWork)
     {
-        var ret = Instantiate((GameObject) Resources.Load(resourcePath), position + new Vector3(0, 0.1f, 0), Quaternion.identity);
-        var character = ret.GetComponent<Character>();
+        var obj = Instantiate((GameObject) Resources.Load(resourcePath), position + new Vector3(0, 0.1f, 0), Quaternion.identity);
+        var character = obj.GetComponent<Character>();
         character.agentId = id;
         character.map = map;
+        character._battleEvents = battleEvents;
+        character._unitOfWork = unitOfWork;
 
-        return ret;
+        character._battleEvents.characterMoved.AddListener((a, b) => character.SetPosition(a, b));
+
+        return character;
     }
 
     public Character SetPosition(AgentId id, Position to)
     {
         if (id == agentId)
         {
-            using (var unitOfWork = unitOfWorkObject.obj)
+            using (_unitOfWork)
             {
-                var agent = unitOfWork.AgentRepository.Get(agentId).Move(to);
+                var agent = _unitOfWork.AgentRepository.Get(agentId).Move(to);
 
-                unitOfWork.AgentRepository.Update(agentId, agent);
+                _unitOfWork.AgentRepository.Update(agentId, agent);
 
-                unitOfWork.Save();
+                _unitOfWork.Save();
             }
 
             transform.position = map.ToUIPosition(to);
@@ -62,13 +67,13 @@ public class Character : MonoBehaviour
     {
         if (id == agentId)
         {
-            using (var unitOfWork = unitOfWorkObject.obj)
+            using (_unitOfWork)
             {
-                var agent = unitOfWork.AgentRepository.Get(agentId).Face(towards);
+                var agent = _unitOfWork.AgentRepository.Get(agentId).Face(towards);
 
-                unitOfWork.AgentRepository.Update(agentId, agent);
+                _unitOfWork.AgentRepository.Update(agentId, agent);
 
-                unitOfWork.Save();
+                _unitOfWork.Save();
             }
 
             Vector2 direction = towards switch
@@ -83,5 +88,11 @@ public class Character : MonoBehaviour
         }
 
         return this;
+    }
+
+    public void LoadSprites(string characterName)
+    {
+        var sprite = transform.Find("Sprite").GetComponent<CharacterSprite>();
+        sprite.LoadSprites(characterName);
     }
 }

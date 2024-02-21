@@ -5,7 +5,7 @@ namespace Battle
     [Serializable]
     public class BattleId : ValueObject<string>
     {
-        private string _uuid;
+        private readonly string _uuid;
 
         public BattleId(string uuid)
         {

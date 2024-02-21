@@ -7,7 +7,7 @@ namespace Battle
 	[Serializable]
 	public class BattleField : Entity
 	{
-		private BattleFieldId _id;
+		private readonly BattleFieldId _id;
 
 		public BattleField(
 			BattleFieldId id, 

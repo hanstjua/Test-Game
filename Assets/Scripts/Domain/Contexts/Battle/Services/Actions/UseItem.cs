@@ -2,17 +2,21 @@ using System;
 using System.Linq;
 using Battle.Common;
 using Battle;
+using Battle.Services.ActionCriteria;
 
 namespace Battle.Services.Actions
 {
     public class UseItem : Action
     {
-        public UseItem() : base("Item")
+        public UseItem() : base("Item", "Use item.")
         {
         }
 
         public override AreaOfEffect AreaOfEffect => throw new NotImplementedException();
         public override ActionType Type => ActionType.UseItem;
+
+        public override SkillType Skill => SkillType.Item;
+        public override ActionCriterion[] Criteria => new[] { new NotParalyzed() };
 
         public ActionEffect[] Execute(Agent actor, Agent target, Item item)
         {

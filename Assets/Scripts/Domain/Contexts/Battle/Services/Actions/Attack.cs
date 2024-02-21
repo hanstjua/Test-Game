@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Battle.Services.ActionCriteria;
 using Battle.Statuses;
 
 namespace Battle.Services.Actions
 {
     public class Attack : Action
     {
-        public Attack() : base("Attack")
+        public Attack() : base("Attack", "Use weapon(s) in hand to inflict physical damage.")
         {
         }
 
@@ -26,6 +27,10 @@ namespace Battle.Services.Actions
         );
 
         public override ActionType Type => ActionType.Attack;
+
+        public override SkillType Skill => SkillType.Physical;
+
+        public override ActionCriterion[] Criteria => new[] { new NotParalyzed() };
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {

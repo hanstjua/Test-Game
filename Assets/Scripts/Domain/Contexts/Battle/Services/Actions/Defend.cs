@@ -1,4 +1,5 @@
 using System.Linq;
+using Battle.Services.ActionCriteria;
 using Battle.Statuses;
 using UnityEditor.Media;
 
@@ -6,7 +7,7 @@ namespace Battle.Services.Actions
 {
     public class Defend : Action
     {
-        public Defend() : base("Defend")
+        public Defend() : base("Defend", "Take defensive stance to guard against incoming attacks.")
         {
         }
 
@@ -15,6 +16,9 @@ namespace Battle.Services.Actions
             0
         );
         public override ActionType Type => ActionType.Defend;
+
+        public override SkillType Skill => SkillType.Physical;
+        public override ActionCriterion[] Criteria => new[] { new NotParalyzed() };
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {

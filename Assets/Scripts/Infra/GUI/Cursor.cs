@@ -9,17 +9,19 @@ public class Cursor : MonoBehaviour
     [SerializeField] public BattleEvents battleEvents;
     
     [field: SerializeField] public UnitOfWorkObject UnitOfWork { get; private set; }
+    [field: SerializeField] private float _heightOffset = 0.3f;
 
-    public static readonly Position NullSelection = new Position(-1, -1, -1);
+    public static readonly Position NullSelection = new Position(-10, -10, -10);
     public BattleFieldId BattleFieldId { get; set; }
 
     private Camera _mainCamera;
     private Map _map;
     private Position _selection;
+    private ColorPalette _palette;
 
     public static Cursor Create(GameObject prefab, Map map)
     {
-        var gameObject = Instantiate(prefab, new Vector3(-1, -1, -1), prefab.transform.rotation);
+        var gameObject = Instantiate(prefab, new Vector3(-10, -10, -10), prefab.transform.rotation);
         var cursor = gameObject.GetComponent<Cursor>();
         cursor.Init(map);
 
@@ -29,7 +31,7 @@ public class Cursor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        _palette = ColorPalette.Get();
     }
 
     // Update is called once per frame
@@ -52,27 +54,28 @@ public class Cursor : MonoBehaviour
 
     public Position Selection
     {
-        get => _selection == null? NullSelection : _selection;
+        get => _selection ?? NullSelection;
 
         set
         {
-            var newSelection = value == null? NullSelection : value;
+            var newSelection = value ?? NullSelection;
             if (!Selection.Equals(newSelection))
             {
+                var oldSelection = _selection;
                 _selection = newSelection;
-                battleEvents.cursorSelectionChanged.Invoke(Selection, _selection);
+                battleEvents.cursorSelectionChanged.Invoke(oldSelection, _selection);
             }
         }
     }
 
     public void ActivateSelection()
     {
-        transform.Rotate(new Vector3(0, 0, 45));
+        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green1"));        
     }
 
     public void DeactivateSelection()
     {
-        transform.Rotate(new Vector3(0, 0, -45));
+        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green3"));
     }
 
     public void Reset()
@@ -109,6 +112,6 @@ public class Cursor : MonoBehaviour
 
     private void ShowCursor(Position oldPosition, Position newPosition)
     {
-        transform.position = _map.ToUIPosition(newPosition) + new Vector3(0, 0.2f, 0);
+        transform.position = _map.ToUIPosition(newPosition) + new Vector3(0, _heightOffset, 0);
     }
 }

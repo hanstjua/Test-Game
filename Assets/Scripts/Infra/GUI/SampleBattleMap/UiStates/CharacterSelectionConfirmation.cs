@@ -12,7 +12,7 @@ public class CharacterSelectionConfirmation : IUiState
     private IUiState _previousState;
     private GameObject _uiObjects;
     private bool _hasInit = false;
-    private static GameObject _confirmSelectionPanel;
+    private static ConfirmCharacters _confirmSelectionPanel;
 
     public CharacterSelectionConfirmation(GameObject uiObjects, IUiState previousState)
     {
@@ -22,19 +22,19 @@ public class CharacterSelectionConfirmation : IUiState
 
     private void Init()
     {
-        if (_confirmSelectionPanel == null) _confirmSelectionPanel = _uiObjects.transform.Find("CameraCanvas/RawImage/ConfirmSelectionPanel").gameObject;
+        if (_confirmSelectionPanel == null) _confirmSelectionPanel = _uiObjects.transform.Find("CameraCanvas/RawImage/ConfirmCharacters").GetComponent<ConfirmCharacters>();
 
-        _confirmSelectionPanel.GetComponent<CanvasGroup>().alpha = 1;
+        _confirmSelectionPanel.Show();
 
-        _confirmSelectionPanel.transform.Find("Yes").GetComponent<Button>().onClick.AddListener(() => _isConfirm = 1);
-        _confirmSelectionPanel.transform.Find("No").GetComponent<Button>().onClick.AddListener(() => _isConfirm = 0);
+        _confirmSelectionPanel.Yes.AddListener(() => _isConfirm = 1);
+        _confirmSelectionPanel.No.AddListener(() => _isConfirm = 0);
 
         _hasInit = true;
     }
 
     private void Uninit(BattleProperties battleProperties)
     {
-        _confirmSelectionPanel.GetComponent<CanvasGroup>().alpha = 0;
+        _confirmSelectionPanel.Hide();
 
         battleProperties.map.ClearHighlights();
 

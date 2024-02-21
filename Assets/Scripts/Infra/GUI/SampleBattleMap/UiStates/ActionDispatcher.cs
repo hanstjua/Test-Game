@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class ActionDispatcher
 {
-    private Dictionary<string, ActionHandler> _registry = new Dictionary<string, ActionHandler>{
+    private readonly Dictionary<string, ActionHandler> _registry = new()
+    {
         {"Attack", new AttackHandler()},
         {"Defend", new DefendHandler()},
         {"End Turn", new EndTurnHandler()}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class CharacterFactory
 {
-    private static Dictionary<string, ICharacter> _registry = new Dictionary<string, ICharacter>()
+    private static readonly Dictionary<string, ICharacter> _registry = new()
     {
         {"Goblin", new Goblin()}
     };
@@ -15,7 +15,7 @@ public class CharacterFactory
 
         if (value == null)
         {
-            throw new InvalidOperationException(String.Format("Invalid generic character name {0}.", name));
+            throw new InvalidOperationException(string.Format("Invalid generic character name {0}.", name));
         }
 
         return value;

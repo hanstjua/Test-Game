@@ -52,11 +52,11 @@ public class CharacterMovement : IUiState
         }
 
         var character = battleProperties.characters[_agentId];
-        var nextTile = battleProperties.map.ToUIPosition(_path[0]);
+        var nextPosition = battleProperties.map.ToUIPosition(_path[0]) + new Vector3(0, 0.1f, 0);
 
         IUiState ret = this;
 
-        if (hasReached(character.transform.position, nextTile))
+        if (hasReached(character.transform.position, nextPosition))
         {
             if (_path[0].Equals(_endPosition))  // move completed
             {
@@ -72,7 +72,7 @@ public class CharacterMovement : IUiState
         }
         else
         {
-            character.transform.position = Vector3.MoveTowards(character.transform.position, nextTile, SPEED * Time.deltaTime);  // move in progress
+            character.transform.position = Vector3.MoveTowards(character.transform.position, nextPosition, SPEED * Time.deltaTime);  // move in progress
 
             var deltaPosition = _nextPosition.RelativeTo(_currentPosition);
             character.transform.eulerAngles = new Vector3(0, (deltaPosition.X * 90) + (deltaPosition.Y * (1 - deltaPosition.Y) * 90), 0);

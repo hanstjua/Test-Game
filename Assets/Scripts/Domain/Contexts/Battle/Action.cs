@@ -8,11 +8,13 @@ namespace Battle
     public abstract class Action : ValueObject<string>
     {
         public string Name { get; private set; }
+        public string Description { get; private set; }
 
 
-        public Action(string name)
+        public Action(string name, string description)
         {
             Name = name;
+            Description = description;
         }
 
         public override string Value()
@@ -26,6 +28,8 @@ namespace Battle
         public abstract AreaOfEffect AreaOfEffect { get; }
 
         public abstract ActionType Type { get; }
+        public abstract SkillType Skill { get; }
+        public abstract ActionCriterion[] Criteria { get; }
 
         public bool IsTargetValid(Agent target, Agent actor)
         {

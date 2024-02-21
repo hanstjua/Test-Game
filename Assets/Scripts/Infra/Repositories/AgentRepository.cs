@@ -11,7 +11,7 @@ using UnityEngine;
 
 public class AgentRepository : IAgentRepository
 {
-    private Dictionary<AgentId, Agent> _agentSet = new Dictionary<AgentId, Agent>();
+    private readonly Dictionary<AgentId, Agent> _agentSet = new();
 
     public Agent Get(AgentId id)
     {

@@ -19,7 +19,7 @@ public class CharacterSelection : IUiState
     private void Init(BattleProperties battleProperties)
     {
         var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
-        _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanel(battleProperties, newPos));
+        _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
         battleProperties.battleEvents.cursorSelectionChanged.AddListener(_characterPanelUpdater);
 
         _hasInit = true;

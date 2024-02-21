@@ -7,6 +7,7 @@ using TMPro;
 public class CharacterPanel : MonoBehaviour
 {
     [SerializeField] public BattleEvents battleEvents;
+    [field: SerializeField] private ColorPalette _palette;
     
     private Agent _character;
 
@@ -30,13 +31,34 @@ public class CharacterPanel : MonoBehaviour
             _character = value;
 
             // update attributes
-            transform.Find("Name").GetComponent<TMP_Text>().text = value.Name;
-            transform.Find("HpValue").GetComponent<TMP_Text>().text = value.Hp.ToString();
-            transform.Find("MpValue").GetComponent<TMP_Text>().text = value.Mp.ToString();
+            transform.Find("Panel/Right/Name").GetComponent<TMP_Text>().text = value.Name;
+
+            var hpText = transform.Find("Panel/Right/Values/HP/Number").GetComponent<TMP_Text>();
+            hpText.text = value.Hp.ToString();
+            if (value.Hp == 0)
+            {
+                hpText.color = _palette.GetColor("Red4");
+            }
+            else
+            {
+                hpText.color = _palette.GetColor("Blue5");
+            }
+
+            transform.Find("Panel/Right/Values/MP/Number").GetComponent<TMP_Text>().text = value.Mp.ToString();
         }
     }
 
-    public void UpdateCharacterPanel(BattleProperties battleProperties, Position position)
+    public void Hide()
+    {
+        GetComponent<CanvasGroup>().alpha = 0;
+    }
+
+    public void Show()
+    {
+        GetComponent<CanvasGroup>().alpha = 1;
+    }
+
+    public void UpdateCharacterPanelByPosition(BattleProperties battleProperties, Position position)
     {
         var agentRepository = battleProperties.unitOfWork.AgentRepository;
         var agent = agentRepository.GetFirstBy(a => a.Position.Equals(position));
@@ -44,12 +66,17 @@ public class CharacterPanel : MonoBehaviour
         if (agent != null)
         {
             Character = agent;
-            GetComponent<CanvasGroup>().alpha = 1;
+            Show();
         }
         else
         {
-            GetComponent<CanvasGroup>().alpha = 0;
+            Hide();
         }
+    }
 
+    public void UpdateChracterPanelByAgent(Agent agent)
+    {
+        Character = agent;
+        Show();
     }
 }
