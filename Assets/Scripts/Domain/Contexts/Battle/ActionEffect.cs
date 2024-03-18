@@ -11,5 +11,10 @@ namespace Battle
         }
 
         public abstract void Apply(UnitOfWork unitOfWork);
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

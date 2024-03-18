@@ -52,7 +52,7 @@ public class CharacterMovement : IUiState
         }
 
         var character = battleProperties.characters[_agentId];
-        var nextPosition = battleProperties.map.ToUIPosition(_path[0]) + new Vector3(0, 0.1f, 0);
+        var nextPosition = battleProperties.map.ToUIPosition(_path[0]) + Character.POSITION_OFFSET;
 
         IUiState ret = this;
 

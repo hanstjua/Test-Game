@@ -22,5 +22,10 @@ namespace Battle
 
             return (hashedPositions, Height);
         }
+
+        public bool IsWithin(Position p0, Position p1)
+        {
+            return RelativePositions.Contains(p1.RelativeTo(p0));
+        }
     }
 }

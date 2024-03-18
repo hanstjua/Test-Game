@@ -11,20 +11,15 @@ public class RemoveStatusAnimationExecutor : AnimationExecutor
         _effect = effect;
     }
 
-    public override bool Execute(Animator animator)
+    public override bool Execute()
     {
-        var parameters = animator.GetComponent<RemoveStatusAnimationParameters>();
-        parameters.effect = _effect;
-        parameters.battleProperties = BattleProperties;
+        // var parameters = animator.GetComponent<RemoveStatusAnimationParameters>();
+        // parameters.effect = _effect;
+        // parameters.battleProperties = BattleProperties;
 
-        animator.Play("Status.RemoveStatus");
-        animator.SetBool("play", true);
+        // animator.Play("Status.RemoveStatus");
+        // animator.SetBool("play", true);
 
         return true;
-    }
-
-    public override bool IsAnimating(Animator animator)
-    {
-       return animator.GetBool("play");
     }
 }

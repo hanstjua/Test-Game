@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Battle;
 using TMPro;
 using UnityEngine;
@@ -33,13 +31,20 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         {
         }
 
-        public override AreaOfEffect AreaOfEffect => throw new System.NotImplementedException();
+        public override AreaOfEffect TargetArea => throw new System.NotImplementedException();
 
         public override ActionType Type => throw new System.NotImplementedException();
 
         public override SkillType Skill => throw new System.NotImplementedException();
 
-        public override ActionCriterion[] Criteria => throw new System.NotImplementedException();
+        public override ActionPrerequisite[] Criteria => throw new System.NotImplementedException();
+
+        public override AreaOfEffect AreaOfEffect => throw new System.NotImplementedException();
+
+        public override bool CanExecute(Agent actor, Battle.Battle battle, UnitOfWork unitOfWork)
+        {
+            throw new System.NotImplementedException();
+        }
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle.Battle battle, UnitOfWork unitOfWork)
         {
@@ -68,24 +73,29 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (_isSelectable) Unfocused.Invoke(_action);
     }
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        _isFocused = false;
+        Focused = new();
+        Unfocused = new();
+        Selected = new();
+
+        _null = new();
         _name = transform.Find("Name").GetComponent<TMP_Text>();
+
+        _isFocused = false;
+        
         _background = GetComponent<Image>();
         _defaultBackgroundColor = _background.color;
         _defaultButtonMaterial = _background.material;
 
-        Focused = new();
-        Unfocused = new();
-        Selected = new();
         _action = new NullAction();
+    }
 
+    // Start is called before the first frame update
+    void Start()
+    {
         Focused.AddListener(_ => HandleFocus());
         Unfocused.AddListener(_ => HandleUnfocus());
-
-        _null = new();
 
         // for demo purposes
         // if (_isSelectable) Enable(_action);

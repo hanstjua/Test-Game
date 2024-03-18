@@ -19,7 +19,7 @@ public class AttackHandler : ActionHandler
         _onCancelState = onCancelState;
         _onProceedState = onProceedState;
         
-        return new SelectActionTarget(this);
+        return new DummyState();
     }
 
     public override bool ValidateTarget(Agent target)
@@ -28,7 +28,7 @@ public class AttackHandler : ActionHandler
         var actor = _battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent);
         var relativePosition = actor.Position.RelativeTo(target.Position);
 
-        var aoe = Service.AreaOfEffect;
+        var aoe = Service.TargetArea;
 
         Func<Position, bool> isWithinAreaOfEffect = (Position p) => 
         relativePosition.X == p.X &&

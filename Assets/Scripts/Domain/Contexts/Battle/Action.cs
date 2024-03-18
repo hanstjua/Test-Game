@@ -10,7 +10,6 @@ namespace Battle
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-
         public Action(string name, string description)
         {
             Name = name;
@@ -22,18 +21,26 @@ namespace Battle
             return Name;
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         protected abstract ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork);
         protected abstract bool ShouldExecute(Agent target, Agent actor);
 
+        public abstract AreaOfEffect TargetArea { get; }
         public abstract AreaOfEffect AreaOfEffect { get; }
 
         public abstract ActionType Type { get; }
         public abstract SkillType Skill { get; }
-        public abstract ActionCriterion[] Criteria { get; }
+        public abstract ActionPrerequisite[] Criteria { get; }
+
+        public abstract bool CanExecute(Agent actor, Battle battle, UnitOfWork unitOfWork);
 
         public bool IsTargetValid(Agent target, Agent actor)
         {
-            return AreaOfEffect.RelativePositions.Contains(target.Position.RelativeTo(actor.Position))
+            return TargetArea.IsWithin(actor.Position, target.Position)
             && ShouldExecute(target, actor);
         }
 
@@ -49,8 +56,18 @@ namespace Battle
             .ToArray();
 
             var outcomes = potentialPreemptors
-            .SelectMany(p => new PreemptorService().Execute(p, potentialPreemptors.Where(a => !a.Equals(p)).ToArray(), Type, actor, targets, battle, unitOfWork))
-            .ToArray();
+            .SelectMany(
+                p => new PreemptorService().Execute(
+                    p,
+                    potentialPreemptors.Where(a => !a.Equals(p)).ToArray(), 
+                    Type, 
+                    actor, 
+                    targets, 
+                    battle, 
+                    unitOfWork
+                )
+            )
+            .ToList();
 
             // refresh agents
             actor = unitOfWork.AgentRepository.Get(actor.Id() as AgentId);
@@ -60,21 +77,30 @@ namespace Battle
             {
                 var executionOutcome = OnExecute(actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(executionOutcome, unitOfWork);
-                
-                outcomes = outcomes.Append(executionOutcome).ToArray();
 
+                outcomes.Add(executionOutcome);
+                
                 // refresh agents
                 actor = unitOfWork.AgentRepository.Get(actor.Id() as AgentId);
                 targets = targets.Select(a => unitOfWork.AgentRepository.Get(a.Id() as AgentId)).ToArray();
 
-                var respondOutcomes = potentialPreemptors
-                .SelectMany(p => new RespondService().Execute(p, potentialPreemptors.Where(a => !a.Equals(p)).ToArray(), executionOutcome, actor, targets, battle, unitOfWork))
-                .ToArray();
-
-                outcomes = outcomes.Concat(respondOutcomes).ToArray();
+                var respondOutcomes = potentialPreemptors.SelectMany(
+                    p => new RespondService().Execute(
+                        p, 
+                        potentialPreemptors.Where(a => !a.Equals(p)).ToArray(), 
+                        executionOutcome, 
+                        actor, 
+                        targets, 
+                        battle, 
+                        unitOfWork
+                    )
+                )
+                .ToList();
+                
+                outcomes.AddRange(respondOutcomes);
             }
 
-            return outcomes;
+            return outcomes.ToArray();
         }
     }
 }

@@ -1,5 +1,3 @@
-using Battle.Statuses;
-
 namespace Battle
 {
     public class ActionFailed : ActionEffect

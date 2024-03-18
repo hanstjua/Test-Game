@@ -7,6 +7,7 @@ public class BattleCommenceAnimationParameters : MonoBehaviour
 {
     public float textAlphaScaler;
     public float canvasAlphaScaler;
+    public BattleCommenceAnimationExecutor executor;
 
     public BattleProperties battleProperties;
 
@@ -25,5 +26,10 @@ public class BattleCommenceAnimationParameters : MonoBehaviour
     public void Trigger()
     {
         
+    }
+
+    public void UpdateAnimationStatus(bool isAnimating)
+    {
+        executor.UpdateAnimationStatus(isAnimating);
     }
 }

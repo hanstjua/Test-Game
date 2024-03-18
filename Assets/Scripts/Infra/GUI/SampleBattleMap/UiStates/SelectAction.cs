@@ -24,6 +24,8 @@ public class SelectAction : IUiState
 
     private void Init(BattleProperties battleProperties)
     {
+        Camera.main.GetComponent<CameraControl>().FocusAt(battleProperties.map.ToUIPosition(battleProperties.unitOfWork.AgentRepository.Get(_agentId).Position));
+
         _actionPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/ActionPanel");
         _actionPanel.GetComponent<ActionPanel>().ActionSelected.AddListener(a => _chosenAction = a.Name);
         _actionPanel.GetComponent<CanvasGroup>().alpha = 1;
@@ -40,7 +42,7 @@ public class SelectAction : IUiState
 
     private void Uninit(BattleProperties battleProperties)
     {
-        _actionPanel.GetComponent<CanvasGroup>().alpha = 0.3f;
+        _actionPanel.GetComponent<CanvasGroup>().alpha = 0f;
 
         var camera = Camera.main;
 
@@ -48,27 +50,26 @@ public class SelectAction : IUiState
 
         _characterPanel.Hide();
 
+        _chosenAction = null;
+
         _hasInit = false;
     }
 
     public IUiState Update(BattleProperties battleProperties)
     {
-        Camera.main.GetComponent<CameraControl>().FocusAt(battleProperties.map.ToUIPosition(battleProperties.unitOfWork.AgentRepository.Get(_agentId).Position));
-
         if (!_hasInit) Init(battleProperties);
-
 
         if (_chosenAction != null)
         {            
-            _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
-
             battleProperties.map.ClearHighlights();
+
+            var action = _actionDispatcher.Dispatch(_chosenAction);
+
+            var ret = new SelectActionTarget(action, new SelectAction(_agentId, _prevState, _nextState), _nextState);
 
             Uninit(battleProperties);
 
-            var handler = _actionDispatcher.Dispatch(_chosenAction);
-
-            return handler.Handle(battleProperties, this, _nextState);
+            return ret;
         }
         else if (Input.GetKey(KeyCode.Escape))
         {

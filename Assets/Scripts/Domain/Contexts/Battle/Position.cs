@@ -22,6 +22,11 @@ namespace Battle
             return (X, Y, Z);
         }
 
+        public override string ToString()
+        {
+            return $"{X}, {Y}, {Z}";
+        }
+
         public int X { get; private set; }
         public int Y { get; private set; }
         public int Z { get; private set; }

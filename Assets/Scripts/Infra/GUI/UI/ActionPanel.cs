@@ -26,8 +26,7 @@ public class ActionPanel : MonoBehaviour
 
     private float _timer;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         ActionSelected = new();
 
@@ -38,18 +37,24 @@ public class ActionPanel : MonoBehaviour
 
         _infoDescription = transform.Find("Info/Description").GetComponent<TMP_Text>();
 
+        _categoryName = transform.Find("Category/Name").GetComponent<TMP_Text>();
+
+        _actions = transform.Find("Actions");
+        _actionScrollBar = _actions.Find("ActionScrollBar");
+        _defaultScrollBarHeight = _actionScrollBar.GetComponent<RectTransform>().sizeDelta.y;
+
+        _timer = INPUT_INTERVAL_S;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
         foreach (var button in _actionButtons)
         {
             button.Focused.AddListener(action => _infoDescription.text = action.Description);
             button.Unfocused.AddListener(action => _infoDescription.text = "");
             button.Selected.AddListener(action => ActionSelected.Invoke(action));
         }
-
-        _categoryName = transform.Find("Category/Name").GetComponent<TMP_Text>();
-
-        _actions = transform.Find("Actions");
-        _actionScrollBar = _actions.Find("ActionScrollBar");
-        _defaultScrollBarHeight = _actionScrollBar.GetComponent<RectTransform>().sizeDelta.y;
 
         UpdateActions(new Dictionary<Battle.Action, bool>{
             {new Attack(), true},
@@ -62,8 +67,6 @@ public class ActionPanel : MonoBehaviour
             {new Thunder(), true},
             {new Water(), false}
         });
-
-        _timer = INPUT_INTERVAL_S;
     }
 
     // Update is called once per frame
@@ -102,6 +105,7 @@ public class ActionPanel : MonoBehaviour
 
     public void UpdateActions(Dictionary<Battle.Action, bool> actions)
     {
+        Debug.Log(name);
         var skills = new HashSet<SkillType>(actions.Keys.Select(a => a.Skill));
 
         _data = skills

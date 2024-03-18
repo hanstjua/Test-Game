@@ -43,9 +43,7 @@ public class CharacterTurn : IUiState
             var actions = agent.Actions
             .ToDictionary(
                 a => a, 
-                a => a.Criteria
-                .Select(c => c.IsFulfilledBy(agent, battle, battleProperties.unitOfWork))
-                .Aggregate((x, y) => x && y)
+                a => a.CanExecute(agent, battle, battleProperties.unitOfWork)
             );
 
             _actionPanel.GetComponent<ActionPanel>().UpdateActions(actions);
@@ -96,11 +94,6 @@ public class CharacterTurn : IUiState
 
         _cameraControl.HandleCameraInput();
 
-        // if (Input.GetKey(KeyCode.F))
-        // {
-        //     Camera.main.GetComponent<CameraControl>().FocusAt(battleProperties.map.ToUIPosition(agent.Position));
-        // }
-
         if (Input.GetKey(KeyCode.F))
         {
             Camera.main.GetComponent<CameraControl>().FocusAtObject(battleProperties.characters[_agentId]);
@@ -117,7 +110,7 @@ public class CharacterTurn : IUiState
         // show action panel preview if cursor is on agent
         if (cursor.Selection.Equals(agent.Position))
         {
-            _actionPanel.GetComponent<CanvasGroup>().alpha = 0.3f;
+            _actionPanel.GetComponent<CanvasGroup>().alpha = 0.9f;
         }
         else
         {
@@ -125,44 +118,6 @@ public class CharacterTurn : IUiState
         }
 
         return this;
-
-        // if (_chosenAction != null)
-        // {            
-        //     _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
-
-        //     battleProperties.map.ClearHighlights();
-
-        //     Uninit(battleProperties);
-
-        //     var handler = _actionDispatcher.Dispatch(_chosenAction);
-        //     IUiState onProceedState = _hasMoved ? new SelectDirection(_agentId) : new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
-
-        //     return handler.Handle(battleProperties, new CharacterTurn(_agentId, _hasMoved, false, _initialPosition, _initialDirection), onProceedState);
-        // }
-        // else
-        // {
-            // if (Input.GetMouseButtonDown(0))
-            // {
-            //     return OnMouseClick(battleProperties);
-            // }
-
-            // if (!_hasMoved)
-            // {
-            //     battleProperties.cursor.UpdateSelection();
-
-            //     foreach(var position in _movablePositions)
-            //     {
-            //         var map = battleProperties.map;
-            //         map.Highlight(map.ToUIPosition(position));
-            //     }
-            // }
-            // else
-            // {
-            //     battleProperties.cursor.Selection = null;
-            // }
-
-        //     return this;
-        // }
     }
 
     private IUiState OnCancelMove(BattleProperties battleProperties)
@@ -184,46 +139,80 @@ public class CharacterTurn : IUiState
     {
         IUiState ret = this;
 
-        if (_hasActed && _movablePositions.Contains(battleProperties.cursor.Selection))
-        {
-            Uninit(battleProperties);
-                
-            ret = new CharacterMovement(
-                _agentId, 
-                battleProperties.cursor.Selection, 
-                new SelectDirection(_agentId, _initialPosition, OnCancelMove)
-            );
-        }
-        else if (_movablePositions.Contains(battleProperties.cursor.Selection))
-        {
-            Uninit(battleProperties);
-
-            var s = battleProperties.cursor.Selection;
-
-            ret = new CharacterMovement(
-                _agentId,
-                battleProperties.cursor.Selection,
-                new SelectAction(
-                    _agentId, 
-                    new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection), 
-                    new SelectDirection(_agentId, _initialPosition)
-                )
-            );
-        }
-        else
+        if (!_hasActed)
         {
             var agent = battleProperties.unitOfWork.AgentRepository.Get(_agentId);
             if (battleProperties.cursor.Selection.Equals(agent.Position))
             {
-                Uninit(battleProperties);
-
                 IUiState nextState = _hasMoved ? 
                 new SelectDirection(_agentId, _initialPosition) : 
                 new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
 
                 ret = new SelectAction(_agentId, this, nextState);
             }
+            else if (_movablePositions.Contains(battleProperties.cursor.Selection))
+            {
+                ret = new CharacterMovement(
+                    _agentId,
+                    battleProperties.cursor.Selection,
+                    new SelectAction(
+                        _agentId, 
+                        new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection), 
+                        new SelectDirection(_agentId, _initialPosition)
+                    )
+                );
+            }
         }
+        else if (_movablePositions.Contains(battleProperties.cursor.Selection))
+        {   
+            var agent = battleProperties.unitOfWork.AgentRepository.Get(_agentId);    
+            ret = battleProperties.cursor.Selection.Equals(agent.Position) ?
+            new SelectDirection(_agentId, _initialPosition, OnCancelMove):
+            new CharacterMovement(
+                _agentId, 
+                battleProperties.cursor.Selection, 
+                new SelectDirection(_agentId, _initialPosition, OnCancelMove)
+            );
+        }
+
+
+        // var agent = battleProperties.unitOfWork.AgentRepository.Get(_agentId);
+        // if (battleProperties.cursor.Selection.Equals(agent.Position))
+        // {
+        //     Uninit(battleProperties);
+
+        //     IUiState nextState = _hasMoved ? 
+        //     new SelectDirection(_agentId, _initialPosition) : 
+        //     new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
+
+        //     ret = new SelectAction(_agentId, this, nextState);
+        // }
+        // else if (_hasActed && _movablePositions.Contains(battleProperties.cursor.Selection))
+        // {
+        //     Uninit(battleProperties);
+                
+        //     ret = new CharacterMovement(
+        //         _agentId, 
+        //         battleProperties.cursor.Selection, 
+        //         new SelectDirection(_agentId, _initialPosition, OnCancelMove)
+        //     );
+        // }
+        // else if (_movablePositions.Contains(battleProperties.cursor.Selection))
+        // {
+        //     Uninit(battleProperties);
+
+        //     ret = new CharacterMovement(
+        //         _agentId,
+        //         battleProperties.cursor.Selection,
+        //         new SelectAction(
+        //             _agentId, 
+        //             new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection), 
+        //             new SelectDirection(_agentId, _initialPosition)
+        //         )
+        //     );
+        // }
+
+        Uninit(battleProperties);
 
         return ret;
     }

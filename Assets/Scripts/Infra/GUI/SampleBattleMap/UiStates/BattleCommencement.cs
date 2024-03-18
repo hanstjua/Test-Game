@@ -15,8 +15,8 @@ public class BattleCommencement : IUiState
     {
         if (!_hasInit)
         {
-            _executor = new BattleCommenceAnimationExecutor(battleProperties);
             _animatorObject = battleProperties.uiObjects.transform.Find("AnimatorObject").GetComponent<AnimatorObject>();
+            _executor = new BattleCommenceAnimationExecutor(battleProperties, _animatorObject.GetComponent<Animator>());
             _animatorObject.Animate(_executor);
 
             _hasInit = true;

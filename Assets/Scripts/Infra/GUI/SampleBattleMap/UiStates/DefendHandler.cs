@@ -18,7 +18,7 @@ public class DefendHandler : ActionHandler
         _onCancelState = onCancelState;
         _onProceedState = onProceedState;
         
-        return new SelectActionTarget(this);
+        return new DummyState();
     }
 
     public override bool ValidateTarget(Agent agent)

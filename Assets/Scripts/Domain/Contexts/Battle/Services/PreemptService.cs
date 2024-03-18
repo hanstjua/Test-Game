@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Battle.Common;
+using PlasticGui;
 
 namespace Battle
 {
@@ -11,55 +13,94 @@ namespace Battle
 
             var role = Equipment.GetHolderRole(preemptor.Id() as AgentId, actor.Id() as AgentId, targets.Select(a => a.Id() as AgentId).ToArray());
 
-            Func<bool> isWeaponTriggered = () => preemptor.Weapon.IsPreExecutionEffectsTriggered(role, action, preemptor, actor, targets, battle, unitOfWork);
-            Func<bool> isArmourTriggered = () => preemptor.Armour.IsPreExecutionEffectsTriggered(role, action, preemptor, actor, targets, battle, unitOfWork);
-
-            ActionOutcome[] ret = {};
+            bool isWeaponTriggered() => preemptor.Weapon.IsPreExecutionEffectsTriggered(role, action, preemptor, actor, targets, battle, unitOfWork);
+            bool isArmourTriggered() => preemptor.Armour.IsPreExecutionEffectsTriggered(role, action, preemptor, actor, targets, battle, unitOfWork);
 
             if (!isWeaponTriggered() && !isArmourTriggered())
             {
-                return ret;
+                return new ActionOutcome[] {};
             }
+
+            List<ActionOutcome> outcomes = new();
 
             var preemptors = potentialPreemptors.Where(a => !a.Id().Equals(preemptor.Id())).ToArray();
 
             if (isWeaponTriggered())
             {
+                outcomes.Add(
+                    new(
+                        preemptor.Id() as AgentId, 
+                        new AgentId[] {}, 
+                        ActionType.PreemptTriggered, 
+                        new ActionEffect[] { new PreemptTriggered(preemptor.Id() as AgentId, preemptor.Weapon.Type, action)}
+                    )
+                );
+
                 var outcome = preemptor.Weapon.GetPreExecutionEffects(role, action, preemptor, actor, targets, battle, unitOfWork);
                 var effectTargets = outcome.On.Select(i => unitOfWork.AgentRepository.Get(i)).ToArray();
                 var weaponOutcomes = preemptors
-                .Aggregate(new ActionOutcome[] {}, 
-                (outcomes, preemptor) => outcomes.Concat(Execute(preemptor, preemptors, outcome.Cause, preemptor, effectTargets, battle, unitOfWork)).ToArray())
-                .ToArray();
+                .SelectMany(p => Execute(p, preemptors, outcome.Cause, preemptor, effectTargets, battle, unitOfWork));
+                
+                outcomes.AddRange(weaponOutcomes);
 
                 if (isWeaponTriggered())
                 {
                     ApplyActionOutcomeService.Execute(outcome, unitOfWork);
-                    weaponOutcomes = weaponOutcomes.Append(outcome).ToArray();
+                    outcomes.Add(outcome);
                 }
-                
-                ret = ret.Concat(weaponOutcomes).ToArray();
+                else
+                {
+                    outcomes
+                    .Add(
+                        new(
+                            preemptor.Id() as AgentId, 
+                            new AgentId[] {}, 
+                            ActionType.PreemptAnnulled, 
+                            new ActionEffect[] {new PreemptAnnulled(preemptor.Id() as AgentId, preemptor.Weapon.Type, action)}
+                        )
+                    );
+                }                
             }
 
             if (isArmourTriggered())
             {
+                outcomes
+                .Add(
+                    new(
+                        preemptor.Id() as AgentId, 
+                        new AgentId[] {}, 
+                        ActionType.PreemptTriggered, 
+                        new ActionEffect[] { new PreemptTriggered(preemptor.Id() as AgentId, preemptor.Armour.Type, action)}
+                    )
+                );
+
                 var outcome = preemptor.Armour.GetPreExecutionEffects(role, action, preemptor, actor, targets, battle, unitOfWork);
                 var effectTargets = outcome.On.Select(i => unitOfWork.AgentRepository.Get(i)).ToArray();
                 var armourOutcomes = preemptors
-                .Aggregate(new ActionOutcome[] {}, 
-                (outcomes, preemptor) => outcomes.Concat(Execute(preemptor, preemptors, outcome.Cause, preemptor, effectTargets, battle, unitOfWork)).ToArray())
-                .ToArray();
+                .SelectMany(p => Execute(p, preemptors, outcome.Cause, preemptor, effectTargets, battle, unitOfWork));
+
+                outcomes.AddRange(armourOutcomes);
 
                 if (isArmourTriggered())
                 {
                     ApplyActionOutcomeService.Execute(outcome, unitOfWork);
-                    armourOutcomes = armourOutcomes.Append(outcome).ToArray();
+                    outcomes.Add(outcome);
                 }
-
-                ret = ret.Concat(armourOutcomes).ToArray();
+                else
+                {
+                    outcomes
+                    .Add(
+                        new(
+                            preemptor.Id() as AgentId, 
+                            new AgentId[] {}, 
+                            ActionType.PreemptAnnulled, 
+                            new ActionEffect[] {new PreemptAnnulled(preemptor.Id() as AgentId, preemptor.Armour.Type, action)}
+                        )
+                    );
+                }
             }
 
-            return ret;
+            return outcomes.ToArray();
         }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Battle.Common;
 using Battle;
-using Battle.Services.ActionCriteria;
+using Battle.Services.ActionPrerequisites;
 
 namespace Battle.Services.Actions
 {
@@ -12,11 +12,16 @@ namespace Battle.Services.Actions
         {
         }
 
-        public override AreaOfEffect AreaOfEffect => throw new NotImplementedException();
+        public override AreaOfEffect AreaOfEffect => new(
+            new Position[] {new(0,0,0)},
+            1
+        );
+
+        public override AreaOfEffect TargetArea => throw new NotImplementedException();
         public override ActionType Type => ActionType.UseItem;
 
         public override SkillType Skill => SkillType.Item;
-        public override ActionCriterion[] Criteria => new[] { new NotParalyzed() };
+        public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         public ActionEffect[] Execute(Agent actor, Agent target, Item item)
         {
@@ -43,7 +48,7 @@ namespace Battle.Services.Actions
 
                     actor.ConsumeItem(item);
                     target.RestoreMp(50);
-                    effectOnTarget = new MpDamage((AgentId)target.Id(), -50);
+                    effectOnTarget = new MpDamage((AgentId) target.Id(), -50);
                     break;
 
                 case Item.Grenade:
@@ -54,7 +59,7 @@ namespace Battle.Services.Actions
 
                     actor.ConsumeItem(item);
                     target.ReduceHp(100);
-                    effectOnTarget = new HpDamage((AgentId)target.Id(), 100);
+                    effectOnTarget = new HpDamage((AgentId) target.Id(), 100);
                     break;
 
                 default:
@@ -67,6 +72,11 @@ namespace Battle.Services.Actions
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
             throw new NotImplementedException();
+        }
+
+        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        {
+            return true;
         }
 
         protected override bool ShouldExecute(Agent target, Agent actor)

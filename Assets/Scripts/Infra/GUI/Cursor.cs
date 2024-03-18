@@ -11,7 +11,7 @@ public class Cursor : MonoBehaviour
     [field: SerializeField] public UnitOfWorkObject UnitOfWork { get; private set; }
     [field: SerializeField] private float _heightOffset = 0.3f;
 
-    public static readonly Position NullSelection = new Position(-10, -10, -10);
+    public static readonly Position NullSelection = new(100, 100, 100);
     public BattleFieldId BattleFieldId { get; set; }
 
     private Camera _mainCamera;
@@ -21,7 +21,7 @@ public class Cursor : MonoBehaviour
 
     public static Cursor Create(GameObject prefab, Map map)
     {
-        var gameObject = Instantiate(prefab, new Vector3(-10, -10, -10), prefab.transform.rotation);
+        var gameObject = Instantiate(prefab, new Vector3(-100, -100, -100), prefab.transform.rotation);
         var cursor = gameObject.GetComponent<Cursor>();
         cursor.Init(map);
 
@@ -32,6 +32,7 @@ public class Cursor : MonoBehaviour
     void Start()
     {
         _palette = ColorPalette.Get();
+        Reset();
     }
 
     // Update is called once per frame
@@ -70,30 +71,32 @@ public class Cursor : MonoBehaviour
 
     public void ActivateSelection()
     {
-        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green1"));        
+        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green4"));        
     }
 
     public void DeactivateSelection()
     {
-        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green3"));
+        GetComponent<Renderer>().sharedMaterial.SetColor("_Color", _palette.GetColor("Green5"));
     }
 
     public void Reset()
     {
         DeactivateSelection();
-        _selection = null;
+        _selection = NullSelection;
     }
 
     public void UpdateSelection()
     {
         // handle canvas and screen resolution difference
         var renderTexture = _mainCamera.targetTexture;
-        var mouseOnRenderTexture = new Vector3(Input.mousePosition.x * (float)renderTexture.width / (float)Screen.width, Input.mousePosition.y * (float) renderTexture.height / (float) Screen.height);
+        var mouseOnRenderTexture = new Vector3(
+            Input.mousePosition.x * renderTexture.width / Screen.width, 
+            Input.mousePosition.y * renderTexture.height / Screen.height
+        );
 
         var ray = _mainCamera.ScreenPointToRay(mouseOnRenderTexture);
 
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
+        if (Physics.Raycast(ray, out RaycastHit hit))
         {
             if (hit.collider != null)
             {

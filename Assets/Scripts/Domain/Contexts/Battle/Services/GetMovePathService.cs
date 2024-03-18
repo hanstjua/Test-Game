@@ -23,7 +23,7 @@ namespace Battle
         }
         public Position[] Execute(Position start, Position end, BattleField field, Position[] adversaryPositions)
         {
-            var edges = new List<Node> {new Node(start, 0, start.Distance(end), null)};
+            var edges = new List<Node> {new(start, 0, start.Distance(end), null)};
             var inners = new List<Node>();
 
             while (edges.Count > 0 && !inners.Exists(i => i.Position == end))
@@ -90,12 +90,13 @@ namespace Battle
 
             while (true)
             {
-                ret.Insert(0, current.Position);
-                current = nodes.Find(n => n.Position == current.Previous);
                 if (current.Position == start)
                 {
                     break;
                 }
+                
+                ret.Insert(0, current.Position);
+                current = nodes.Find(n => n.Position == current.Previous);
             }
 
             return ret;

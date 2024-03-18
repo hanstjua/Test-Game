@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class Character : MonoBehaviour
 {
+    public static readonly Vector3 POSITION_OFFSET = new(0, 0.1f, 0);
     public AgentId agentId;
     public Map map;
 

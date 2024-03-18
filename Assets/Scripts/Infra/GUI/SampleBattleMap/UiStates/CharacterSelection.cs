@@ -30,7 +30,7 @@ public class CharacterSelection : IUiState
         battleProperties.battleEvents.cursorSelectionChanged.RemoveListener(_characterPanelUpdater);
 
         battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CanvasGroup>().alpha = 0;
-        battleProperties.cursor.Selection = new Position(-1, -1, -1);
+        battleProperties.cursor.Selection = Cursor.NullSelection;
 
         _hasInit = false;
     }
@@ -85,7 +85,7 @@ public class CharacterSelection : IUiState
                 }
                 
                 var character = battleProperties.characters[_selectedAgentId];
-                character.transform.position = battleProperties.map.ToUIPosition(position) + new Vector3(0, battleProperties.map.Offset.y + character.transform.localScale.y / 2, 0);
+                character.transform.position = battleProperties.map.ToUIPosition(position) + Character.POSITION_OFFSET;
 
                 battleProperties.cursor.DeactivateSelection();
 

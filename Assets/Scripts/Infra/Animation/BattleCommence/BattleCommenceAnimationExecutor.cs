@@ -3,21 +3,28 @@ using UnityEngine;
 
 public class BattleCommenceAnimationExecutor : AnimationExecutor
 {
-    public BattleCommenceAnimationExecutor(BattleProperties battleProperties) : base(battleProperties, new ActionOutcome[] {}) {}
+    Animator _animator;
 
-    public override bool Execute(Animator animator)
+    public BattleCommenceAnimationExecutor(BattleProperties battleProperties, Animator animator) : base(battleProperties, new ActionOutcome[] {})
     {
-        var parameters = animator.GetComponent<BattleCommenceAnimationParameters>();
-        parameters.battleProperties = BattleProperties;
+        _animator = animator;
+    }
 
-        animator.Play("BattleCommence");
-        animator.SetBool("play", true);
+    public override bool Execute()
+    {
+        IsAnimating = true;
+        var parameters = _animator.GetComponent<BattleCommenceAnimationParameters>();
+        parameters.battleProperties = BattleProperties;
+        parameters.executor = this;
+
+        _animator.Play("BattleCommence");
+        _animator.SetBool("play", true);
 
         return true;
     }
 
-    public override bool IsAnimating(Animator animator)
+    public void UpdateAnimationStatus(bool isAnimating)
     {
-       return animator.GetBool("play");
+        IsAnimating = isAnimating;
     }
 }

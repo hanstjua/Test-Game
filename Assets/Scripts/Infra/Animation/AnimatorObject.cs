@@ -23,11 +23,11 @@ public class AnimatorObject : MonoBehaviour
     {
         _executor = executor;
 
-        return executor.Execute(_animator);
+        return executor.Execute();
     }
 
     public bool IsAnimating(AnimationExecutor executor)
     {
-        return _executor == executor && _executor.IsAnimating(_animator);
+        return _executor == executor && _executor.IsAnimating;
     }
 }

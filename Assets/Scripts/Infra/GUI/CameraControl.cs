@@ -33,10 +33,10 @@ public class CameraControl : MonoBehaviour
         if (!LeanTween.isTweening(gameObject))
         {
             Vector3[] positions = {
-                new Vector3(-4.5f, 6f, -4.5f),
-                new Vector3(-4.5f, 6f, 4.5f),
-                new Vector3(4.5f, 6f, 4.5f),
-                new Vector3(4.5f, 6f, -4.5f)
+                new(-4.5f, 6f, -4.5f),
+                new(-4.5f, 6f, 4.5f),
+                new(4.5f, 6f, 4.5f),
+                new(4.5f, 6f, -4.5f)
             };
 
             Vector3 newPosition = new(-1, -1, -1);
@@ -114,22 +114,22 @@ public class CameraControl : MonoBehaviour
         {
             case KeyCode.W:
             var forward = transform.forward;
-            transform.position += new Vector3(forward.x / Math.Abs(forward.x), 0, forward.z / Math.Abs(forward.z)) * TRANSLATION_SCALER * Time.deltaTime;
+            transform.position += Time.deltaTime * TRANSLATION_SCALER * new Vector3(forward.x / Math.Abs(forward.x), 0, forward.z / Math.Abs(forward.z));
             break;
 
             case KeyCode.A:
             var left = transform.right * -1;
-            transform.position += new Vector3(left.x / Math.Abs(left.x), 0, left.z / Math.Abs(left.z)) * TRANSLATION_SCALER * Time.deltaTime;
+            transform.position += Time.deltaTime * TRANSLATION_SCALER * new Vector3(left.x / Math.Abs(left.x), 0, left.z / Math.Abs(left.z));
             break;
 
             case KeyCode.S:
             var backward = transform.forward * -1;
-            transform.position += new Vector3(backward.x / Math.Abs(backward.x), 0, backward.z / Math.Abs(backward.z)) * TRANSLATION_SCALER * Time.deltaTime;
+            transform.position += Time.deltaTime * TRANSLATION_SCALER * new Vector3(backward.x / Math.Abs(backward.x), 0, backward.z / Math.Abs(backward.z));
             break;
 
             case KeyCode.D:
             var right = transform.right;
-            transform.position += new Vector3(right.x / Math.Abs(right.x), 0, right.z / Math.Abs(right.z)) * TRANSLATION_SCALER * Time.deltaTime;
+            transform.position += Time.deltaTime * TRANSLATION_SCALER * new Vector3(right.x / Math.Abs(right.x), 0, right.z / Math.Abs(right.z));
             break;
 
             case KeyCode.Q:

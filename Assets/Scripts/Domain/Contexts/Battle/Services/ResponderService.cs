@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using Battle.Common;
 
@@ -11,49 +11,63 @@ namespace Battle
 
             var role = Equipment.GetHolderRole(responder.Id() as AgentId, actor.Id() as AgentId, targets.Select(a => a.Id() as AgentId).ToArray());
 
-            Func<bool> isWeaponTriggered = () => responder.Weapon.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
-            Func<bool> isArmourTriggered = () => responder.Armour.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
+            bool isWeaponTriggered() => responder.Weapon.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
+            bool isArmourTriggered() => responder.Armour.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
 
-            ActionOutcome[] ret = {};
+            List<ActionOutcome> outcomes = new();
 
             if (!isWeaponTriggered() && !isArmourTriggered())
             {
-                return ret;
+                return new ActionOutcome[] {};
             }
 
             var responders = potentialResponders.Where(a => !a.Id().Equals(responder.Id())).ToArray();
 
             if (isWeaponTriggered())
             {
+                outcomes.Add(
+                    new(
+                        responder.Id() as AgentId, 
+                        new AgentId[] {}, 
+                        ActionType.RespondTriggered, 
+                        new ActionEffect[] { new RespondTriggered(responder.Id() as AgentId, responder.Weapon.Type, outcome)}
+                    )
+                );
+
                 var weaponOutcome = responder.Weapon.GetPostExecutionEffects(role, outcome, responder, actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(weaponOutcome, unitOfWork);
-                ret = ret.Append(weaponOutcome).ToArray();
+                outcomes.Add(weaponOutcome);
 
                 var effectTargets = weaponOutcome.On.Select(i => unitOfWork.AgentRepository.Get(i)).ToArray();
                 var weaponOutcomes = responders
-                .Aggregate(new ActionOutcome[] {}, 
-                (outcomes, responder) => outcomes.Concat(Execute(responder, responders, weaponOutcome, responder, effectTargets, battle, unitOfWork)).ToArray())
-                .ToArray();
+                .SelectMany(r => Execute(r, responders, weaponOutcome, responder, effectTargets, battle, unitOfWork));
                 
-                ret = ret.Concat(weaponOutcomes).ToArray();
+                outcomes.AddRange(weaponOutcomes);
             }
 
             if (isArmourTriggered())
             {
+                outcomes.Add(
+                    new(
+                        responder.Id() as AgentId, 
+                        new AgentId[] {}, 
+                        ActionType.RespondTriggered, 
+                        new ActionEffect[] { new RespondTriggered(responder.Id() as AgentId, responder.Armour.Type, outcome)}
+                    )
+                );
+
                 var armourOutcome = responder.Armour.GetPostExecutionEffects(role, outcome, responder, actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(armourOutcome, unitOfWork);
-                ret = ret.Append(armourOutcome).ToArray();
+                outcomes.Add(armourOutcome);
 
                 var effectTargets = outcome.On.Select(i => unitOfWork.AgentRepository.Get(i)).ToArray();
                 var armourOutcomes = responders
-                .Aggregate(new ActionOutcome[] {}, 
-                (outcomes, preemptor) => outcomes.Concat(Execute(responder, responders, armourOutcome, responder, effectTargets, battle, unitOfWork)).ToArray())
-                .ToArray();
+                .SelectMany(r => Execute(r, responders, armourOutcome, responder, effectTargets, battle, unitOfWork));
 
-                ret = ret.Concat(armourOutcomes).ToArray();
+                outcomes.AddRange(armourOutcomes);
             }
 
-            return ret;
+            return outcomes.ToArray();
         }
     }
 }

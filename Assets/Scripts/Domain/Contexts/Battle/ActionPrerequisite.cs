@@ -1,12 +1,10 @@
-using System;
-
 namespace Battle
 {
-    public abstract class ActionCriterion : ValueObject<string>
+    public abstract class ActionPrerequisite : ValueObject<string>
     {
         public string Name { get; private set; }
 
-        public ActionCriterion(string name)
+        public ActionPrerequisite(string name)
         {
             Name = name;
         }

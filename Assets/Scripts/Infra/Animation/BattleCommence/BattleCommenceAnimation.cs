@@ -16,6 +16,7 @@ public class BattleCommence : StateMachineBehaviour
         _parameters = animator.GetComponent<BattleCommenceAnimationParameters>();
         _rawImage = _parameters.battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage").GetComponent<RawImage>();
         _text = _parameters.battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CommenceText").GetComponent<TMP_Text>();
+        _parameters.UpdateAnimationStatus(true);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -37,6 +38,7 @@ public class BattleCommence : StateMachineBehaviour
         _text.alpha = 0;
 
         animator.SetBool("play", false);
+        _parameters.UpdateAnimationStatus(false);
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()

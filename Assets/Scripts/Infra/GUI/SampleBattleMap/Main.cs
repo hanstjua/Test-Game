@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Text.Json;
 using Unity.Plastic.Newtonsoft.Json;
+using System.Linq;
 
 public class Main : MonoBehaviour
 {
@@ -14,14 +15,16 @@ public class Main : MonoBehaviour
     [SerializeField] public GameObject uiObjects;
     [SerializeField] public BattleEvents battleEvents;
 
+    private const float INPUT_INTERVAL = 0.1f;
+
     private SampleBattleMap _sampleBattleMap;
     private Cursor _cursor;
     private BattleId _battleId;
     private BattleFieldId _battleFieldId;
-    private Camera _mainCamera;
     private Dictionary<AgentId, GameObject> _characters = new();
     private Map _map;
     private IUiState _uiState;
+    private float _counter = 0;
 
     public GameObject CursorPrefab { get; private set; }
 
@@ -41,23 +44,11 @@ public class Main : MonoBehaviour
 
         var battle = unitOfWork.obj.BattleRepository.Get(_battleId);
 
-        foreach (var id in battle.EnemyIds)
+        foreach (var id in battle.EnemyIds.Concat(battle.PlayerIds))
         {
-            var enemy = uow.AgentRepository.Get(id);
-            var ser = JsonUtility.ToJson(enemy);
-            Debug.Log($"main {ser}");
-            Debug.Log($"{JsonUtility.FromJson<Agent>(ser).Name}");
-            var character = Character.Create(id, _map, "Prefabs/Characters/Character", _map.ToUIPosition(enemy.Position), battleEvents, unitOfWork.obj);
-            character.LoadSprites(enemy.Name);
-
-            _characters.Add(id, character.gameObject);
-        }
-
-        foreach (var id in battle.PlayerIds)
-        {
-            var player = uow.AgentRepository.Get(id);
-            var character = Character.Create(id, _map, "Prefabs/Characters/Character", _map.ToUIPosition(player.Position), battleEvents, unitOfWork.obj);
-            character.LoadSprites(player.Name);
+            var agent = uow.AgentRepository.Get(id);
+            var character = Character.Create(id, _map, "Prefabs/Characters/Character", _map.ToUIPosition(agent.Position), battleEvents, unitOfWork.obj);
+            character.LoadSprites(agent.Name);
 
             _characters.Add(id, character.gameObject);
         }
@@ -76,24 +67,35 @@ public class Main : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        var oldState = _uiState;
-        _uiState = _uiState.Update(
-            new BattleProperties(
-                unitOfWork.obj,
-                _characters,
-                _map,
-                _battleId,
-                _cursor,
-                uiObjects,
-                battleEvents
-            )
-        );
-
-        if (oldState != _uiState) Debug.Log(_uiState.GetType());
-
-        if (_uiState == new VictoryScreen())
+        if (_counter >= INPUT_INTERVAL)
         {
-            Application.Quit();
+            var oldState = _uiState;
+            _uiState = _uiState.Update(
+                new BattleProperties(
+                    unitOfWork.obj,
+                    _characters,
+                    _map,
+                    _battleId,
+                    _cursor,
+                    uiObjects,
+                    battleEvents
+                )
+            );
+
+            if (oldState != _uiState) 
+            {
+                Debug.Log(_uiState.GetType());
+                _counter = 0;
+            }
+
+            if (_uiState == new VictoryScreen())
+            {
+                Application.Quit();
+            }
+        }
+        else
+        {
+            _counter += Time.deltaTime;
         }
     }
 
@@ -102,8 +104,6 @@ public class Main : MonoBehaviour
         _sampleBattleMap = uiObjects.GetComponentInChildren<SampleBattleMap>();
 
         _characters = new();
-
-        _mainCamera = Camera.main;
 
         _map = _sampleBattleMap.GetComponent<Map>();
 

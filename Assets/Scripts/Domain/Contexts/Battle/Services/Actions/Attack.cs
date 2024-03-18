@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Battle.Services.ActionCriteria;
+using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
 
 namespace Battle.Services.Actions
@@ -12,16 +12,21 @@ namespace Battle.Services.Actions
         {
         }
 
-        public override AreaOfEffect AreaOfEffect => new AreaOfEffect(
+        public override AreaOfEffect AreaOfEffect => new(
+            new Position[] {new(0,0,0)},
+            1
+        );
+
+        public override AreaOfEffect TargetArea => new(
             new Position[] {
-                new Position(1, 1, 0),
-                new Position(1, 0, 0),
-                new Position(1, -1, 0),
-                new Position(0, 1, 0),
-                new Position(0, -1, 0),
-                new Position(-1, 1, 0),
-                new Position(-1, 0, 0),
-                new Position(-1, -1, 0)
+                new(1, 1, 0),
+                new(1, 0, 0),
+                new(1, -1, 0),
+                new(0, 1, 0),
+                new(0, -1, 0),
+                new(-1, 1, 0),
+                new(-1, 0, 0),
+                new(-1, -1, 0)
             },
             2
         );
@@ -30,7 +35,7 @@ namespace Battle.Services.Actions
 
         public override SkillType Skill => SkillType.Physical;
 
-        public override ActionCriterion[] Criteria => new[] { new NotParalyzed() };
+        public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
@@ -57,6 +62,11 @@ namespace Battle.Services.Actions
                 Type,
                 actionEffects
             );
+        }
+
+        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        {
+            return true;
         }
 
         protected override bool ShouldExecute(Agent target, Agent actor)

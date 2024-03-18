@@ -1,8 +1,6 @@
-using System;
-
-namespace Battle.Services.ActionCriteria
+namespace Battle.Services.ActionPrerequisites
 {
-    public class NotParalyzed : ActionCriterion
+    public class NotParalyzed : ActionPrerequisite
     {
         public NotParalyzed() : base("NotParalyzed")
         {

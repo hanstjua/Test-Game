@@ -11,20 +11,15 @@ public class PoisonAnimationExecutor : AnimationExecutor
         _outcomes = outcomes;
     }
 
-    public override bool Execute(Animator animator)
+    public override bool Execute()
     {
-        var parameters = animator.GetComponent<PoisonAnimationParameters>();
-        parameters.hpDamage = _outcomes[0].Effects[0] as HpDamage;
-        parameters.battleProperties = BattleProperties;
+        // var parameters = animator.GetComponent<PoisonAnimationParameters>();
+        // parameters.hpDamage = _outcomes[0].Effects[0] as HpDamage;
+        // parameters.battleProperties = BattleProperties;
 
-        animator.Play("Poison");
-        animator.SetBool("play", true);
+        // animator.Play("Poison");
+        // animator.SetBool("play", true);
 
         return true;
-    }
-
-    public override bool IsAnimating(Animator animator)
-    {
-       return animator.GetBool("play");
     }
 }

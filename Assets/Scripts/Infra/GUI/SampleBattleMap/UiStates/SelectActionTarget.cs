@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Battle;
 using UnityEngine;
@@ -7,13 +6,17 @@ using UnityEngine.Events;
 
 public class SelectActionTarget : IUiState
 {
-    private ActionHandler _actionHandler;
+    private Action _action;
+    private IUiState _onCancel;
+    private IUiState _onProceed;
     private bool _hasInit = false;
     private UnityAction<Position, Position> _characterPanelUpdater;
 
-    public SelectActionTarget(ActionHandler actionHandler)
+    public SelectActionTarget(Action action, IUiState onCancel, IUiState onProceed)
     {
-        _actionHandler = actionHandler;
+        _action = action;
+        _onCancel = onCancel;
+        _onProceed = onProceed;
     }
 
     private void Init(BattleProperties battleProperties)
@@ -27,7 +30,7 @@ public class SelectActionTarget : IUiState
         var battle = battleProperties.unitOfWork.BattleRepository.Get(battleProperties.battleId);
         var battleField = battleProperties.unitOfWork.BattleFieldRepository.Get(battle.BattleFieldId);
         var actorPosition = battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent).Position;
-        var positionsToHighlight = _actionHandler.Service.AreaOfEffect.RelativePositions
+        var positionsToHighlight = _action.TargetArea.RelativePositions
         .Select(p => actorPosition.TranslateBy(p))
         .Where(p => p.X >= 0 && p.Y >= 0 && battleField.Terrains[p.X][p.Y].Traversable);
         var uiPositionsToHighlight = positionsToHighlight.Select(p => map.ToUIPosition(p));
@@ -44,7 +47,7 @@ public class SelectActionTarget : IUiState
     {
         battleProperties.battleEvents.cursorSelectionChanged.RemoveListener(_characterPanelUpdater);
 
-        battleProperties.cursor.Selection = new Position(-1, -1, -1);
+        battleProperties.cursor.Reset();
 
         // clear map highlights
         battleProperties.map.ClearHighlights();
@@ -64,17 +67,31 @@ public class SelectActionTarget : IUiState
         if (Input.GetMouseButtonDown(0))
         {
             var position = battleProperties.cursor.Selection;
-            var agent = battleProperties.unitOfWork.AgentRepository.GetAll().ToList().Find(a => a.Position.Equals(position) && _actionHandler.ValidateTarget(a));
-            if (agent != null)
+            var battle = battleProperties.unitOfWork.BattleRepository.Get(battleProperties.battleId);
+            var actor = battleProperties.unitOfWork.AgentRepository.Get(battle.ActiveAgent);
+            var targets = battleProperties.unitOfWork.AgentRepository
+            .GetAll()
+            .Where(
+                a => (a.Position.Equals(position) || _action.AreaOfEffect.IsWithin(actor.Position, a.Position)) 
+                && _action.IsTargetValid(a, actor)
+            )
+            .ToArray();
+
+            if (targets.Length > 0)
             {
                 Uninit(battleProperties);
-                ret = _actionHandler.ExecuteAction(agent);
+                var outcomes = _action.Execute(actor, targets, battle, battleProperties.unitOfWork);
+                ret = new ActionTriggeredExecution(
+                    actor,
+                    _action.ToString(),
+                    ExecutionStateDispatcher.Dispatch(outcomes, _onProceed)
+                );
             }
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
             Uninit(battleProperties);
-            ret = _actionHandler.CancelAction();
+            ret = _onCancel;
         }
 
         return ret;

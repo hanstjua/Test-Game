@@ -18,7 +18,6 @@ public class ConfirmCharacters : MonoBehaviour
     void Start()
     {
         var yesButton = transform.Find("Window/Yes").GetComponent<ConfirmSelectionButton>();
-        Debug.Log(yesButton.Selected);
         yesButton.Selected.AddListener(() => Yes.Invoke());
 
         var noButton = transform.Find("Window/No").GetComponent<ConfirmSelectionButton>();
@@ -34,12 +33,10 @@ public class ConfirmCharacters : MonoBehaviour
     public void Hide()
     {
         LeanTween.value(gameObject,i => GetComponent<CanvasGroup>().alpha = i, 1, 0, 0.2f);
-        // GetComponent<CanvasGroup>().alpha = 0;
     }
 
     public void Show()
     {
         LeanTween.value(gameObject,i => GetComponent<CanvasGroup>().alpha = i, 0, 1, 0.2f);
-        // GetComponent<CanvasGroup>().alpha = 1;
     }
 }

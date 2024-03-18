@@ -55,6 +55,11 @@ namespace Battle
             return _id;
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
+
         public string Name;
         public List<Action> Actions 
         { 

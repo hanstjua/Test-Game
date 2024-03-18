@@ -13,4 +13,9 @@ public class AgentId : ValueObject<string>
     {
         return Uuid;
     }
+
+    public override string ToString()
+    {
+        return Value();
+    }
 }
