@@ -12,17 +12,17 @@ public class Goblin : ICharacter
         new Attack(), 
         new Defend()
     };
-    public Stats Stats => new(
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        3,
-        1
+    public StatLevels Levels => new(
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        30,
+        10
     );
 
     public Dictionary<Item, int> Items => new();

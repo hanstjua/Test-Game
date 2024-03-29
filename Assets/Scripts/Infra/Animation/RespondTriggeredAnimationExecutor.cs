@@ -38,7 +38,7 @@ public class RespondTriggeredAnimationExecutor : AnimationExecutor
         camera.FocusAt(target.transform.position);
 
         LeanTween.sequence()
-        .append(0.5f)
+        .append(1f)
         .append(() => {
             popup.Hide();
             IsAnimating = false;

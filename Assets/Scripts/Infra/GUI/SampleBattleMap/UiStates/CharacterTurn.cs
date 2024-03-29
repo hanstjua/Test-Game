@@ -17,6 +17,7 @@ public class CharacterTurn : IUiState
     private Transform _actionPanel;
     private CameraControl _cameraControl;
     private Position[] _movablePositions;
+    private Pointer _pointer;
 
     public CharacterTurn(AgentId agentId, bool hasMoved, bool hasActed, Position initialPosition, Direction initialDirection)
     {
@@ -29,10 +30,13 @@ public class CharacterTurn : IUiState
 
     private void Init(BattleProperties battleProperties)
     {
+        _pointer = Pointer.Create(Resources.Load("Prefabs/Maps/Pointer") as GameObject, battleProperties.map);
+
         var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
         battleProperties.battleEvents.cursorSelectionChanged.AddListener((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
 
         _actionPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/ActionPanel");
+        _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
 
         var agent = battleProperties.unitOfWork.AgentRepository.Get(_agentId);
 
@@ -49,8 +53,6 @@ public class CharacterTurn : IUiState
             _actionPanel.GetComponent<ActionPanel>().UpdateActions(actions);
 
             // TODO: add end turn button
-
-            _actionPanel.GetComponent<CanvasGroup>().alpha = 1;
         }
 
         _field ??= battleProperties.unitOfWork.BattleFieldRepository.Get(battle.BattleFieldId);
@@ -83,6 +85,8 @@ public class CharacterTurn : IUiState
 
         _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
 
+        _pointer.Destroy();
+
         _hasInit = false;
     }
 
@@ -110,11 +114,13 @@ public class CharacterTurn : IUiState
         // show action panel preview if cursor is on agent
         if (cursor.Selection.Equals(agent.Position))
         {
-            _actionPanel.GetComponent<CanvasGroup>().alpha = 0.9f;
+            // _actionPanel.GetComponent<CanvasGroup>().alpha = 0.9f;
+            _pointer.Position = agent.Position;
         }
         else
         {
-            _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
+            // _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
+            _pointer.Position = Pointer.NullSelection;
         }
 
         return this;
@@ -174,43 +180,6 @@ public class CharacterTurn : IUiState
                 new SelectDirection(_agentId, _initialPosition, OnCancelMove)
             );
         }
-
-
-        // var agent = battleProperties.unitOfWork.AgentRepository.Get(_agentId);
-        // if (battleProperties.cursor.Selection.Equals(agent.Position))
-        // {
-        //     Uninit(battleProperties);
-
-        //     IUiState nextState = _hasMoved ? 
-        //     new SelectDirection(_agentId, _initialPosition) : 
-        //     new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
-
-        //     ret = new SelectAction(_agentId, this, nextState);
-        // }
-        // else if (_hasActed && _movablePositions.Contains(battleProperties.cursor.Selection))
-        // {
-        //     Uninit(battleProperties);
-                
-        //     ret = new CharacterMovement(
-        //         _agentId, 
-        //         battleProperties.cursor.Selection, 
-        //         new SelectDirection(_agentId, _initialPosition, OnCancelMove)
-        //     );
-        // }
-        // else if (_movablePositions.Contains(battleProperties.cursor.Selection))
-        // {
-        //     Uninit(battleProperties);
-
-        //     ret = new CharacterMovement(
-        //         _agentId,
-        //         battleProperties.cursor.Selection,
-        //         new SelectAction(
-        //             _agentId, 
-        //             new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection), 
-        //             new SelectDirection(_agentId, _initialPosition)
-        //         )
-        //     );
-        // }
 
         Uninit(battleProperties);
 

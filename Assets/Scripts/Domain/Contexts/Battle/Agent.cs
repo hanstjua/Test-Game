@@ -1,13 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Battle.Common;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
 using Battle.Statuses;
-using UnityEngine.iOS;
 
 namespace Battle
 {
@@ -19,12 +16,13 @@ namespace Battle
         private List<Action> _actions;
         private Dictionary<Item, int> _items;
         private HashSet<Status> _statuses;
+        private Stats _augmentation = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         public Agent(
             AgentId agentId,
             string name,
             List<Action> actions,
-            Stats stats,
+            StatLevels statLevels,
             Position position,
             Dictionary<Item, int> items,
             int movements,
@@ -37,9 +35,9 @@ namespace Battle
             _id = agentId;
             Name = name;
             Actions = actions;
-            Stats = stats;
-            Hp = stats.MaxHp;
-            Mp = stats.MaxMp;
+            StatLevels = statLevels;
+            Hp = Stats.MaxHp;
+            Mp = Stats.MaxMp;
             Position = position;
             Items = items;
             Statuses = new HashSet<Status>();
@@ -66,7 +64,11 @@ namespace Battle
             get => new(_actions); 
             private set => _actions = value; 
         }
-        public Stats Stats { get; private set; }
+        public StatLevels StatLevels { get; private set; }
+        public Stats Stats 
+        {
+            get => StatLevels.ToStats().Augment(_augmentation);
+        }
         public int Hp { get; private set; }
         public int Mp { get; private set; }
         public Position Position 
@@ -171,10 +173,7 @@ namespace Battle
             return this;
         }
 
-        public bool IsAlive()
-        {
-            return Hp > 0;
-        }
+        public bool IsAlive() => Hp > 0;
 
         public Agent AddStatus(Status status)
         {
@@ -190,15 +189,9 @@ namespace Battle
             return this;
         }
 
-        public bool HasStatus(Type status)
-        {
-            return Statuses.Any(s => s.GetType() == status);
-        }
+        public bool HasStatus(Type status) =>  Statuses.Any(s => s.GetType() == status);
 
-        public double TurnGaugeIncrement
-        {
-            get { return (double) Stats.Agility; }
-        }
+        public double TurnGaugeIncrement => Stats.Agility;
 
         public Agent RaiseTurnGauge()
         {
@@ -224,9 +217,16 @@ namespace Battle
             return this;
         }
 
-        public Agent UpdateStats(Stats stats)
+        public Agent IncreaseStats(Dictionary<StatType, int> increments)
         {
-            Stats = stats;
+            _augmentation = increments.Aggregate(_augmentation, (stats, inc) => stats.ModifyStat(inc.Key, inc.Value));
+
+            return this;
+        }
+
+        public Agent LevelsUp(Dictionary<StatType, uint> increments)
+        {
+            StatLevels = increments.Aggregate(StatLevels, (levels, inc) => levels.IncreaseLevel(inc.Key, inc.Value));
 
             return this;
         }

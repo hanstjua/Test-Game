@@ -2,14 +2,14 @@ using System.IO;
 using System.Linq;
 using Battle;
 
-public class StatsSerializer : ISerializer<Stats>
+public class StatLevelsSerializer : ISerializer<StatLevels>
 {
-    public Stats Deserialize(byte[] payload)
+    public StatLevels Deserialize(byte[] payload)
     {
         using MemoryStream ms = new(payload);
         using BinaryReader br = new(ms);
 
-        return new Stats(
+        return new StatLevels(
             br.ReadByte(),
             br.ReadByte(),
             br.ReadByte(),
@@ -25,7 +25,7 @@ public class StatsSerializer : ISerializer<Stats>
 
     public byte[] Serialize(object obj)
     {
-        var stats = (Stats) obj;
+        var stats = (StatLevels) obj;
         using MemoryStream ms = new();
         using BinaryWriter bw = new(ms);
 

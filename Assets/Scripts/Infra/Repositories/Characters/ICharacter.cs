@@ -7,7 +7,7 @@ using Battle.Common.Weapons;
 public interface ICharacter
 {
     public List<Action> Actions { get; }
-    public Stats Stats { get; }
+    public StatLevels Levels { get; }
     public Dictionary<Item, int> Items { get; }
     public int Movements { get; }
     public Weapon Weapon { get; }

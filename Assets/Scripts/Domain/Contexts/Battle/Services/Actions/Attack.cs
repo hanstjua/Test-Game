@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using Battle;
 using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
 
@@ -36,6 +36,10 @@ namespace Battle.Services.Actions
         public override SkillType Skill => SkillType.Physical;
 
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
+
+        public override StatType[] ActorRelevantStats => new StatType[] { StatType.Strength };
+
+        public override StatType[] TargetRelevantStats => new StatType[] { StatType.Defense };
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {

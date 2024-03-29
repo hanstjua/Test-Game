@@ -25,6 +25,10 @@ namespace Battle.Services.Actions
         public override SkillType Skill => SkillType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
+        public override StatType[] ActorRelevantStats => new StatType[] {};
+
+        public override StatType[] TargetRelevantStats => new StatType[] {};
+
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
             return new ActionOutcome(

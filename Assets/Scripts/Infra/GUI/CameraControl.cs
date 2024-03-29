@@ -1,16 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class CameraControl : MonoBehaviour
 {
-    [SerializeField] public BattleEvents battleEvents;
+    public BattleEvents battleEvents;
 
     private const float TRANSLATION_SCALER = 30.0f;
     private const float ROTATION_INTERVAL = 0.2f;
     private const float ROTATION_DURATION = 0.2f;
+    private const float HEIGHT_COORD = 60f;
+    private const float BASE_COORD = -72.5f;
     private static readonly KeyCode[] KEYS = {
         KeyCode.W, 
         KeyCode.A,
@@ -33,10 +32,10 @@ public class CameraControl : MonoBehaviour
         if (!LeanTween.isTweening(gameObject))
         {
             Vector3[] positions = {
-                new(-4.5f, 6f, -4.5f),
-                new(-4.5f, 6f, 4.5f),
-                new(4.5f, 6f, 4.5f),
-                new(4.5f, 6f, -4.5f)
+                new(-BASE_COORD, HEIGHT_COORD, -BASE_COORD),
+                new(-BASE_COORD, HEIGHT_COORD, BASE_COORD),
+                new(BASE_COORD, HEIGHT_COORD, BASE_COORD),
+                new(BASE_COORD, HEIGHT_COORD, -BASE_COORD)
             };
 
             Vector3 newPosition = new(-1, -1, -1);

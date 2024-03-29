@@ -1,11 +1,9 @@
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Battle;
 using Battle.Common;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
-using UnityEngine.Animations;
 
 public class AgentSerializer : ISerializer<Agent>
 {
@@ -17,7 +15,7 @@ public class AgentSerializer : ISerializer<Agent>
         var agentId = new AgentId(br.ReadString());
         var name = br.ReadString();
         var actions = Enumerable.Range(0, br.ReadByte()).Select(_ => Serializer.Deserialize<Action>(br.ReadBytes(br.ReadByte()))).ToList();
-        var stats = Serializer.Deserialize<Stats>(br.ReadBytes(br.ReadByte()));
+        var statLevels = Serializer.Deserialize<StatLevels>(br.ReadBytes(br.ReadByte()));
         var position = Serializer.Deserialize<Position>(br.ReadBytes(br.ReadByte()));
         var items = Enumerable.Range(0, br.ReadUInt16()).ToDictionary(_ => (Item) br.ReadUInt16(), _ => (int) br.ReadByte());
         var movements = (int) br.ReadByte();
@@ -30,7 +28,7 @@ public class AgentSerializer : ISerializer<Agent>
             agentId,
             name,
             actions,
-            stats,
+            statLevels,
             position,
             items,
             movements,

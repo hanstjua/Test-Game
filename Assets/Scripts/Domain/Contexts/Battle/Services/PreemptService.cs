@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Battle.Common;
+using log4net.Core;
 using PlasticGui;
 
 namespace Battle

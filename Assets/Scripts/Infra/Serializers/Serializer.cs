@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Battle;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
-using Unity.VisualScripting.YamlDotNet.Serialization;
 
 public class Serializer
 {
@@ -12,6 +11,7 @@ public class Serializer
         {typeof(Agent), new AgentSerializer()},
         {typeof(Armour), new ArmourSerializer()},
         {typeof(Position), new PositionSerializer()},
+        {typeof(StatLevels), new StatLevelsSerializer()},
         {typeof(Stats), new StatsSerializer()},
         {typeof(Weapon), new WeaponSerializer()}
     };

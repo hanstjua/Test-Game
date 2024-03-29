@@ -38,7 +38,7 @@ public class PreemptTriggeredAnimationExecutor : AnimationExecutor
         camera.FocusAt(target.transform.position);
 
         LeanTween.sequence()
-        .append(0.5f)
+        .append(1f)
         .append(() => {
             popup.Hide();
             IsAnimating = false;

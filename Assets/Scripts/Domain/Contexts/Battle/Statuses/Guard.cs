@@ -8,14 +8,12 @@ namespace Battle.Statuses
 
         protected override Agent OnAdd(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
-            var agentDefense = agent.Stats.Defense;
-            return agent.UpdateStats(agent.Stats.ModifyStat(Stats.Type.Defense, agentDefense + 3));
+            return agent.IncreaseStats(new() {{StatType.Defense, 3}});
         }
 
         protected override Agent OnRemove(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
-            var agentDefense = agent.Stats.Defense;
-            return agent.UpdateStats(agent.Stats.ModifyStat(Stats.Type.Defense, agentDefense - 3));
+            return agent.IncreaseStats(new() {{StatType.Defense, -3}});
         }
     }
 }

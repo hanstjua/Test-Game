@@ -26,6 +26,12 @@ namespace Battle
             return Name;
         }
 
+        // for damage calc: maps (actor relevant stats - target relevant stats) to damage
+        public static double DamageActivation(double statsDelta)
+        {
+            return (StatLevels.MAX_LEVEL + 1) / (1 + Math.Pow(Math.E, -(statsDelta - 200) / 50));
+        }
+
         protected abstract ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork);
         protected abstract bool ShouldExecute(Agent target, Agent actor);
 
@@ -34,6 +40,8 @@ namespace Battle
 
         public abstract ActionType Type { get; }
         public abstract SkillType Skill { get; }
+        public abstract StatType[] ActorRelevantStats { get; }
+        public abstract StatType[] TargetRelevantStats { get; }
         public abstract ActionPrerequisite[] Criteria { get; }
 
         public abstract bool CanExecute(Agent actor, Battle battle, UnitOfWork unitOfWork);
@@ -77,6 +85,7 @@ namespace Battle
             {
                 var executionOutcome = OnExecute(actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(executionOutcome, unitOfWork);
+                LevelUpService.Execute(executionOutcome, this, unitOfWork);
 
                 outcomes.Add(executionOutcome);
                 
