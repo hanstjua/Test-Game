@@ -1,13 +1,11 @@
-using System.Linq;
 using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
-using UnityEditor.Media;
 
 namespace Battle.Services.Actions
 {
-    public class Wind : Action
+    public class Dark : Action
     {
-        public Wind() : base(ActionType.Wind, "Whoosh.")
+        public Dark() : base(ActionType.Dark, "Shoong.")
         {
         }
 
@@ -20,8 +18,8 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-
-        public override ArbellumType Arbellum => ArbellumType.Physical;
+        
+        public override ArbellumType Arbellum => ArbellumType.Profanity;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         public override StatType[] ActorRelevantStats => new StatType[] {};

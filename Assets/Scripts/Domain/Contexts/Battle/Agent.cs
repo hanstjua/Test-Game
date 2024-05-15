@@ -21,7 +21,7 @@ namespace Battle
         public Agent(
             AgentId agentId,
             string name,
-            List<Action> actions,
+            Arbellum[] arbella,
             StatLevels statLevels,
             Position position,
             Dictionary<Item, int> items,
@@ -34,7 +34,7 @@ namespace Battle
         {
             _id = agentId;
             Name = name;
-            Actions = actions;
+            Arbella = arbella;
             StatLevels = statLevels;
             Hp = Stats.MaxHp;
             Mp = Stats.MaxMp;
@@ -46,7 +46,6 @@ namespace Battle
             Direction = direction;
             Weapon = weapon;
             Armour = armour;
-
         }
 
         public override object Id() {
@@ -59,10 +58,10 @@ namespace Battle
         }
 
         public string Name;
-        public List<Action> Actions 
+        public Arbellum[] Arbella { get; private set; }
+        public Action[] Actions 
         { 
-            get => new(_actions); 
-            private set => _actions = value; 
+            get => Arbella.SelectMany(a => a.Actives).ToArray();
         }
         public StatLevels StatLevels { get; private set; }
         public Stats Stats 
@@ -156,19 +155,9 @@ namespace Battle
             return this;
         }
 
-        public Agent StockItem(Item item)
+        public Agent StockItem(Item item, int amount)
         {
-            if (Items.ContainsKey(item))
-            {
-                if (Items[item] < 99)
-                {
-                    Items[item] += 1;
-                }
-            }
-            else
-            {
-                Items[item] = 1;
-            }
+            Items[item] = Items.ContainsKey(item) ? Math.Min(Items[item] + amount, 99) : Math.Min(amount, 99);
 
             return this;
         }
@@ -227,6 +216,13 @@ namespace Battle
         public Agent LevelsUp(Dictionary<StatType, uint> increments)
         {
             StatLevels = increments.Aggregate(StatLevels, (levels, inc) => levels.IncreaseLevel(inc.Key, inc.Value));
+
+            return this;
+        }
+
+        public Agent ArbellumUp(ArbellumType type, int points)
+        {
+            Arbella.First(a => a.Type == type).ExperienceUp(points);
 
             return this;
         }

@@ -1,13 +1,12 @@
 using System.Linq;
 using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
-using UnityEditor.Media;
 
 namespace Battle.Services.Actions
 {
     public class Defend : Action
     {
-        public Defend() : base("Defend", "Take defensive stance to guard against incoming attacks.")
+        public Defend() : base(ActionType.Defend, "Take defensive stance to guard against incoming attacks.")
         {
         }
 
@@ -20,14 +19,13 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-        public override ActionType Type => ActionType.Defend;
 
-        public override SkillType Skill => SkillType.Physical;
+        public override ArbellumType Arbellum => ArbellumType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         public override StatType[] ActorRelevantStats => new StatType[] {};
-
         public override StatType[] TargetRelevantStats => new StatType[] {};
+        public override int Cost => 2;
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
@@ -41,7 +39,7 @@ namespace Battle.Services.Actions
             );
         }
 
-        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return true;
         }

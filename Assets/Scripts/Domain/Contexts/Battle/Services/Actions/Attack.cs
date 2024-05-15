@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Battle;
+﻿using System.Linq;
 using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
 
@@ -8,7 +6,7 @@ namespace Battle.Services.Actions
 {
     public class Attack : Action
     {
-        public Attack() : base("Attack", "Use weapon(s) in hand to inflict physical damage.")
+        public Attack() : base(ActionType.Attack, "Use weapon(s) in hand to inflict physical damage.")
         {
         }
 
@@ -31,9 +29,7 @@ namespace Battle.Services.Actions
             2
         );
 
-        public override ActionType Type => ActionType.Attack;
-
-        public override SkillType Skill => SkillType.Physical;
+        public override ArbellumType Arbellum => ArbellumType.Physical;
 
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
@@ -45,13 +41,18 @@ namespace Battle.Services.Actions
         {
             // calculate damage
             var target = targets[0];
-            int weaponDamage = actor.Weapon.CalculateDamage(actor, target, battle, unitOfWork);
-            int armourResistance = target.Armour.CalculateResistance(actor, target, battle, unitOfWork);
+            // int weaponDamage = actor.Weapon.CalculateDamage(actor, target, battle, unitOfWork);
+            // int armourResistance = target.Armour.CalculateResistance(actor, target, battle, unitOfWork);
+
+            var actorStrength = actor.Stats.Augment(actor.Weapon.StatsBoost).Strength;
+            var targetDefense = target.Stats.Augment(target.Armour.StatsBoost).Defense;
 
             // TODO: calculate damage enhancement by accessories
             // TODO: calculate damage attenuation by accessories
 
-            var damage = weaponDamage - armourResistance;
+            // var damage = weaponDamage - armourResistance;
+
+            var damage = (int) DamageActivation(actorStrength - targetDefense);
 
             var actionEffects = new ActionEffect[] {new HpDamage(target.Id() as AgentId, damage)};
 
@@ -68,7 +69,7 @@ namespace Battle.Services.Actions
             );
         }
 
-        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return true;
         }

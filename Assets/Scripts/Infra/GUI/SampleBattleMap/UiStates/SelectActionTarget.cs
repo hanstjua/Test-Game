@@ -47,6 +47,8 @@ public class SelectActionTarget : IUiState
     {
         battleProperties.battleEvents.cursorSelectionChanged.RemoveListener(_characterPanelUpdater);
 
+        battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>().Hide();
+
         battleProperties.cursor.Reset();
 
         // clear map highlights

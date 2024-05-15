@@ -15,7 +15,7 @@ public class ActionPanel : MonoBehaviour
     
     private const float INPUT_INTERVAL_S = 0.2f;
     private ActionButton[] _actionButtons;
-    private (SkillType, (Battle.Action, bool)[][])[] _data;
+    private (ArbellumType, (Battle.Action, bool)[][])[] _data;
     private TMP_Text _categoryName;
     private TMP_Text _infoDescription;
     private int _categoryIndex;
@@ -106,17 +106,17 @@ public class ActionPanel : MonoBehaviour
     public void UpdateActions(Dictionary<Battle.Action, bool> actions)
     {
         Debug.Log(name);
-        var skills = new HashSet<SkillType>(actions.Keys.Select(a => a.Skill));
+        var skills = new HashSet<ArbellumType>(actions.Keys.Select(a => a.Arbellum));
 
         _data = skills
-        .OrderByDescending(skill => skill == SkillType.Physical)  // Physical first
-        .ThenByDescending(skill => skill != SkillType.Item)  // Item last
+        .OrderByDescending(skill => skill == ArbellumType.Physical)  // Physical first
+        .ThenByDescending(skill => skill != ArbellumType.Item)  // Item last
         .ThenBy(skill => skill.Name)
         .Select(
             s => (
                 s,
                 actions
-                .Where(data => data.Key.Skill == s)
+                .Where(data => data.Key.Arbellum == s)
                 .Select(data => (data.Key, data.Value))
                 .Select((d, i) => new { Index = i, Value = d})
                 .GroupBy(x => x.Index / _actionButtons.Length)

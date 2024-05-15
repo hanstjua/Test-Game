@@ -6,6 +6,8 @@ namespace Battle.Common.Armours
     public class LeatherArmour : Armour
     {
         public override ArmourType Type => ArmourType.LeatherArmour;
+        public override Stats StatsBoost => new(0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
+
         protected override bool IsPostExecutionReactorEffectsTriggered(ActionOutcome outcome, Agent xactor, Agent holder, Battle battle, UnitOfWork unitOfWork)
         {
             return outcome.By.Equals(holder.Id() as AgentId) && holder.IsAlive();

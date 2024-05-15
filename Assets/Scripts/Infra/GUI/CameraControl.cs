@@ -43,8 +43,7 @@ public class CameraControl : MonoBehaviour
 
             foreach (var p in positions)
             {
-                RaycastHit hit;
-                var noHit = !Physics.Raycast(position, p, out hit);
+                var noHit = !Physics.Raycast(position, p, out RaycastHit hit);
                 if (noHit || hit.transform.GetComponent<Block>() == null)
                 {
                     var v1 = new Vector2(transform.forward.x, transform.forward.z);

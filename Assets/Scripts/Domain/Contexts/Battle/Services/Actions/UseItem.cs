@@ -20,8 +20,11 @@ namespace Battle.Services.Actions
         public override AreaOfEffect TargetArea => throw new NotImplementedException();
         public override ActionType Type => ActionType.UseItem;
 
-        public override SkillType Skill => SkillType.Item;
+        public override ArbellumType Arbellum => ArbellumType.Item;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
+
+        public override StatType[] ActorRelevantStats => new StatType[] {};
+        public override StatType[] TargetRelevantStats => new StatType[] {};
 
         public ActionEffect[] Execute(Agent actor, Agent target, Item item)
         {
@@ -74,7 +77,7 @@ namespace Battle.Services.Actions
             throw new NotImplementedException();
         }
 
-        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return true;
         }

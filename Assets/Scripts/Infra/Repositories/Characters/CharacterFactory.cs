@@ -10,8 +10,7 @@ public class CharacterFactory
 
     public static ICharacter GetGeneric(string name)
     {
-        ICharacter value = null;
-        _registry.TryGetValue(name, out value);
+        _registry.TryGetValue(name, out ICharacter value);
 
         if (value == null)
         {

@@ -1,13 +1,10 @@
-using System.Linq;
 using Battle.Services.ActionPrerequisites;
-using Battle.Statuses;
-using UnityEditor.Media;
 
 namespace Battle.Services.Actions
 {
-    public class Wind : Action
+    public class Disintegrate : Action
     {
-        public Wind() : base(ActionType.Wind, "Whoosh.")
+        public Disintegrate() : base(ActionType.Disintegrate, "A Magic attack that launches a daya projectile that renders unregulated daya it cuts through into a destructive force, damaging the flesh where the daya resided.")
         {
         }
 
@@ -20,8 +17,9 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
+        public override int Cost => 9999;
 
-        public override ArbellumType Arbellum => ArbellumType.Physical;
+        public override ArbellumType Arbellum => ArbellumType.Malediction;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         public override StatType[] ActorRelevantStats => new StatType[] {};
@@ -39,7 +37,7 @@ namespace Battle.Services.Actions
 
         protected override bool ShouldExecute(Agent target, Agent actor)
         {
-            return false;
+            return true;
         }
     }
 }

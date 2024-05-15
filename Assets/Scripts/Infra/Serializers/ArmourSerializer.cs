@@ -23,7 +23,7 @@ public class ArmourSerializer : ISerializer<Armour>
         using MemoryStream ms = new();
         using BinaryWriter bw = new(ms);
 
-        bw.Write(_armourMap[armour.Type.Name].Type.Name);
+        bw.Write(armour.Type.Name);
 
         return ms.ToArray();
     }

@@ -18,6 +18,7 @@ namespace Battle
 
                     var increments = targets.Append(actor).ToDictionary(a => a, _ => new Dictionary<StatType, uint>());
 
+                    // Actor stat increments
                     foreach (var stat in action.ActorRelevantStats)
                     {
                         uint inc = 0;
@@ -36,6 +37,7 @@ namespace Battle
                         increments[actor].Add(stat, inc);
                     }
 
+                    // Targets stat increments
                     foreach (var stat in action.TargetRelevantStats)
                     {
                         uint inc = 0;
@@ -80,6 +82,9 @@ namespace Battle
                     {
                         unitOfWork.AgentRepository.Update(agent.Id() as AgentId, agent);
                     }
+
+                    // Actor arbellum level up
+                    unitOfWork.AgentRepository.Update(actor.Id() as AgentId, actor.ArbellumUp(action.Arbellum, 1));
 
                     unitOfWork.Save();
                 }

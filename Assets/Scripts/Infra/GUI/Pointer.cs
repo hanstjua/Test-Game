@@ -7,7 +7,7 @@ using System.Linq;
 
 public class Pointer : MonoBehaviour
 {
-    [field: SerializeField] private float _heightOffset = 2f;
+    [field: SerializeField] private float _heightOffset = 0f;
 
     public static readonly Position NullSelection = new(-100, -100, -100);
     public BattleFieldId BattleFieldId { get; set; }
@@ -19,6 +19,16 @@ public class Pointer : MonoBehaviour
     {
         get => _map.ToDomainPosition(transform.position - new Vector3(0, _heightOffset, 0));
         set => transform.position = _map.ToUIPosition(value) + new Vector3(0, _heightOffset, 0);
+    }
+
+    public static Pointer CreatePointer(Map map)
+    {
+        return Create(Resources.Load("Prefabs/Maps/Pointer") as GameObject, map);
+    }
+
+    public static Pointer CreateActorPointer(Map map)
+    {
+        return Create(Resources.Load("Prefabs/Maps/ActorPointer") as GameObject, map);
     }
 
     public static Pointer Create(GameObject prefab, Map map)
@@ -33,7 +43,6 @@ public class Pointer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Reset();
         LeanTween.rotateAround(gameObject, Vector3.up, 360, 4f).setRepeat(-1);
         LeanTween.value(gameObject, 0, -1, 0.5f)
         .setOnUpdate((float val) => transform.position = _map.ToUIPosition(Position) + new Vector3(0, (0.3f * val) + _heightOffset, 0))

@@ -30,9 +30,8 @@ public class SampleBattleMap : MonoBehaviour
             var layer = transform.GetChild(i);
             for (int j = 0; j < layer.childCount; j++)
             {
-                var block = layer.GetChild(j).GetComponent<Block>();
-
-                if (block != null)
+                
+                if (layer.GetChild(j).TryGetComponent<Block>(out var block))
                 {
                     var position = vector3ToPosition(block.transform.position);
 
@@ -53,8 +52,8 @@ public class SampleBattleMap : MonoBehaviour
 
         var terrainMatrix = Enumerable.Range(0, maxX + 1).Select(i => Enumerable.Range(0, maxY + 1).Select(j => terrains.Where(t => t.Position.X == i && t.Position.Y == j).ToArray()).ToArray()).ToArray();
 
-        Func<Battle.Terrain, Battle.Terrain, Battle.Terrain> GetHigherTerrain = (t1, t2) => t1.Position.Z > t2.Position.Z ? t1 : t2;
-        Func<Battle.Terrain[], Battle.Terrain> GetTopLevelTerrain = arr => arr.Aggregate(GetHigherTerrain);
+        Battle.Terrain GetHigherTerrain(Battle.Terrain t1, Battle.Terrain t2) => t1.Position.Z > t2.Position.Z ? t1 : t2;
+        Battle.Terrain GetTopLevelTerrain(Battle.Terrain[] arr) => arr.Aggregate(GetHigherTerrain);
 
         return terrainMatrix
         .Select(row => row.Select(GetTopLevelTerrain).ToArray())

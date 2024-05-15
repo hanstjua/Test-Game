@@ -5,8 +5,7 @@ using Battle;
 using Battle.Common;
 using Battle.Common.Armours;
 using Battle.Common.Weapons;
-using Battle.Services.Actions;
-using UnityEngine;
+using Battle.Services.Arbella;
 
 
 public class AgentRepository : IAgentRepository
@@ -34,8 +33,8 @@ public class AgentRepository : IAgentRepository
         var agent = new Agent(
             id,
             name,
-            new List<Battle.Action> { new Attack(), new Defend() },
-            new StatLevels(10, 10, 10, 10, 10, 10, 10, 10, 30, 10),
+            new Arbellum[] {new Physical(0)},
+            new StatLevels(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
             position,
             new Dictionary<Item, int>(),
             2,
@@ -55,7 +54,7 @@ public class AgentRepository : IAgentRepository
         var agent = new Agent(
             id, 
             name, 
-            character.Actions, 
+            character.Arbella, 
             character.Levels, 
             position, 
             character.Items, 

@@ -6,7 +6,6 @@ using TMPro;
 
 public class CharacterPanel : MonoBehaviour
 {
-    [SerializeField] public BattleEvents battleEvents;
     [field: SerializeField] private ColorPalette _palette;
     
     private Agent _character;
@@ -43,8 +42,10 @@ public class CharacterPanel : MonoBehaviour
             {
                 hpText.color = _palette.GetColor("Blue5");
             }
+            SetHpBar((float)value.Hp / value.Stats.MaxHp);
 
             transform.Find("Panel/Right/Values/MP/Number").GetComponent<TMP_Text>().text = value.Mp.ToString();
+            SetMpBar((float)value.Mp / value.Stats.MaxMp);
         }
     }
 
@@ -78,5 +79,18 @@ public class CharacterPanel : MonoBehaviour
     {
         Character = agent;
         Show();
+    }
+
+    private void SetHpBar(float percentage)
+    {
+        var size = transform.Find("Panel/Right/Values/HP/Gauge/BarContainer").GetComponent<RectTransform>().sizeDelta;
+        transform.Find("Panel/Right/Values/HP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
+    }
+
+    private void SetMpBar(float percentage)
+    {
+        var size = transform.Find("Panel/Right/Values/MP/Gauge/BarContainer").GetComponent<RectTransform>().sizeDelta;
+        transform.Find("Panel/Right/Values/MP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
+        Debug.Log($"% {percentage} {size.x} {percentage * size.x}");
     }
 }

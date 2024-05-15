@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Codice.CM.SEIDInfo;
 
 namespace Battle.Common
 {
@@ -12,6 +11,8 @@ namespace Battle.Common
             Reactor,
             Observer
         }
+
+        public virtual Stats StatsBoost => new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         public static HolderRole GetHolderRole(AgentId holderId, AgentId actorId, AgentId[] targetIds)
         {

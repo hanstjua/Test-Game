@@ -1,5 +1,4 @@
 using Battle;
-using TMPro;
 using UnityEngine;
 
 public class PreemptTriggeredAnimationExecutor : AnimationExecutor
@@ -7,6 +6,7 @@ public class PreemptTriggeredAnimationExecutor : AnimationExecutor
     private const float DURATION = 1f;
     private const float HEIGHT_INCREASE = 1.5f;
     private const float WORLD_HEIGHT_OFFSET = 1.5f;
+    private static Pointer _pointer;
 
     public PreemptTriggeredAnimationExecutor(BattleProperties battleProperties, ActionOutcome[] outcomes) : base(battleProperties, outcomes)
     {
@@ -19,6 +19,9 @@ public class PreemptTriggeredAnimationExecutor : AnimationExecutor
         var targetId = Outcomes[0].By;
         var effect = (PreemptTriggered) Outcomes[0].Effects[0];
         var target = BattleProperties.characters[targetId];
+
+        _pointer = Pointer.CreateActorPointer(BattleProperties.map);
+        _pointer.Position = BattleProperties.map.ToDomainPosition(target.transform.position);
 
         var uiObjects = BattleProperties.uiObjects.transform;
         
@@ -42,6 +45,7 @@ public class PreemptTriggeredAnimationExecutor : AnimationExecutor
         .append(() => {
             popup.Hide();
             IsAnimating = false;
+            _pointer.Destroy();
         });
 
         return true;

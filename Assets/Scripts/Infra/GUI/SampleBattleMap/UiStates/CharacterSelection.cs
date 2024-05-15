@@ -42,6 +42,8 @@ public class CharacterSelection : IUiState
             Init(battleProperties);
         }
 
+        Camera.main.GetComponent<CameraControl>().HandleCameraInput();
+
         battleProperties.cursor.UpdateSelection();
 
         IUiState ret = this;

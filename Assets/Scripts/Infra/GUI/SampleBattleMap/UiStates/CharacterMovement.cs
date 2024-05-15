@@ -56,7 +56,7 @@ public class CharacterMovement : IUiState
 
         IUiState ret = this;
 
-        if (hasReached(character.transform.position, nextPosition))
+        if (HasReached(character.transform.position, nextPosition))
         {
             if (_path[0].Equals(_endPosition))  // move completed
             {
@@ -81,7 +81,7 @@ public class CharacterMovement : IUiState
         return ret;
     }
 
-    private bool hasReached(Vector3 current, Vector3 destination)
+    private bool HasReached(Vector3 current, Vector3 destination)
     {
         return Vector3.Distance(current, destination) <= TOLERANCE;
     }

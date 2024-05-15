@@ -14,7 +14,7 @@ public class AgentSerializer : ISerializer<Agent>
 
         var agentId = new AgentId(br.ReadString());
         var name = br.ReadString();
-        var actions = Enumerable.Range(0, br.ReadByte()).Select(_ => Serializer.Deserialize<Action>(br.ReadBytes(br.ReadByte()))).ToList();
+        var arbella = Enumerable.Range(0, br.ReadByte()).Select(_ => Serializer.Deserialize<Arbellum>(br.ReadBytes(br.ReadByte()))).ToArray();
         var statLevels = Serializer.Deserialize<StatLevels>(br.ReadBytes(br.ReadByte()));
         var position = Serializer.Deserialize<Position>(br.ReadBytes(br.ReadByte()));
         var items = Enumerable.Range(0, br.ReadUInt16()).ToDictionary(_ => (Item) br.ReadUInt16(), _ => (int) br.ReadByte());
@@ -27,7 +27,7 @@ public class AgentSerializer : ISerializer<Agent>
         return new Agent(
             agentId,
             name,
-            actions,
+            arbella,
             statLevels,
             position,
             items,
@@ -49,7 +49,7 @@ public class AgentSerializer : ISerializer<Agent>
         bw.Write(agent.Name);
 
         // write actions
-        bw.Write((byte)agent.Actions.Count);
+        bw.Write((byte)agent.Arbella.Count());
         foreach (var action in agent.Actions)
         {
             var actionPayload = Serializer.Serialize(action);

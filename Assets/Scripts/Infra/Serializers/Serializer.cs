@@ -8,6 +8,7 @@ public class Serializer
 {
     private static readonly Dictionary<Type, ISerializer<object>> _serializers = new() {
         {typeof(Battle.Action), new ActionSerializer()},
+        {typeof(Arbellum), new ArbellumSerializer()},
         {typeof(Agent), new AgentSerializer()},
         {typeof(Armour), new ArmourSerializer()},
         {typeof(Position), new PositionSerializer()},

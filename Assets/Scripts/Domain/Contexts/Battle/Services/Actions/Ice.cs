@@ -22,15 +22,18 @@ namespace Battle.Services.Actions
         );
         public override ActionType Type => ActionType.Ice;
 
-        public override SkillType Skill => SkillType.Physical;
+        public override ArbellumType Arbellum => ArbellumType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
+
+        public override StatType[] ActorRelevantStats => new StatType[] {};
+        public override StatType[] TargetRelevantStats => new StatType[] {};
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
             return null;
         }
 
-        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return true;
         }

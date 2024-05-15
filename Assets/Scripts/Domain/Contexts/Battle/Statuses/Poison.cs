@@ -11,7 +11,7 @@ namespace Battle.Statuses
         protected override ActionOutcome[] OnApply(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return new ActionOutcome[] {
-                new ActionOutcome(
+                new(
                     agent.Id() as AgentId,
                     new AgentId[] {agent.Id() as AgentId},
                     Type,

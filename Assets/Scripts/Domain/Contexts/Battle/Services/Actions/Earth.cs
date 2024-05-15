@@ -1,13 +1,10 @@
-using System.Linq;
 using Battle.Services.ActionPrerequisites;
-using Battle.Statuses;
-using UnityEditor.Media;
 
 namespace Battle.Services.Actions
 {
     public class Earth : Action
     {
-        public Earth() : base("Earth", "Crackle.")
+        public Earth() : base(ActionType.Earth, "Crackle.")
         {
         }
 
@@ -20,17 +17,19 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-        public override ActionType Type => ActionType.Earth;
 
-        public override SkillType Skill => SkillType.Physical;
+        public override ArbellumType Arbellum => ArbellumType.Geocraft;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
+
+        public override StatType[] ActorRelevantStats => new StatType[] {};
+        public override StatType[] TargetRelevantStats => new StatType[] {};
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
             return null;
         }
 
-        public override bool CanExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent agent, Battle battle, UnitOfWork unitOfWork)
         {
             return true;
         }

@@ -7,6 +7,7 @@ namespace Battle.Common.Weapons
     public class Longsword : Weapon
     {
         public override WeaponType Type => WeaponType.Longsword;
+        public override Stats StatsBoost => new(3, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         protected override bool IsPostExecutionInitiatorEffectsTriggered(ActionOutcome outcome, Agent holder, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {

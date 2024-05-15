@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Battle
@@ -7,44 +8,52 @@ namespace Battle
     [Serializable]
     public abstract class Action : ValueObject<string>
     {
-        public string Name { get; private set; }
+        public ActionType Type { get; private set; }
         public string Description { get; private set; }
 
-        public Action(string name, string description)
+        public Action(ActionType type, string description)
         {
-            Name = name;
+            Type = type;
             Description = description;
         }
 
         public override string Value()
         {
-            return Name;
+            return Type.Name;
         }
 
         public override string ToString()
         {
-            return Name;
+            return Type.Name;
         }
 
         // for damage calc: maps (actor relevant stats - target relevant stats) to damage
         public static double DamageActivation(double statsDelta)
         {
-            return (StatLevels.MAX_LEVEL + 1) / (1 + Math.Pow(Math.E, -(statsDelta - 200) / 50));
+            return 10000 / (1 + Math.Pow(Math.E, -(statsDelta - 200.0) / 50.0));
         }
-
-        protected abstract ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork);
-        protected abstract bool ShouldExecute(Agent target, Agent actor);
 
         public abstract AreaOfEffect TargetArea { get; }
         public abstract AreaOfEffect AreaOfEffect { get; }
-
-        public abstract ActionType Type { get; }
-        public abstract SkillType Skill { get; }
-        public abstract StatType[] ActorRelevantStats { get; }
-        public abstract StatType[] TargetRelevantStats { get; }
+        public abstract ArbellumType Arbellum { get; }
         public abstract ActionPrerequisite[] Criteria { get; }
+        public virtual StatType[] ActorRelevantStats => new StatType[] {};
+        public virtual StatType[] TargetRelevantStats => new StatType[] {};
+        public virtual int Cost => 0;
 
-        public abstract bool CanExecute(Agent actor, Battle battle, UnitOfWork unitOfWork);
+        public abstract bool IsActorAbleToExecute(Agent actor, Battle battle, UnitOfWork unitOfWork);
+        protected abstract ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork);
+        protected abstract bool ShouldExecute(Agent target, Agent actor);
+
+        public bool CanExecute(Agent actor, Battle battle, UnitOfWork unitOfWork)
+        {
+            return actor.Mp >= Cost && IsActorAbleToExecute(actor, battle, unitOfWork);
+        }
+
+        private bool IsExecutionValid(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
+        {
+            return actor.Mp >= Cost;
+        }
 
         public bool IsTargetValid(Agent target, Agent actor)
         {
@@ -54,6 +63,8 @@ namespace Battle
 
         public ActionOutcome[] Execute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
+            if (!IsExecutionValid(actor, targets, battle, unitOfWork)) throw new InvalidOperationException("Action execution is invalid");
+
             var potentialPreemptors = battle.PlayerIds
             .Concat(battle.EnemyIds)
             .Where(i => !i.Equals(actor.Id()))
@@ -86,6 +97,13 @@ namespace Battle
                 var executionOutcome = OnExecute(actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(executionOutcome, unitOfWork);
                 LevelUpService.Execute(executionOutcome, this, unitOfWork);
+
+                // reduce MP
+                using (unitOfWork)
+                {
+                    unitOfWork.AgentRepository.Update(actor.Id() as AgentId, actor.ReduceMp(Cost));
+                    unitOfWork.Save();
+                }
 
                 outcomes.Add(executionOutcome);
                 

@@ -18,7 +18,7 @@ public class CharacterTurn : IUiState
     private CameraControl _cameraControl;
     private Position[] _movablePositions;
     private Pointer _pointer;
-
+    
     public CharacterTurn(AgentId agentId, bool hasMoved, bool hasActed, Position initialPosition, Direction initialDirection)
     {
         _agentId = agentId;
@@ -30,7 +30,7 @@ public class CharacterTurn : IUiState
 
     private void Init(BattleProperties battleProperties)
     {
-        _pointer = Pointer.Create(Resources.Load("Prefabs/Maps/Pointer") as GameObject, battleProperties.map);
+        _pointer = Pointer.CreatePointer(battleProperties.map);
 
         var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
         battleProperties.battleEvents.cursorSelectionChanged.AddListener((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
@@ -114,12 +114,10 @@ public class CharacterTurn : IUiState
         // show action panel preview if cursor is on agent
         if (cursor.Selection.Equals(agent.Position))
         {
-            // _actionPanel.GetComponent<CanvasGroup>().alpha = 0.9f;
             _pointer.Position = agent.Position;
         }
         else
         {
-            // _actionPanel.GetComponent<CanvasGroup>().alpha = 0;
             _pointer.Position = Pointer.NullSelection;
         }
 
@@ -128,15 +126,20 @@ public class CharacterTurn : IUiState
 
     private IUiState OnCancelMove(BattleProperties battleProperties)
     {
-        if (_hasMoved)
-        {
-            battleProperties.characters[_agentId]
-            .GetComponent<Character>()
-            .SetPosition(_agentId, _initialPosition)
-            .SetDirection(_agentId, _initialDirection);
-        }
+        // if (_hasMoved)
+        // {
+        //     battleProperties.characters[_agentId]
+        //     .GetComponent<Character>()
+        //     .SetPosition(_agentId, _initialPosition)
+        //     .SetDirection(_agentId, _initialDirection);
+        // }
 
-        Uninit(battleProperties);
+        battleProperties.characters[_agentId]
+        .GetComponent<Character>()
+        .SetPosition(_agentId, _initialPosition)
+        .SetDirection(_agentId, _initialDirection);
+
+        // Uninit(battleProperties);
 
         return new CharacterTurn(_agentId, false, _hasActed, _initialPosition, _initialDirection);
     }
@@ -154,7 +157,7 @@ public class CharacterTurn : IUiState
                 new SelectDirection(_agentId, _initialPosition) : 
                 new CharacterTurn(_agentId, false, true, _initialPosition, _initialDirection);
 
-                ret = new SelectAction(_agentId, this, nextState);
+                ret = new SelectAction(_agentId, nextState, OnCancelMove);
             }
             else if (_movablePositions.Contains(battleProperties.cursor.Selection))
             {
@@ -162,9 +165,10 @@ public class CharacterTurn : IUiState
                     _agentId,
                     battleProperties.cursor.Selection,
                     new SelectAction(
-                        _agentId, 
-                        new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection), 
-                        new SelectDirection(_agentId, _initialPosition)
+                        _agentId,  
+                        new SelectDirection(_agentId, _initialPosition),
+                        // _ => new CharacterTurn(_agentId, false, false, _initialPosition, _initialDirection)
+                        OnCancelMove
                     )
                 );
             }

@@ -1,4 +1,5 @@
 using Battle;
+using System;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -8,18 +9,18 @@ public class SelectAction : IUiState
     private static ActionDispatcher _actionDispatcher = new ActionDispatcher();
 
     private AgentId _agentId;
-    private IUiState _prevState;
     private IUiState _nextState;
+    private Func<BattleProperties, IUiState> _onCancel;
     private string _chosenAction;
     private bool _hasInit = false;
     private Transform _actionPanel;
     private CharacterPanel _characterPanel;
 
-    public SelectAction(AgentId agentId, IUiState prevState, IUiState nextState)
+    public SelectAction(AgentId agentId, IUiState nextState, Func<BattleProperties, IUiState> onCancel)
     {
         _agentId = agentId;
-        _prevState = prevState;
         _nextState = nextState;
+        _onCancel = onCancel;
     }
 
     private void Init(BattleProperties battleProperties)
@@ -65,7 +66,7 @@ public class SelectAction : IUiState
 
             var action = _actionDispatcher.Dispatch(_chosenAction);
 
-            var ret = new SelectActionTarget(action, new SelectAction(_agentId, _prevState, _nextState), _nextState);
+            var ret = new SelectActionTarget(action, new SelectAction(_agentId, _nextState, _onCancel), _nextState);
 
             Uninit(battleProperties);
 
@@ -75,7 +76,7 @@ public class SelectAction : IUiState
         {
             Uninit(battleProperties);
 
-            return _prevState;
+            return _onCancel(battleProperties);
         }
         else
         {

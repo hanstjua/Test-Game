@@ -35,13 +35,13 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         public override ActionType Type => throw new System.NotImplementedException();
 
-        public override SkillType Skill => throw new System.NotImplementedException();
+        public override ArbellumType Arbellum => throw new System.NotImplementedException();
 
         public override ActionPrerequisite[] Criteria => throw new System.NotImplementedException();
 
         public override AreaOfEffect AreaOfEffect => throw new System.NotImplementedException();
 
-        public override bool CanExecute(Agent actor, Battle.Battle battle, UnitOfWork unitOfWork)
+        public override bool IsActorAbleToExecute(Agent actor, Battle.Battle battle, UnitOfWork unitOfWork)
         {
             throw new System.NotImplementedException();
         }
