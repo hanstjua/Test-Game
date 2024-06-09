@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
+using Common;
 using UnityEngine;
-using Battle;
 
 
 public class CompositionRoot : MonoBehaviour
@@ -26,7 +24,12 @@ public class CompositionRoot : MonoBehaviour
     {
         _instance = this;
 
-        unitOfWorkObject.obj = new UnitOfWork(new AgentRepository(), new BattleRepository(), new BattleFieldRepository());
+        unitOfWorkObject.obj = new UnitOfWork(
+            new AgentRepository(),
+            new BattleRepository(),
+            new BattleFieldRepository(),
+            new InventoryRepository()
+        );
     }
 
     public static CompositionRoot Instance

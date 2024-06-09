@@ -20,7 +20,7 @@ namespace Battle
             // Calculate the next N turns
             int N = 30;
             double turnThreshold = 100.0;
-            List<Agent> turns = new List<Agent>();
+            List<Agent> turns = new();
 
             while (turns.Count < N)
             {

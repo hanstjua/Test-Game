@@ -1,3 +1,5 @@
+using Common;
+
 namespace Battle
 {
     public class ActionFailed : ActionEffect

@@ -48,6 +48,22 @@ namespace Battle
             };
         }
 
+        public static StatLevels MaxLevels
+        {
+            get => new(
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL,
+                MAX_LEVEL
+            );
+        }
+
         public uint Strength { get; private set; }
         public uint Defense { get; private set; }
         public uint Magic { get; private set; }

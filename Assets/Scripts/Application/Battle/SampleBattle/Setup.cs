@@ -1,13 +1,18 @@
+using Battle.Accessories;
+using Battle.Armours;
+using Battle.Footwears;
+using Battle.Services.Arbella;
+using Battle.Weapons;
+using Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace Battle.SampleBattle
 {
 	public class Preparing : Phase
 	{
-		private UnitOfWork _unitOfWork;
+		private readonly UnitOfWork _unitOfWork;
 
 		public Preparing(UnitOfWork unitOfWork) : base("SampleBattle.Preparing")
         {
@@ -42,9 +47,9 @@ namespace Battle.SampleBattle
 	
     public class Setup
     {
-        private static System.Random _random = new System.Random();
-        private UnitOfWork _unitOfWork;
-        private BattleFieldId _fieldId;
+        private static readonly Random _random = new();
+        private readonly UnitOfWork _unitOfWork;
+        private readonly BattleFieldId _fieldId;
 
         public Setup(
             UnitOfWork unitOfWork,
@@ -76,6 +81,68 @@ namespace Battle.SampleBattle
             return battleId;
         }
 
+		public Agent CreateAgentByName(string name, Position position, UnitOfWork unitOfWork)
+		{
+			var id = new AgentId(Guid.NewGuid().ToString());
+			var agent = new Agent(
+				id,
+				name,
+				new Arbellum[] {new Physical(0)},
+				new StatLevels(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
+				position,
+				new Dictionary<Item, int>(),
+				2,
+				null, null, null, null, null, null
+			);
+
+			var service = new EquipService();
+			service.Execute(id, new Longsword(), false, unitOfWork);
+			service.Execute(id, new LeatherArmour(), unitOfWork);
+			service.Execute(id, new IronBoots(), unitOfWork);
+			service.Execute(id, new GoldNecklace(), true, unitOfWork);
+
+			using (unitOfWork)
+			{
+				unitOfWork.AgentRepository.Update(id, agent);
+				unitOfWork.Save();
+			}
+
+			return agent;
+		}
+
+		public Agent CreateGenericEnemyByName(string name, Position position, UnitOfWork unitOfWork)
+		{
+			var character = CharacterFactory.GetGeneric(name);
+
+			var id = new AgentId(Guid.NewGuid().ToString());
+			var agent = new Agent(
+				id, 
+				name, 
+				character.Arbella, 
+				character.Levels, 
+				position, 
+				character.Items, 
+				character.Movements,
+				null, null, null, null, null, null
+			);
+			
+			var service = new EquipService();
+			service.Execute(id, character.LeftHand, false, unitOfWork);
+			service.Execute(id, character.RightHand, true, unitOfWork);
+			service.Execute(id, character.Armour, unitOfWork);
+			service.Execute(id, character.Footwear, unitOfWork);
+			service.Execute(id, character.Accessory1, true, unitOfWork);
+			service.Execute(id, character.LeftHand, false, unitOfWork);
+
+			using (unitOfWork)
+			{
+				unitOfWork.AgentRepository.Update(id, agent);
+				unitOfWork.Save();
+			}
+
+			return agent;
+		}
+
         private List<Agent> GenerateEnemies(Terrain[][] terrains)
 		{
 			int enemiesCount = _random.Next(1, 2);
@@ -88,7 +155,7 @@ namespace Battle.SampleBattle
 			var shuffledTerrains = Shuffle(flatTerrains);
 
 			return Enumerable.Range(0, enemiesCount)
-			.Select(i => _unitOfWork.AgentRepository.CreateGenericEnemyByName("Goblin", shuffledTerrains[i].Position))
+			.Select(i => CreateGenericEnemyByName("Goblin", shuffledTerrains[i].Position, _unitOfWork))
 			.ToList();
 		}
 
@@ -96,7 +163,7 @@ namespace Battle.SampleBattle
 		{
 			var randomizedPositions = Shuffle(startingPositions);
 			var characters = Enumerable.Range(0, characterNames.Count())
-			.Select(i => _unitOfWork.AgentRepository.CreateAgentByName(characterNames[i], startingPositions[i]))
+			.Select(i => CreateAgentByName(characterNames[i], startingPositions[i], _unitOfWork))
 			.ToList();
 
 			return Enumerable.Range(0, characters.Count())

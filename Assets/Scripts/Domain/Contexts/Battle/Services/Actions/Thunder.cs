@@ -7,7 +7,7 @@ namespace Battle.Services.Actions
 {
     public class Thunder : Action
     {
-        public Thunder() : base("Thunder", "Roar.")
+        public Thunder() : base(ActionType.Thunder, "Roar.")
         {
         }
 
@@ -20,7 +20,6 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-        public override ActionType Type => ActionType.Thunder;
 
         public override ArbellumType Arbellum => ArbellumType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };

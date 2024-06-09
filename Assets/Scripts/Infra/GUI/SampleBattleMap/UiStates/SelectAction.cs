@@ -28,7 +28,7 @@ public class SelectAction : IUiState
         Camera.main.GetComponent<CameraControl>().FocusAt(battleProperties.map.ToUIPosition(battleProperties.unitOfWork.AgentRepository.Get(_agentId).Position));
 
         _actionPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/ActionPanel");
-        _actionPanel.GetComponent<ActionPanel>().ActionSelected.AddListener(a => _chosenAction = a.Name);
+        _actionPanel.GetComponent<ActionPanel>().ActionSelected.AddListener(a => _chosenAction = a.Type.Name);
         _actionPanel.GetComponent<CanvasGroup>().alpha = 1;
 
         _characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();

@@ -1,3 +1,5 @@
+using Common;
+
 namespace Battle.Services.ActionPrerequisites
 {
     public class NotParalyzed : ActionPrerequisite

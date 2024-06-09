@@ -1,6 +1,6 @@
-namespace Battle.Common.Weapons
+namespace Battle.Weapons
 {
-    public class WeaponType : ActionType
+    public class WeaponType : HandheldType
     {
         public WeaponType(string name) : base(name) {}
 

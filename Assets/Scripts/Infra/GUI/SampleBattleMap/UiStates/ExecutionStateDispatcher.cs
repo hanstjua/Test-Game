@@ -1,6 +1,6 @@
 using Battle;
-using Battle.Common.Armours;
-using Battle.Common.Weapons;
+using Battle.Armours;
+using Battle.Weapons;
 using System;
 using System.Linq;
 

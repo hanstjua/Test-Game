@@ -1,9 +1,12 @@
 using System.IO;
 using System.Linq;
 using Battle;
-using Battle.Common;
-using Battle.Common.Armours;
-using Battle.Common.Weapons;
+using Battle.Accessories;
+using Battle.Armours;
+using Battle.Footwears;
+using Battle.Weapons;
+
+#nullable enable
 
 public class AgentSerializer : ISerializer<Agent>
 {
@@ -19,8 +22,12 @@ public class AgentSerializer : ISerializer<Agent>
         var position = Serializer.Deserialize<Position>(br.ReadBytes(br.ReadByte()));
         var items = Enumerable.Range(0, br.ReadUInt16()).ToDictionary(_ => (Item) br.ReadUInt16(), _ => (int) br.ReadByte());
         var movements = (int) br.ReadByte();
-        var weapon = Serializer.Deserialize<Weapon>(br.ReadBytes(br.ReadByte()));
-        var armour = Serializer.Deserialize<Armour>(br.ReadBytes(br.ReadByte()));
+        var rightHand = br.ReadBoolean() ? Serializer.Deserialize<Handheld>(br.ReadBytes(br.ReadByte())) : null;
+        var leftHand = br.ReadBoolean() ? Serializer.Deserialize<Handheld>(br.ReadBytes(br.ReadByte())) : null;
+        var armour = br.ReadBoolean() ? Serializer.Deserialize<Armour>(br.ReadBytes(br.ReadByte())) : null;
+        var footwear = br.ReadBoolean() ? Serializer.Deserialize<Footwear>(br.ReadBytes(br.ReadByte())) : null;
+        var accessory1 = br.ReadBoolean() ? Serializer.Deserialize<Accessory>(br.ReadBytes(br.ReadByte())) : null;
+        var accessory2 = br.ReadBoolean() ? Serializer.Deserialize<Accessory>(br.ReadBytes(br.ReadByte())) : null;
         var turnGauge = br.ReadDouble();
         var direction = (Direction) br.ReadInt16();
 
@@ -32,8 +39,12 @@ public class AgentSerializer : ISerializer<Agent>
             position,
             items,
             movements,
-            weapon,
+            rightHand,
+            leftHand,
             armour,
+            footwear,
+            accessory1,
+            accessory2,
             turnGauge,
             direction
         );
@@ -77,15 +88,59 @@ public class AgentSerializer : ISerializer<Agent>
 
         bw.Write((byte) agent.Movements);
         
-        // write weapon
-        var weaponPayload = Serializer.Serialize(agent.Weapon);
-        bw.Write((byte) weaponPayload.Length);
-        bw.Write(weaponPayload);
+        // write right hand
+        bw.Write(agent.RightHand != null);
+        if (agent.RightHand != null)
+        {
+            var rightHandPayload = Serializer.Serialize(agent.RightHand);
+            bw.Write((byte) rightHandPayload.Length);
+            bw.Write(rightHandPayload);
+        }
+
+        // write left hand
+        bw.Write(agent.LeftHand != null);
+        if (agent.LeftHand != null)
+        {
+            var leftHandPayload = Serializer.Serialize(agent.LeftHand);
+            bw.Write((byte) leftHandPayload.Length);
+            bw.Write(leftHandPayload);
+        }
 
         // write armour
-        var armourPayload = Serializer.Serialize(agent.Armour);
-        bw.Write((byte) armourPayload.Length);
-        bw.Write(armourPayload);
+        bw.Write(agent.Armour != null);
+        if (agent.Armour != null)
+        {
+            var armourPayload = Serializer.Serialize(agent.Armour);
+            bw.Write((byte) armourPayload.Length);
+            bw.Write(armourPayload);
+        }
+
+        // write footwear
+        bw.Write(agent.Footwear != null);
+        if (agent.Footwear != null)
+        {
+            var footwearPayload = Serializer.Serialize(agent.Footwear);
+            bw.Write((byte) footwearPayload.Length);
+            bw.Write(footwearPayload);
+        }
+
+        // write accessory 1
+        bw.Write(agent.Accessory1 != null);
+        if (agent.Accessory1 != null)
+        {
+            var accessoryPayload = Serializer.Serialize(agent.Accessory1);
+            bw.Write((byte) accessoryPayload.Length);
+            bw.Write(accessoryPayload);
+        }
+
+        // write footwear
+        bw.Write(agent.Accessory2 != null);
+        if (agent.Accessory1 != null)
+        {
+            var accessoryPayload = Serializer.Serialize(agent.Accessory2);
+            bw.Write((byte) accessoryPayload.Length);
+            bw.Write(accessoryPayload);
+        }
 
         bw.Write(agent.TurnGauge);
         bw.Write((short) agent.Direction);
@@ -93,3 +148,5 @@ public class AgentSerializer : ISerializer<Agent>
         return ms.ToArray();
     }
 }
+
+#nullable disable

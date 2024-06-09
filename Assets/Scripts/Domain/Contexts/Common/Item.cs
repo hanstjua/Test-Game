@@ -1,6 +1,6 @@
 using System;
 
-namespace Battle.Common
+namespace Battle
 {
     public enum Item
     {

@@ -1,4 +1,4 @@
-using System.Linq;
+using Common;
 
 namespace Battle.Statuses{
     public abstract class Status : ValueObject<(string, int)>

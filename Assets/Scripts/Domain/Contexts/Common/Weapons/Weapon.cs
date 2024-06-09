@@ -1,10 +1,10 @@
-using Battle.Common;
+using Common;
 
-namespace Battle.Common.Weapons
+namespace Battle.Weapons
 {
-    public abstract class Weapon : Equipment
+    public abstract class Weapon : Handheld
     {
-        public abstract WeaponType Type { get; }
+        public override abstract HandheldType Type { get; }
         public abstract int CalculateDamage(Agent actor, Agent target, Battle battle, UnitOfWork unitOfWork);
     }
 }

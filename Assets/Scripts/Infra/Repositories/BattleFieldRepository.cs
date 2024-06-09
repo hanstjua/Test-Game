@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using Battle;
-using UnityEngine;
 
 [Serializable]
 public struct PositionData
@@ -92,9 +91,9 @@ public struct BattleFieldData
 
 public class BattleFieldRepository : IBattleFieldRepository
 {
-    private Dictionary<BattleFieldIdData, BattleFieldData> _tempBattleFieldSet = new Dictionary<BattleFieldIdData, BattleFieldData>();
+    private Dictionary<BattleFieldIdData, BattleFieldData> _tempBattleFieldSet = new();
     private MemoryStream _battleFieldSet;
-    private BinaryFormatter _serializer = new BinaryFormatter();
+    private readonly BinaryFormatter _serializer = new();
 
     BattleField IBattleFieldRepository.GetBattleFieldByName(string name)
     {

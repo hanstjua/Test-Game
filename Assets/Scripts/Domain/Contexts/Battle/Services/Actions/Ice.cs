@@ -7,7 +7,7 @@ namespace Battle.Services.Actions
 {
     public class Ice : Action
     {
-        public Ice() : base("Ice", "Freeze.")
+        public Ice() : base(ActionType.Ice, "Freeze.")
         {
         }
 
@@ -20,7 +20,6 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-        public override ActionType Type => ActionType.Ice;
 
         public override ArbellumType Arbellum => ArbellumType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };

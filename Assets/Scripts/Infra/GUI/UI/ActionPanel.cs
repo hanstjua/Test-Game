@@ -110,7 +110,7 @@ public class ActionPanel : MonoBehaviour
 
         _data = skills
         .OrderByDescending(skill => skill == ArbellumType.Physical)  // Physical first
-        .ThenByDescending(skill => skill != ArbellumType.Item)  // Item last
+        .ThenByDescending(skill => skill != ArbellumType.Supplies)  // Item last
         .ThenBy(skill => skill.Name)
         .Select(
             s => (

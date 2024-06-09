@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Battle.Common;
-using Battle.Common.Armours;
-using Battle.Common.Weapons;
+using Battle;
+using Battle.Accessories;
+using Battle.Armours;
+using Battle.Footwears;
 using Battle.Statuses;
+
+#nullable enable
 
 namespace Battle
 {
@@ -12,10 +15,6 @@ namespace Battle
     public class Agent : Entity
     {
         private readonly AgentId _id;
-        private Position _position;
-        private List<Action> _actions;
-        private Dictionary<Item, int> _items;
-        private HashSet<Status> _statuses;
         private Stats _augmentation = new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         public Agent(
@@ -26,8 +25,12 @@ namespace Battle
             Position position,
             Dictionary<Item, int> items,
             int movements,
-            Weapon weapon,
-            Armour armour,
+            Handheld? rightHand,
+            Handheld? leftHand,
+            Armour? armour,
+            Footwear? footwear,
+            Accessory? accessory1,
+            Accessory? accessory2,
             double turnGauge = 0.0,
             Direction direction = Direction.North
         )
@@ -44,7 +47,8 @@ namespace Battle
             TurnGauge = turnGauge;
             Movements = movements;
             Direction = direction;
-            Weapon = weapon;
+            RightHand = rightHand;
+            LeftHand = leftHand;
             Armour = armour;
         }
 
@@ -70,26 +74,18 @@ namespace Battle
         }
         public int Hp { get; private set; }
         public int Mp { get; private set; }
-        public Position Position 
-        { 
-            get => _position; 
-            set => _position = value; 
-        }
-        public Dictionary<Item, int> Items 
-        { 
-            get => new(_items);
-            private set => _items = value;
-        }
-        public HashSet<Status> Statuses
-        { 
-            get => new(_statuses);
-            private set => _statuses = value;
-        }
+        public Position Position { get; private set; }
+        public Dictionary<Item, int> Items { get; private set; }
+        public HashSet<Status> Statuses { get; private set; }
         public double TurnGauge { get; private set; }
         public int Movements { get; private set; }
         public Direction Direction { get; private set; }
-        public Weapon Weapon { get; private set; }
-        public Armour Armour { get; private set; }
+        public Handheld? RightHand { get; private set; }
+        public Handheld? LeftHand { get; private set; }
+        public Armour? Armour { get; private set; }
+        public Footwear? Footwear { get; private set; }
+        public Accessory? Accessory1 { get; private set; }
+        public Accessory? Accessory2 { get; private set; }
 
         public Agent ReduceHp(int damage)
         {
@@ -124,6 +120,12 @@ namespace Battle
 
             Position = to;
 
+            return this;
+        }
+
+        public Agent Teleport(Position to)
+        {
+            Position = to;
             return this;
         }
 
@@ -166,14 +168,14 @@ namespace Battle
 
         public Agent AddStatus(Status status)
         {
-            _statuses.Add(status);
+            Statuses.Add(status);
 
             return this;
         }
 
         public Agent RemoveStatus(Status status)
         {
-            _statuses.Remove(status);
+            Statuses.Remove(status);
 
             return this;
         }
@@ -226,5 +228,43 @@ namespace Battle
 
             return this;
         }
+
+        public Agent RightHandEquip(Handheld? handheld)
+        {
+            RightHand = handheld;
+            return this;
+        }
+
+        public Agent LeftHandEquip(Handheld? handheld)
+        {
+            LeftHand = handheld;
+            return this;
+        }
+
+        public Agent ArmourEquip(Armour? armour)
+        {
+            Armour = armour;
+            return this;
+        }
+
+        public Agent FootwearEquip(Footwear? footwear)
+        {
+            Footwear = footwear;
+            return this;
+        }
+
+        public Agent Accessory1Equip(Accessory? accessory)
+        {
+            Accessory1 = accessory;
+            return this;
+        }
+
+        public Agent Accessory2Equip(Accessory? accessory)
+        {
+            Accessory2 = accessory;
+            return this;
+        }
     }
 }
+
+#nullable disable

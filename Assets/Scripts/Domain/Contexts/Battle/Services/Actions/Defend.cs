@@ -25,7 +25,7 @@ namespace Battle.Services.Actions
 
         public override StatType[] ActorRelevantStats => new StatType[] {};
         public override StatType[] TargetRelevantStats => new StatType[] {};
-        public override int Cost => 2;
+        public override int Cost => 0;
 
         protected override ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork)
         {
@@ -34,7 +34,7 @@ namespace Battle.Services.Actions
                 new AgentId[] {actor.Id() as AgentId},
                 Type,
                 new ActionEffect[] {
-                    new AddStatus(actor.Id() as AgentId, new Guard(3), battle.Id() as BattleId)
+                    new AddStatus(actor.Id() as AgentId, new Guard(1), battle.Id() as BattleId)
                 }
             );
         }

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Battle;
-using UnityEngine;
-
 
 public class BattleRepository : IBattleRepository
 {
-    private Dictionary<BattleId, Battle.Battle> _battleSet = new Dictionary<BattleId, Battle.Battle>();
+    private readonly Dictionary<BattleId, Battle.Battle> _battleSet = new();
 
     public BattleId Create(List<AgentId> players, List<AgentId> enemies, BattleFieldId battleFieldId, Phase phase)
     {

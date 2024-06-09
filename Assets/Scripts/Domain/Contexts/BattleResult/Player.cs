@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Battle.Common;
+using Battle;
 
 namespace BattleResult
 {

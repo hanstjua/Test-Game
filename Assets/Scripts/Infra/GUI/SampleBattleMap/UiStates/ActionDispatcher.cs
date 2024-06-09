@@ -15,7 +15,7 @@ public class ActionDispatcher
         .GetTypes()
         .Where(t => t.IsSubclassOf(typeof(Battle.Action)))
         .Select(t => (Battle.Action) Activator.CreateInstance(t))
-        .ToDictionary(a => a.Name, a => a);
+        .ToDictionary(a => a.Type.Name, a => a);
 
         return _registry[action];
     }

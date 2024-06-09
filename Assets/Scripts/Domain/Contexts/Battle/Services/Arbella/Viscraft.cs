@@ -9,6 +9,7 @@ namespace Battle.Services.Arbella
             "The art of chanelling daya into the body to alter its equilibrium state.", 
             experience, 
             new Learnable[] {
+                new(new Empower(), 0, false)
             }
         )
         {}

@@ -27,13 +27,11 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private class NullAction : Action
     {
-        public NullAction() : base("", "")
+        public NullAction() : base(null, "")
         {
         }
 
         public override AreaOfEffect TargetArea => throw new System.NotImplementedException();
-
-        public override ActionType Type => throw new System.NotImplementedException();
 
         public override ArbellumType Arbellum => throw new System.NotImplementedException();
 
@@ -161,14 +159,14 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         _action = action;
 
-        _name.text = action.Name;
+        _name.text = action.Type.Name;
     }
 
     public void SetNoAction()
     {
         _action = _null;
 
-        _name.text = _action.Name;
+        _name.text = _action.Type.Name;
 
         Disable();
     }

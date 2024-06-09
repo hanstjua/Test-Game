@@ -1,4 +1,4 @@
-namespace Battle.Common.Armours
+namespace Battle.Armours
 {
     public class ArmourType : ActionType
     {

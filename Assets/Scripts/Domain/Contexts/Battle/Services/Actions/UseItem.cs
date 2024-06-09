@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Battle.Common;
+using Battle;
 using Battle;
 using Battle.Services.ActionPrerequisites;
 
@@ -8,7 +8,7 @@ namespace Battle.Services.Actions
 {
     public class UseItem : Action
     {
-        public UseItem() : base("Item", "Use item.")
+        public UseItem() : base(ActionType.UseItem, "Use item.")
         {
         }
 
@@ -18,9 +18,8 @@ namespace Battle.Services.Actions
         );
 
         public override AreaOfEffect TargetArea => throw new NotImplementedException();
-        public override ActionType Type => ActionType.UseItem;
 
-        public override ArbellumType Arbellum => ArbellumType.Item;
+        public override ArbellumType Arbellum => ArbellumType.Supplies;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };
 
         public override StatType[] ActorRelevantStats => new StatType[] {};

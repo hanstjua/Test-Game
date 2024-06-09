@@ -1,3 +1,4 @@
+using Common;
 namespace Battle
 {
     public class ApplyActionOutcomeService

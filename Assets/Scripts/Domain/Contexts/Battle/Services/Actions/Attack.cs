@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Battle.Services.ActionPrerequisites;
 using Battle.Statuses;
+using Common;
 
 namespace Battle.Services.Actions
 {
@@ -44,7 +45,7 @@ namespace Battle.Services.Actions
             // int weaponDamage = actor.Weapon.CalculateDamage(actor, target, battle, unitOfWork);
             // int armourResistance = target.Armour.CalculateResistance(actor, target, battle, unitOfWork);
 
-            var actorStrength = actor.Stats.Augment(actor.Weapon.StatsBoost).Strength;
+            var actorStrength = actor.Stats.Augment(actor.RightHand.StatsBoost).Strength;
             var targetDefense = target.Stats.Augment(target.Armour.StatsBoost).Defense;
 
             // TODO: calculate damage enhancement by accessories

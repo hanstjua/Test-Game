@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Battle;
-using Battle.Common.Armours;
-using Battle.Common.Weapons;
+using Battle.Armours;
+using Battle.Weapons;
 
 public class Serializer
 {
@@ -14,10 +14,11 @@ public class Serializer
         {typeof(Position), new PositionSerializer()},
         {typeof(StatLevels), new StatLevelsSerializer()},
         {typeof(Stats), new StatsSerializer()},
-        {typeof(Weapon), new WeaponSerializer()}
+        {typeof(Weapon), new WeaponSerializer()},
+        {typeof(Inventory.Inventory), new InventorySerializer()}
     };
 
     public static T Deserialize<T>(byte[] payload) =>  (T) _serializers[typeof(T)].Deserialize(payload);
-
+    public static object Deserialize(Type type, byte[] payload) => _serializers[type].Deserialize(payload);
     public static byte[] Serialize<T>(T t) => _serializers[typeof(T)].Serialize(t);
 }

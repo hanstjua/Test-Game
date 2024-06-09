@@ -1,9 +1,10 @@
+using Common;
 using System;
 using System.Linq;
 
-namespace Battle.Common
+namespace Battle
 {
-    public class Equipment
+    public abstract class Equipment : ValueObject<string>
     {
         public enum HolderRole
         {
@@ -147,4 +148,15 @@ namespace Battle.Common
             return null;
         }
     }
+
+    public abstract class HandheldType : EquipmentType
+    {
+        public HandheldType(string name) : base(name)
+        {}
+    }
+
+    public abstract class Handheld : Equipment
+    {
+        public abstract HandheldType Type { get; }
+    }    
 }

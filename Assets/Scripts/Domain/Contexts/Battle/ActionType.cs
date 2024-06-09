@@ -1,5 +1,3 @@
-using PlasticPipe.PlasticProtocol.Messages;
-
 namespace Battle
 {
     public class ActionType
@@ -76,11 +74,14 @@ namespace Battle
         public static readonly ActionType Recover = new("Recover");
         public static readonly ActionType Rejuvenate = new("Rejuvenate");
         public static readonly ActionType Revive = new("Revive");
+        public static readonly ActionType Regeneration = new("Regeneration");
         public static readonly ActionType SecondWind = new("Second Wind");
 
         // Malediction
         public static readonly ActionType Disintegrate = new("Disintegrate");
         public static readonly ActionType Sever = new("Sever");
+        public static readonly ActionType Reconstruction = new("Reconstruction");
+        public static readonly ActionType BottomlessWell = new("Bottomless Well");
         public static readonly ActionType AltarOfDamnation = new("Altar of Damnation");
     }
 }

@@ -1,6 +1,6 @@
-using Battle.Common;
+using Common;
 
-namespace Battle.Common.Armours
+namespace Battle.Armours
 {
     public abstract class Armour : Equipment
     {

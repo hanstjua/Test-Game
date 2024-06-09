@@ -1,6 +1,6 @@
+using Common;
 using System.Collections.Generic;
 using System.Linq;
-using Battle.Common;
 
 namespace Battle
 {
@@ -11,7 +11,7 @@ namespace Battle
 
             var role = Equipment.GetHolderRole(responder.Id() as AgentId, actor.Id() as AgentId, targets.Select(a => a.Id() as AgentId).ToArray());
 
-            bool isWeaponTriggered() => responder.Weapon.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
+            bool isWeaponTriggered() => responder.RightHand.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
             bool isArmourTriggered() => responder.Armour.IsPostExecutionEffectsTriggered(role, outcome, responder, actor, targets, battle, unitOfWork);
 
             List<ActionOutcome> outcomes = new();
@@ -30,11 +30,11 @@ namespace Battle
                         responder.Id() as AgentId, 
                         new AgentId[] {}, 
                         ActionType.RespondTriggered, 
-                        new ActionEffect[] { new RespondTriggered(responder.Id() as AgentId, responder.Weapon.Type, outcome)}
+                        new ActionEffect[] { new RespondTriggered(responder.Id() as AgentId, responder.RightHand.Type, outcome)}
                     )
                 );
 
-                var weaponOutcome = responder.Weapon.GetPostExecutionEffects(role, outcome, responder, actor, targets, battle, unitOfWork);
+                var weaponOutcome = responder.RightHand.GetPostExecutionEffects(role, outcome, responder, actor, targets, battle, unitOfWork);
                 ApplyActionOutcomeService.Execute(weaponOutcome, unitOfWork);
                 outcomes.Add(weaponOutcome);
 

@@ -1,10 +1,11 @@
-using System.Linq;
+using Common;
 using Battle.Statuses;
 
-namespace Battle.Common.Armours
+namespace Battle.Armours
 {
     public class LeatherArmour : Armour
     {
+        public override string Value() => Type.Name;
         public override ArmourType Type => ArmourType.LeatherArmour;
         public override Stats StatsBoost => new(0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
 

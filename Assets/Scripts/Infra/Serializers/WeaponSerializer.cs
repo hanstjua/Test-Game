@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Battle.Common.Weapons;
+using Battle.Weapons;
 
 public class WeaponSerializer : ISerializer<Weapon>
 {

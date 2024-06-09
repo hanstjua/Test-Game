@@ -1,4 +1,5 @@
-using Battle.Common;
+using Battle;
+using Common;
 
 namespace Battle
 {

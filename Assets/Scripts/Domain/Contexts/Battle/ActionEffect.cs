@@ -1,3 +1,4 @@
+using Common;
 namespace Battle
 {
     public abstract class ActionEffect : ValueObject<string>

@@ -1,5 +1,5 @@
 using System;
-using Battle.Common;
+using Battle;
 
 namespace BattleResult
 {

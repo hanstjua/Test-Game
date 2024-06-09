@@ -1,6 +1,5 @@
-using System;
+using Common;
 using System.Linq;
-using Battle;
 
 namespace Battle.SampleBattle
 {

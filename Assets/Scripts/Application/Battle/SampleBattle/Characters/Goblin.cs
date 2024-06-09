@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Battle;
-using Battle.Common;
-using Battle.Common.Armours;
-using Battle.Common.Weapons;
+using Battle.Accessories;
+using Battle.Armours;
+using Battle.Footwears;
+using Battle.Weapons;
 using Battle.Services.Actions;
 using Battle.Services.Arbella;
 
@@ -23,7 +24,16 @@ public class Goblin : ICharacter
 
     public Dictionary<Item, int> Items => new();
     public int Movements => 2;
-    public Weapon Weapon => new Longsword();
     public Armour Armour => new LeatherArmour();
     public Arbellum[] Arbella => new Arbellum[] {new Physical(0)};
+
+    public Handheld RightHand => new Longsword();
+
+    public Handheld LeftHand => null;
+
+    public Footwear Footwear => null;
+
+    public Accessory Accessory1 => null;
+
+    public Accessory Accessory2 => null;
 }

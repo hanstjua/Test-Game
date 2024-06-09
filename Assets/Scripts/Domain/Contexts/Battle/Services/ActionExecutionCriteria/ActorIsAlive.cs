@@ -1,3 +1,5 @@
+using Common;
+
 namespace Battle.Services.ActionExecutionCriteria
 {
     public class ActorIsAlive : ActionExecutionCriterion

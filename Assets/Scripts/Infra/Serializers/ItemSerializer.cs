@@ -1,5 +1,5 @@
 using Battle;
-using Battle.Common;
+using Battle;
 
 public class ItemSerializer : ISerializer<Item>
 {

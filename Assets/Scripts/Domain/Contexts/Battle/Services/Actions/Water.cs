@@ -7,7 +7,7 @@ namespace Battle.Services.Actions
 {
     public class Water : Action
     {
-        public Water() : base("Water", "Bloop.")
+        public Water() : base(ActionType.Water, "Bloop.")
         {
         }
 
@@ -20,7 +20,6 @@ namespace Battle.Services.Actions
             new Position[] {new(0, 0, 0)},
             0
         );
-        public override ActionType Type => ActionType.Water;
 
         public override ArbellumType Arbellum => ArbellumType.Physical;
         public override ActionPrerequisite[] Criteria => new[] { new NotParalyzed() };

@@ -1,5 +1,5 @@
 using Battle;
-using Battle.Common.Weapons;
+using Battle.Weapons;
 using Battle.Statuses;
 using System;
 

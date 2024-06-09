@@ -81,7 +81,7 @@ public class CharacterSelection : IUiState
                 using (var unitOfWork = battleProperties.unitOfWork)
                 {
                     var agent = unitOfWork.AgentRepository.Get(_selectedAgentId);
-                    agent.Position = position;
+                    agent.Teleport(position);
                     
                     unitOfWork.Save();
                 }

@@ -11,9 +11,6 @@ using TMPro;
 public class DefendExecution : IUiState
 {
     private ActionOutcome _outcome;
-    private GameObject _anim;
-    private float _elapsed = 0;
-    private float _period = 1;
     private bool _hasInit = false;
     private IUiState _nextState;
     private AnimatorObject _animatorObject;
