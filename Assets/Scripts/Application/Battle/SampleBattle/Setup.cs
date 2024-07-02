@@ -2,6 +2,7 @@ using Battle.Accessories;
 using Battle.Armours;
 using Battle.Footwears;
 using Battle.Services.Arbella;
+using Battle.Shieds;
 using Battle.Weapons;
 using Common;
 using System;
@@ -65,6 +66,20 @@ namespace Battle.SampleBattle
 			BattleId battleId;
 			using (_unitOfWork)
             {
+				// populate inventory
+				var inventory = _unitOfWork
+				.InventoryRepository
+				.Get()
+				.AddItem(Item.Potion, 10)
+				.AddEquipment(new Longsword(), 3)
+				.AddEquipment(new Buckler(), 3)
+				.AddEquipment(new LeatherArmour(), 3)
+				.AddEquipment(new IronBoots(), 3)
+				.AddEquipment(new GoldNecklace(), 2)
+				.AddEquipment(new SilverRing(), 2);
+
+				_unitOfWork.InventoryRepository.Update(inventory);
+
 				var battleField = _unitOfWork.BattleFieldRepository.Get(_fieldId);
 
 				var players = GeneratePlayers(new List<string> {"James", "Jane"}, battleField.PlayerStartingPositions).Select(p => (AgentId)p.Id());
@@ -88,12 +103,18 @@ namespace Battle.SampleBattle
 				id,
 				name,
 				new Arbellum[] {new Physical(0)},
-				new StatLevels(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
+				new(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
 				position,
-				new Dictionary<Item, int>(),
+				new(),
 				2,
 				null, null, null, null, null, null
 			);
+
+			using (unitOfWork)
+			{
+				unitOfWork.AgentRepository.Update(id, agent);
+				unitOfWork.Save();
+			}
 
 			var service = new EquipService();
 			service.Execute(id, new Longsword(), false, unitOfWork);
@@ -125,6 +146,12 @@ namespace Battle.SampleBattle
 				character.Movements,
 				null, null, null, null, null, null
 			);
+
+			using (unitOfWork)
+			{
+				unitOfWork.AgentRepository.Update(id, agent);
+				unitOfWork.Save();
+			}
 			
 			var service = new EquipService();
 			service.Execute(id, character.LeftHand, false, unitOfWork);

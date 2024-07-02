@@ -1,6 +1,8 @@
 using Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Battle
 {
@@ -13,7 +15,12 @@ namespace Battle
             Observer
         }
 
+        public abstract EquipmentType Type { get; }
+        public abstract string Description { get; }
+
         public virtual Stats StatsBoost => new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        public Equipment() {}
 
         public static HolderRole GetHolderRole(AgentId holderId, AgentId actorId, AgentId[] targetIds)
         {
@@ -149,14 +156,22 @@ namespace Battle
         }
     }
 
-    public abstract class HandheldType : EquipmentType
+    public class EquipmentFactory
+    {
+        public static readonly Dictionary<string, Equipment> Instances = 
+        AppDomain.CurrentDomain
+        .GetAssemblies()
+        .SelectMany(a => a.GetTypes())
+        .Where(t => t.IsSubclassOf(typeof(Equipment)) && !t.GetTypeInfo().IsAbstract)
+        .ToDictionary(t => t.Name, t => (Equipment) Activator.CreateInstance(t));
+    }
+
+    public class HandheldType : EquipmentType
     {
         public HandheldType(string name) : base(name)
         {}
     }
 
     public abstract class Handheld : Equipment
-    {
-        public abstract HandheldType Type { get; }
-    }    
+    {}
 }

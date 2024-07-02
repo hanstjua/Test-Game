@@ -6,7 +6,8 @@ namespace Battle.Weapons
     public class Longsword : Weapon
     {
         public override string Value() => Type.Name;
-        public override HandheldType Type => WeaponType.Longsword;
+        public override EquipmentType Type => WeaponType.Longsword;
+        public override string Description => "Long sharp weapon for cutting onions.";
         public override Stats StatsBoost => new(3, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         protected override bool IsPostExecutionInitiatorEffectsTriggered(ActionOutcome outcome, Agent holder, Agent[] targets, Battle battle, UnitOfWork unitOfWork)

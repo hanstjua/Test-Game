@@ -6,7 +6,8 @@ namespace Battle.Armours
     public class LeatherArmour : Armour
     {
         public override string Value() => Type.Name;
-        public override ArmourType Type => ArmourType.LeatherArmour;
+        public override EquipmentType Type => ArmourType.LeatherArmour;
+        public override string Description => "Made from cow hide.";
         public override Stats StatsBoost => new(0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
 
         protected override bool IsPostExecutionReactorEffectsTriggered(ActionOutcome outcome, Agent xactor, Agent holder, Battle battle, UnitOfWork unitOfWork)

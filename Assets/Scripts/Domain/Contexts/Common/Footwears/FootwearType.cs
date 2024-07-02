@@ -1,6 +1,8 @@
+using Common;
+
 namespace Battle.Footwears
 {
-    public class FootwearType : ActionType
+    public class FootwearType : EquipmentType
     {
         public FootwearType(string name) : base(name) {}
 

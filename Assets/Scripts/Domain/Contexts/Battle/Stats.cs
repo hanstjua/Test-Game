@@ -34,7 +34,15 @@ namespace Battle
         {
             return new int[] {
                 Strength,
-                
+                Defense,
+                Magic,
+                MagicDefense,
+                Agility,
+                Accuracy,
+                Evasion,
+                Luck,
+                MaxHp,
+                MaxMp
             };
         }
 

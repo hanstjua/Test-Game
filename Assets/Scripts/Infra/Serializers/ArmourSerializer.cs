@@ -1,20 +1,21 @@
 using System.Collections.Generic;
 using System.IO;
+using Battle;
 using Battle.Armours;
 
 public class ArmourSerializer : ISerializer<Armour>
 {
-    private static readonly Dictionary<string, Armour> _armourMap = new()
-    {
-        {ArmourType.LeatherArmour.Name, new LeatherArmour()}
-    };
+    // private static readonly Dictionary<string, Armour> _armourMap = new()
+    // {
+    //     {ArmourType.LeatherArmour.Name, new LeatherArmour()}
+    // };
 
     public Armour Deserialize(byte[] payload)
     {
         using MemoryStream ms = new(payload);
         using BinaryReader br = new(ms);
 
-        return _armourMap[br.ReadString()];
+        return (Armour) EquipmentFactory.Instances[br.ReadString()];
     }
 
     public byte[] Serialize(object obj)

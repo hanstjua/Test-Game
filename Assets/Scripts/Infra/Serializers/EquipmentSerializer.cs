@@ -1,24 +1,23 @@
-using Battle;
-using System;
 using System.IO;
+using Battle;
 
-public class ItemSerializer : ISerializer<Item>
+public class EquipmentSerializer : ISerializer<Equipment>
 {
-    public Item Deserialize(byte[] payload)
+    public Equipment Deserialize(byte[] payload)
     {
         using MemoryStream ms = new(payload);
         using BinaryReader br = new(ms);
 
-        return ItemFactory.Instances[br.ReadString()];
+        return EquipmentFactory.Instances[br.ReadString()];
     }
 
     public byte[] Serialize(object obj)
     {
-        var item = (Item) obj;
+        var equipment = (Equipment) obj;
         using MemoryStream ms = new();
         using BinaryWriter bw = new(ms);
 
-        bw.Write(item.Name);
+        bw.Write(equipment.GetType().Name);
 
         return ms.ToArray();
     }

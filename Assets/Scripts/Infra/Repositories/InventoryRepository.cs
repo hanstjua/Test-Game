@@ -9,7 +9,7 @@ public class InventoryRepository : IInventoryRepository
 
     public IInventoryRepository Reload()
     {
-        _current = Serializer.Deserialize<Inventory.Inventory>(_savedInventory);
+        _current = _savedInventory is not null ? Serializer.Deserialize<Inventory.Inventory>(_savedInventory) : _current;
         return this;
     }
 

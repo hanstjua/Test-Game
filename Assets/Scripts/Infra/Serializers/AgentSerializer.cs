@@ -20,7 +20,7 @@ public class AgentSerializer : ISerializer<Agent>
         var arbella = Enumerable.Range(0, br.ReadByte()).Select(_ => Serializer.Deserialize<Arbellum>(br.ReadBytes(br.ReadByte()))).ToArray();
         var statLevels = Serializer.Deserialize<StatLevels>(br.ReadBytes(br.ReadByte()));
         var position = Serializer.Deserialize<Position>(br.ReadBytes(br.ReadByte()));
-        var items = Enumerable.Range(0, br.ReadUInt16()).ToDictionary(_ => (Item) br.ReadUInt16(), _ => (int) br.ReadByte());
+        var items = Enumerable.Range(0, br.ReadUInt16()).ToDictionary(_ => Serializer.Deserialize<Item>(br.ReadBytes(br.ReadByte())), _ => (int) br.ReadByte());
         var movements = (int) br.ReadByte();
         var rightHand = br.ReadBoolean() ? Serializer.Deserialize<Handheld>(br.ReadBytes(br.ReadByte())) : null;
         var leftHand = br.ReadBoolean() ? Serializer.Deserialize<Handheld>(br.ReadBytes(br.ReadByte())) : null;
@@ -82,7 +82,9 @@ public class AgentSerializer : ISerializer<Agent>
         bw.Write((ushort) agent.Items.Count);
         foreach (var kvp in agent.Items)
         {
-            bw.Write((ushort) kvp.Key);
+            var itemPayload = Serializer.Serialize(kvp.Key);
+            bw.Write((byte) itemPayload.Length);
+            bw.Write(itemPayload);
             bw.Write((byte) kvp.Value);
         }
 

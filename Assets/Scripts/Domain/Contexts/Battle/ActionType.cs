@@ -25,6 +25,10 @@ namespace Battle
 
         // Supplies
         public static readonly ActionType UseItem = new("UseItem");
+        public static readonly ActionType Ether = new("Ether");
+        public static readonly ActionType Grenade = new("Grenade");
+        public static readonly ActionType Potion = new("Potion");
+        public static readonly ActionType Remedy = new("Remedy");
 
         // Pyrecraft
         public static readonly ActionType Fire = new("Fire");

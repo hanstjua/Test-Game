@@ -63,7 +63,7 @@ public class InventorySerializer : ISerializer<Inventory.Inventory>
             var payload = Serializer.Serialize(item);
             bw.Write((byte) payload.Length);
             bw.Write(payload);
-            bw.Write(inventory.Amount(item));
+            bw.Write((byte) inventory.Amount(item));
         }
 
         // serialize equipment

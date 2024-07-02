@@ -1,6 +1,8 @@
+using Common;
+
 namespace Battle.Accessories
 {
-    public class AccessoryType : ActionType
+    public class AccessoryType : EquipmentType
     {
         public AccessoryType(string name) : base(name) {}
 

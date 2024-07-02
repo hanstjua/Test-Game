@@ -1,4 +1,5 @@
 using Battle;
+using Battle.Services.Arbella;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using UnityEngine.Events;
 
 public class CharacterSelection : IUiState
 {
-    private AgentId _selectedAgentId;
+    private readonly AgentId _selectedAgentId;
     private bool _hasInit = false;
     private UnityAction<Position, Position> _characterPanelUpdater;
 
@@ -49,6 +50,7 @@ public class CharacterSelection : IUiState
         IUiState ret = this;
         
         if (Input.GetKeyDown(KeyCode.Return)) ret = OnKeyPress(KeyCode.Return, battleProperties);
+        else if (Input.GetKeyDown(KeyCode.Space)) ret = OnKeyPress(KeyCode.Space, battleProperties);
         else if (Input.GetKeyDown(KeyCode.UpArrow)) ret = OnKeyPress(KeyCode.UpArrow, battleProperties);
         else if (Input.GetMouseButtonDown(0)) ret = OnMouseClick(battleProperties.cursor.Selection, battleProperties);
         
@@ -106,7 +108,35 @@ public class CharacterSelection : IUiState
         {
             case KeyCode.Return:
             Uninit(battleProperties);
-            return new CharacterSelectionConfirmation(battleProperties.uiObjects,this);
+            return new CharacterSelectionConfirmation(battleProperties.uiObjects, this);
+
+            case KeyCode.Space:
+            var characterScreen = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterScreen").GetComponent<CharacterScreen>();
+            
+            if (characterScreen.gameObject.activeSelf) characterScreen.Hide();
+            else {
+                var id = new AgentId(Guid.NewGuid().ToString());
+                var agent = new Agent(
+                    id,
+                    "Anton",
+                    new Arbellum[] {new Physical(0)},
+                    new(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
+                    new(1, 2, 3),
+                    new(),
+                    2,
+                    null, null, null, null, null, null
+                );
+                var uow = battleProperties.unitOfWork;
+                using (uow)
+                {
+                    uow.AgentRepository.Update(id, agent);
+                    uow.Save();
+                }
+                characterScreen.SetCharacter(agent, battleProperties.unitOfWork);
+                characterScreen.Show();
+            }
+
+            return this;
             
             case KeyCode.UpArrow:
             return this;
