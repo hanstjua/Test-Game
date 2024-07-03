@@ -2,6 +2,8 @@ using UnityEngine;
 using Common;
 using Battle;
 using TMPro;
+using UnityEngine.UI;
+using System;
 
 #nullable enable
 
@@ -13,7 +15,7 @@ public class CharacterScreen : MonoBehaviour
     // stats colors
     [field: SerializeField] public Color StatNormalColor { get; private set; }
     [field: SerializeField] public Color StatDecreasedColor { get; private set; }
-    [field: SerializeField] public Color StatIncrasedColor { get; private set; }
+    [field: SerializeField] public Color StatIncreasedColor { get; private set; }
 
     // equipment colors
     [field: SerializeField] public Color EquipmentSlotNormalColor { get; private set; }
@@ -119,19 +121,9 @@ public class CharacterScreen : MonoBehaviour
         transform.Find("Top/Panel/Right/Values/MP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new(Character.Mp / Character.Stats.MaxMp * maxMpBarSize.x, maxMpBarSize.y);
 
         // TODO: Update statuses
-
+        
         // stats panel
-        var maxStatsBarWidth = 300;
-        var maxStats = StatLevels.MaxLevels.ToStats();
-
-        SetStatValue("Str", Character.Stats.Strength / maxStats.Strength, maxStatsBarWidth);
-        SetStatValue("Mag", Character.Stats.Magic / maxStats.Magic, maxStatsBarWidth);
-        SetStatValue("Def", Character.Stats.Defense / maxStats.Defense, maxStatsBarWidth);
-        SetStatValue("Mdef", Character.Stats.MagicDefense / maxStats.MagicDefense, maxStatsBarWidth);
-        SetStatValue("Agi", Character.Stats.Agility / maxStats.Agility, maxStatsBarWidth);
-        SetStatValue("Eva", Character.Stats.Evasion / maxStats.Evasion, maxStatsBarWidth);
-        SetStatValue("Acc", Character.Stats.Accuracy / maxStats.Accuracy, maxStatsBarWidth);
-        SetStatValue("Luk", Character.Stats.Luck / maxStats.Luck, maxStatsBarWidth);
+        ResetStatValues();
 
         // equipment panel
         transform.Find("Middle/Equipment/Equipped/RightHand").GetComponent<EquipmentSlot>().Equipment = Character.RightHand;
@@ -147,15 +139,70 @@ public class CharacterScreen : MonoBehaviour
         // TODO: update panels
     }
 
-    private void SetStatValue(string initials, float fraction, int maxBarWidth)
+    public void ResetStatValues()
+    {
+        var maxStatsBarWidth = 300;
+        var maxStats = StatLevels.MaxLevels.ToStats();
+
+        SetStatValue("Str", Character!.Stats.Strength, maxStatsBarWidth / maxStats.Strength);
+        SetStatValue("Mag", Character!.Stats.Magic, maxStatsBarWidth / maxStats.Magic);
+        SetStatValue("Def", Character!.Stats.Defense, maxStatsBarWidth / maxStats.Defense);
+        SetStatValue("Mdef", Character!.Stats.MagicDefense, maxStatsBarWidth / maxStats.MagicDefense);
+        SetStatValue("Agi", Character!.Stats.Agility, maxStatsBarWidth / maxStats.Agility);
+        SetStatValue("Eva", Character!.Stats.Evasion, maxStatsBarWidth / maxStats.Evasion);
+        SetStatValue("Acc", Character!.Stats.Accuracy, maxStatsBarWidth / maxStats.Accuracy);
+        SetStatValue("Luk", Character!.Stats.Luck, maxStatsBarWidth / maxStats.Luck);
+    }
+
+    private void SetStatValue(string initials, int statValue, float barScaler)
     {
         var statNumberObject = transform.Find($"Top/Stats/Left/{initials}/Number");
         statNumberObject = statNumberObject == null ? transform.Find($"Top/Stats/Right/{initials}/Number") : statNumberObject;
-        statNumberObject.GetComponent<TMP_Text>().text = Character!.Stats.Defense.ToString();
+        var number = statNumberObject.GetComponent<TMP_Text>()!;
+        number.text = statValue.ToString();
+        number.color = StatNormalColor;
+        
         var statBarObject = transform.Find($"Top/Stats/Left/{initials}/Bar");
         statBarObject = statBarObject == null ? transform.Find($"Top/Stats/Right/{initials}/Bar") : statBarObject;
-        var rectTransform = statBarObject.GetComponent<RectTransform>();
-        rectTransform.sizeDelta = new(fraction * maxBarWidth, rectTransform.sizeDelta.y);
+        statBarObject.GetComponent<LayoutElement>()!.preferredWidth = Math.Max(1, statValue * barScaler);
+        statBarObject.GetComponent<Image>()!.color = StatNormalColor;
+    }
+
+    public void PreviewEquipment(Equipment? current, Equipment? potential)
+    {
+        var currentStat = current != null ? current.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var potentialStat = potential != null ? potential.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        var maxStatsBarWidth = 300;
+        var maxStats = StatLevels.MaxLevels.ToStats();
+
+        SetStatPreviewValue("Str", potentialStat.Strength, potentialStat.Strength - currentStat.Strength, maxStatsBarWidth / maxStats.Strength);
+        SetStatPreviewValue("Mag", potentialStat.Magic, potentialStat.Magic - currentStat.Magic, maxStatsBarWidth / maxStats.Magic);
+        SetStatPreviewValue("Def", potentialStat.Defense, potentialStat.Defense - currentStat.Defense, maxStatsBarWidth / maxStats.Defense);
+        SetStatPreviewValue("Mdef", potentialStat.MagicDefense, potentialStat.MagicDefense - currentStat.MagicDefense, maxStatsBarWidth / maxStats.MagicDefense);
+        SetStatPreviewValue("Agi", potentialStat.Agility, potentialStat.Agility - currentStat.Agility, maxStatsBarWidth / maxStats.Agility);
+        SetStatPreviewValue("Eva", potentialStat.Evasion, potentialStat.Evasion - currentStat.Evasion, maxStatsBarWidth / maxStats.Evasion);
+        SetStatPreviewValue("Acc", potentialStat.Accuracy, potentialStat.Accuracy - currentStat.Accuracy, maxStatsBarWidth / maxStats.Accuracy);
+        SetStatPreviewValue("Luk", potentialStat.Luck, potentialStat.Luck - currentStat.Luck, maxStatsBarWidth / maxStats.Luck);
+    }
+
+    private void SetStatPreviewValue(string initials, int potentialValue, int valueChange, float barScaler)
+    {
+        if (valueChange != 0)
+        {
+            var color = valueChange < 0 ? StatDecreasedColor : StatIncreasedColor;
+
+            var statNumberObject = transform.Find($"Top/Stats/Left/{initials}/Number");
+            statNumberObject = statNumberObject == null ? transform.Find($"Top/Stats/Right/{initials}/Number") : statNumberObject;
+            var number = statNumberObject.GetComponent<TMP_Text>()!;
+            number.text = $"{potentialValue} ({valueChange})";
+            number.color = color;
+            
+            var statBarObject = transform.Find($"Top/Stats/Left/{initials}/Bar");
+            statBarObject = statBarObject == null ? transform.Find($"Top/Stats/Right/{initials}/Bar") : statBarObject;
+            statBarObject.GetComponent<LayoutElement>()!.preferredWidth = Math.Max(1, potentialValue * barScaler);
+            statBarObject.GetComponent<Image>()!.color = color;
+        }
     }
 
     public void ScrollEquipmentOptions(bool down, Equipment[] items)

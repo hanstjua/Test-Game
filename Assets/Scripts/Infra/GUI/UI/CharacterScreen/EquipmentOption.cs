@@ -78,8 +78,7 @@ public class EquipmentOption : CharacterScreenSelectable
     public override void OnClick(PointerEventData eventdata)
     {
         // TODO: Update equipment slot
-        var selectable = CharacterScreen.ActivatedSelectable;
-        if (selectable is EquipmentSlot slot)
+        if (CharacterScreen.ActivatedSelectable is EquipmentSlot slot)
         {
             if (Type != null)
             {
@@ -130,6 +129,11 @@ public class EquipmentOption : CharacterScreenSelectable
             var image = GetComponent<Image>();
             _currentColor = image.color;
             image.color = CharacterScreen.FocusColor;
+
+            if (CharacterScreen.ActivatedSelectable is EquipmentSlot slot)
+            {
+                CharacterScreen.PreviewEquipment(slot.Equipment, Equipment);
+            }
         }
     }
 
@@ -164,6 +168,8 @@ public class EquipmentOption : CharacterScreenSelectable
                 _currentFontColor = null;
             }
             else transform.Find("Name").GetComponent<TMP_Text>().color = CharacterScreen.EquipmentOptionNormalFontColor;
+
+            CharacterScreen.ResetStatValues();
         }
     }
 }
