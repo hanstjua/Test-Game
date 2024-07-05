@@ -4,6 +4,7 @@ using Battle;
 using TMPro;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 #nullable enable
 
@@ -44,6 +45,7 @@ public class CharacterScreen : MonoBehaviour
     private int _arbellumOptionHeadIndex = 0;
     private int _actionsHeadIndex = 0;
     public EquipmentOption[]? EquipmentOptions { get; private set; }
+    public ActiveArbellum[]? ActiveArbellums { get; private set; }
 
     private CharacterScreenSelectable? _activatedSelectable = null;
     public CharacterScreenSelectable? ActivatedSelectable 
@@ -87,6 +89,12 @@ public class CharacterScreen : MonoBehaviour
         foreach (var s in GetComponentsInChildren<CharacterScreenSelectable>())
         {
             s.CharacterScreen = this;
+        }
+
+        ActiveArbellums = GetComponentsInChildren<ActiveArbellum>();
+        foreach (var a in ActiveArbellums)
+        {
+            a.CharacterScreen = this;
         }
 
         _hasInit = true;
@@ -136,6 +144,17 @@ public class CharacterScreen : MonoBehaviour
         // description panel
         transform.Find($"Bottom/Description").GetComponent<TMP_Text>().text = "";
 
+        foreach (var a in ActiveArbellums!)
+        {
+            a.ClearArbellum();
+        }
+
+        // active arbella
+        foreach (var i in Enumerable.Range(0, character.Arbella.Count()))
+        {
+            ActiveArbellums[i].SetArbellum(character.Arbella[i]);
+        }
+
         // TODO: update panels
     }
 
@@ -170,8 +189,11 @@ public class CharacterScreen : MonoBehaviour
 
     public void PreviewEquipment(Equipment? current, Equipment? potential)
     {
-        var currentStat = current != null ? current.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-        var potentialStat = potential != null ? potential.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var currentStatBoost = current != null ? current.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        var potentialStatBoost = potential != null ? potential.StatsBoost : new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        var currentStat = Character!.Stats;
+        var potentialStat = Character!.Stats.Deaugment(currentStatBoost).Augment(potentialStatBoost);
 
         var maxStatsBarWidth = 300;
         var maxStats = StatLevels.MaxLevels.ToStats();

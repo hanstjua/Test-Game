@@ -50,6 +50,9 @@ namespace Battle
             RightHand = rightHand;
             LeftHand = leftHand;
             Armour = armour;
+            Footwear = footwear;
+            Accessory1 = accessory1;
+            Accessory2 = accessory2;
         }
 
         public override object Id() {
@@ -231,37 +234,61 @@ namespace Battle
 
         public Agent RightHandEquip(Handheld? handheld)
         {
+            if (RightHand != null) _augmentation = _augmentation.Deaugment(RightHand.StatsBoost);
+            if (handheld != null) _augmentation = _augmentation.Augment(handheld.StatsBoost);
+
             RightHand = handheld;
+
             return this;
         }
 
         public Agent LeftHandEquip(Handheld? handheld)
         {
+            if (LeftHand != null) _augmentation = _augmentation.Deaugment(LeftHand.StatsBoost);
+            if (handheld != null) _augmentation = _augmentation.Augment(handheld.StatsBoost);
+
             LeftHand = handheld;
+
             return this;
         }
 
         public Agent ArmourEquip(Armour? armour)
         {
+            if (Armour != null) _augmentation = _augmentation.Deaugment(Armour.StatsBoost);
+            if (armour != null) _augmentation = _augmentation.Augment(armour.StatsBoost);
+
             Armour = armour;
+
             return this;
         }
 
         public Agent FootwearEquip(Footwear? footwear)
         {
+            if (Footwear != null) _augmentation = _augmentation.Deaugment(Footwear.StatsBoost);
+            if (footwear != null) _augmentation = _augmentation.Augment(footwear.StatsBoost);
+
             Footwear = footwear;
+
             return this;
         }
 
         public Agent Accessory1Equip(Accessory? accessory)
         {
+            if (Accessory1 != null) _augmentation = _augmentation.Deaugment(Accessory1.StatsBoost);
+            if (accessory != null) _augmentation = _augmentation.Augment(accessory.StatsBoost);
+
             Accessory1 = accessory;
+
             return this;
         }
 
         public Agent Accessory2Equip(Accessory? accessory)
         {
+            if (Accessory2 != null) _augmentation = _augmentation.Deaugment(Accessory2.StatsBoost);
+            if (accessory != null) _augmentation = _augmentation.Augment(accessory.StatsBoost);
+
             Accessory2 = accessory;
+
             return this;
         }
     }

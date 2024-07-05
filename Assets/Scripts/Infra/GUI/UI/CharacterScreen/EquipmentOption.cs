@@ -88,6 +88,8 @@ public class EquipmentOption : CharacterScreenSelectable
             {
                 slot.Equipment = null;
             }
+
+            CharacterScreen.ResetStatValues();
         }
     }
 

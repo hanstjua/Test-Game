@@ -120,5 +120,21 @@ namespace Battle
                 MaxMp + augmentation.MaxMp
             );
         }
+
+        public Stats Deaugment(Stats augmentation)
+        {
+            return new(
+                Strength - augmentation.Strength,
+                Defense - augmentation.Defense,
+                Magic - augmentation.Magic,
+                MagicDefense - augmentation.MagicDefense,
+                Agility - augmentation.Agility,
+                Accuracy - augmentation.Accuracy,
+                Evasion - augmentation.Evasion,
+                Luck - augmentation.Luck,
+                MaxHp - augmentation.MaxHp,
+                MaxMp - augmentation.MaxMp
+            );
+        }
     }
 }
