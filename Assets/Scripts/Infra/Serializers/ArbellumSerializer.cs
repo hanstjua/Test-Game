@@ -16,7 +16,13 @@ public class ArbellumSerializer : ISerializer<Arbellum>
         using MemoryStream ms = new(payload);
         using BinaryReader br = new(ms);
 
-        return (Arbellum) Activator.CreateInstance(_arbellumMap[br.ReadString()], new object[] {br.ReadInt16()});
+        return (Arbellum) Activator.CreateInstance(
+            _arbellumMap[br.ReadString()],
+            new object[] {
+                br.ReadInt16(),
+                br.ReadBoolean()
+            }
+        );
     }
 
     public byte[] Serialize(object obj)
@@ -27,6 +33,7 @@ public class ArbellumSerializer : ISerializer<Arbellum>
 
         bw.Write(arbellum.Type.Name);
         bw.Write(arbellum.Experience);
+        bw.Write(arbellum.IsActive);
 
         return ms.ToArray();
     }

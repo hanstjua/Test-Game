@@ -32,13 +32,15 @@ namespace Battle
         public Learnable[] Learnables { get;  private set; }
         public Action[] Actives { get; private set; }
         public Action[] Passives { get; private set; }
+        public bool IsActive { get; private set; }
         
-        public Arbellum(ArbellumType type, string description, int experience, Learnable[] learnables)
+        public Arbellum(ArbellumType type, string description, int experience, Learnable[] learnables, bool isActive)
         {
             Type = type;
             Description = description;
             Experience = experience;
             Learnables = learnables;
+            IsActive = isActive;
 
             Actives = new Action[] {};
             Passives = new Action[] {};
@@ -52,7 +54,7 @@ namespace Battle
             Actives = Actives
             .Concat(
                 Learnables
-                .Where(l => !l.IsPassive && l.RequiredExperience >= Experience)
+                .Where(l => !l.IsPassive && l.RequiredExperience <= Experience)
                 .Select(l => l.Action)
             ).ToArray();
 
@@ -60,7 +62,7 @@ namespace Battle
             Passives = Passives
             .Concat(
                 Learnables
-                .Where(l => l.IsPassive && l.RequiredExperience >= Experience)
+                .Where(l => l.IsPassive && l.RequiredExperience <= Experience)
                 .Select(l => l.Action)
             ).ToArray();
 
@@ -73,6 +75,18 @@ namespace Battle
             Experience += points;
             Learn();
 
+            return this;
+        }
+
+        public Arbellum Activate()
+        {
+            IsActive = true;
+            return this;
+        }
+
+        public Arbellum Deactivate()
+        {
+            IsActive = false;
             return this;
         }
     }

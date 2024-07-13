@@ -4,13 +4,14 @@ namespace Battle.Services.Arbella
 {
     public class Geocraft : Arbellum
     {
-        public Geocraft(int experience) : base(
+        public Geocraft(int experience, bool isActive) : base(
             ArbellumType.Geocraft, 
             "Manipulation of daya into earth deformation.", 
             experience, 
             new Learnable[] {
                 new(new Earth(), 0, false),
-            }
+            },
+            isActive
         )
         {}
     }

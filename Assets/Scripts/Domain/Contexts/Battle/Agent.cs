@@ -291,6 +291,24 @@ namespace Battle
 
             return this;
         }
+
+        public Agent ActivateArbellum(ArbellumType arbellumType)
+        {
+            var arbellum = Arbella.First(a => a.Type == arbellumType) ?? throw new ArgumentException($"Agent {Name} has Arbellum of type {arbellumType.Name}");
+
+            arbellum.Activate();
+
+            return this;
+        }
+
+        public Agent DeactivateArbellum(ArbellumType arbellumType)
+        {
+            var arbellum = Arbella.First(a => a.Type == arbellumType) ?? throw new ArgumentException($"Agent {Name} has Arbellum of type {arbellumType.Name}");
+
+            arbellum.Deactivate();
+
+            return this;
+        }
     }
 }
 

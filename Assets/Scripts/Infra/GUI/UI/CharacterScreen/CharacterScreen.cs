@@ -32,12 +32,15 @@ public class CharacterScreen : MonoBehaviour
     [field: SerializeField] public Color ActiveArbellumFontColor { get; private set; }
     [field: SerializeField] public Color ArbellumOptionNormalColor { get; private set; }
     [field: SerializeField] public Color ArbellumOptionHighlightedColor { get; private set; }
+    [field: SerializeField] public Color ArbellumOptionToggledColor { get; private set; }
     [field: SerializeField] public Color ArbellumOptionNormalFontColor { get; private set; }
     [field: SerializeField] public Color ArbellumOptionHighlightedFontColor { get; private set; }
+    [field: SerializeField] public Color ArbellumOptionToggledFontColor { get; private set; }
     [field: SerializeField] public Color ActionNormalColor { get; private set; }
     [field: SerializeField] public Color ActionHighlightedColor { get; private set; }
     [field: SerializeField] public Color ActionNormalFontColor { get; private set; }
     [field: SerializeField] public Color ActionHighlightedFontColor { get; private set; }
+    [field: SerializeField] public Color ActionMutedFontColor { get; private set; }
 
     public UnitOfWork? UnitOfWork { get; private set; }
     public Agent? Character { get; private set; }
@@ -46,8 +49,12 @@ public class CharacterScreen : MonoBehaviour
     private int _actionsHeadIndex = 0;
     public EquipmentOption[]? EquipmentOptions { get; private set; }
     public ActiveArbellum[]? ActiveArbellums { get; private set; }
+    public ArbellumOption[]? ArbellumOptions { get; private set; }
+    public AvailableAction[]? AvailableActions { get; private set; }
 
     private CharacterScreenSelectable? _activatedSelectable = null;
+    private CharacterScreenSelectable? _focusedArbellum = null;
+
     public CharacterScreenSelectable? ActivatedSelectable 
     { 
         get => _activatedSelectable;
@@ -97,6 +104,18 @@ public class CharacterScreen : MonoBehaviour
             a.CharacterScreen = this;
         }
 
+        ArbellumOptions = GetComponentsInChildren<ArbellumOption>();
+        foreach (var a in ArbellumOptions)
+        {
+            a.CharacterScreen = this;
+        }
+
+        AvailableActions = GetComponentsInChildren<AvailableAction>();
+        foreach (var a in AvailableActions)
+        {
+            a.CharacterScreen = this;
+        }
+
         _hasInit = true;
     }
 
@@ -107,7 +126,6 @@ public class CharacterScreen : MonoBehaviour
 
     public void Hide()
     {
-        UnitOfWork = null;
         gameObject.SetActive(false);
     }
 
@@ -144,18 +162,35 @@ public class CharacterScreen : MonoBehaviour
         // description panel
         transform.Find($"Bottom/Description").GetComponent<TMP_Text>().text = "";
 
+        // active arbella
+        UpdateActiveArbella();
+
+        // arbellum options
+        foreach (var a in ArbellumOptions!)
+        {
+            a.ClearArbellum();
+        }
+
+        foreach (var i in Enumerable.Range(0, character.Arbella.Length))
+        {
+            ArbellumOptions[i].SetArbellum(character.Arbella[i]);
+        }
+
+        // TODO: update panels
+    }
+
+    public void UpdateActiveArbella()
+    {
         foreach (var a in ActiveArbellums!)
         {
             a.ClearArbellum();
         }
 
-        // active arbella
-        foreach (var i in Enumerable.Range(0, character.Arbella.Count()))
+        var activeArbella = Character!.Arbella.Where(a => a.IsActive).ToArray();
+        foreach (var i in Enumerable.Range(0, activeArbella.Length))
         {
-            ActiveArbellums[i].SetArbellum(character.Arbella[i]);
+            ActiveArbellums[i].SetArbellum(activeArbella[i]);
         }
-
-        // TODO: update panels
     }
 
     public void ResetStatValues()
@@ -271,5 +306,67 @@ public class CharacterScreen : MonoBehaviour
         for (int i = 0; i < EquipmentOptions!.Length; i++) EquipmentOptions[i].Deactivate();
 
         _equipmentOptionHeadIndex = 0;
+    }
+
+    public void SetArbellumOptions(int startingIndex, Arbellum[] arbellums)
+    {
+        for (int i = 0; i < ArbellumOptions!.Length; i++)
+        {
+            if (i < arbellums.Length)
+            {
+                var option = ArbellumOptions[i];
+                option.Activate();
+                option.SetArbellum(arbellums[i]);
+            }
+            else ArbellumOptions[i].Deactivate();
+        }
+
+        _arbellumOptionHeadIndex = startingIndex;
+    }
+
+    public void ClearArbellumOptions()
+    {
+
+    }
+
+    public void FocusArbellumOption(ArbellumOption option)
+    {
+        if (_focusedArbellum != null) _focusedArbellum.Unfocus();
+        _focusedArbellum = option;
+        _focusedArbellum.Focus();
+    }
+
+    public void SetAvailableActions(int startingIndex, Arbellum arbellum)
+    {
+        ClearAvailableActions();
+        var learned = arbellum.Actives.Concat(arbellum.Passives).ToArray();
+        for (int i = 0; i < AvailableActions!.Length; i++)
+        {
+            if (i < learned.Length)
+            {
+                var availableAction = AvailableActions[i];
+                var action = learned[i];
+                availableAction.SetAction(action, false);
+            }
+            else if (i - learned.Length < arbellum.Learnables.Length)
+            {
+                var availableAction = AvailableActions[i];
+                var learnable = arbellum.Learnables[i];
+                availableAction.SetAction(learnable.Action, true);
+            }
+            else AvailableActions[i].ClearAction();
+        }
+
+        _actionsHeadIndex = startingIndex;
+    }
+
+    public void ClearAvailableActions()
+    {
+        foreach (var a in AvailableActions!)
+        {
+            a.ClearAction();
+        }
+
+        _actionsHeadIndex = 0;
     }
 }

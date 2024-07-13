@@ -25,7 +25,7 @@ public class Goblin : ICharacter
     public Dictionary<Item, int> Items => new();
     public int Movements => 2;
     public Armour Armour => new LeatherArmour();
-    public Arbellum[] Arbella => new Arbellum[] {new Physical(0)};
+    public Arbellum[] Arbella => new Arbellum[] {new Physical(0, true)};
 
     public Handheld RightHand => new Longsword();
 

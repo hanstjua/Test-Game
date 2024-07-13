@@ -9,6 +9,7 @@ using UnityEngine.Events;
 public class CharacterSelection : IUiState
 {
     private readonly AgentId _selectedAgentId;
+    private AgentId _testingAgentId;
     private bool _hasInit = false;
     private UnityAction<Position, Position> _characterPanelUpdater;
 
@@ -115,24 +116,32 @@ public class CharacterSelection : IUiState
             
             if (characterScreen.gameObject.activeSelf) characterScreen.Hide();
             else {
-                var id = new AgentId(Guid.NewGuid().ToString());
-                var agent = new Agent(
-                    id,
-                    "Anton",
-                    new Arbellum[] {new Physical(0)},
-                    new(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
-                    new(1, 2, 3),
-                    new(),
-                    2,
-                    null, null, null, null, null, null
-                );
-                var uow = battleProperties.unitOfWork;
-                using (uow)
+                if (_testingAgentId == null)
                 {
-                    uow.AgentRepository.Update(id, agent);
-                    uow.Save();
+                    var id = new AgentId(Guid.NewGuid().ToString());
+                    var agent = new Agent(
+                        id,
+                        "Anton",
+                        new Arbellum[] {new Physical(0, true), new Malediction(0, false)},
+                        new(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
+                        new(1, 2, 3),
+                        new(),
+                        2,
+                        null, null, null, null, null, null
+                    );
+                    var uow = battleProperties.unitOfWork;
+                    using (uow)
+                    {
+                        uow.AgentRepository.Update(id, agent);
+                        uow.Save();
+                    }
+                    _testingAgentId = id;
                 }
-                characterScreen.SetCharacter(agent, battleProperties.unitOfWork);
+                
+                characterScreen.SetCharacter(
+                    battleProperties.unitOfWork.AgentRepository.Get(_testingAgentId),
+                    battleProperties.unitOfWork
+                );
                 characterScreen.Show();
             }
 

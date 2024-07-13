@@ -4,7 +4,7 @@ namespace Battle.Services.Arbella
 {
     public class Physical : Arbellum
     {
-        public Physical(int experience) : base(
+        public Physical(int experience, bool isActive) : base(
             ArbellumType.Physical, 
             "Basic combat skills.", 
             experience, 
@@ -12,7 +12,8 @@ namespace Battle.Services.Arbella
                 new(new Attack(), 0, false),
                 new(new Defend(), 0, false),
                 new(new UseItem(), 0, false)
-            }
+            },
+            isActive
         )
         {}
     }

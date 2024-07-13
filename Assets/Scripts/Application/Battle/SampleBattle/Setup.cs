@@ -102,7 +102,7 @@ namespace Battle.SampleBattle
 			var agent = new Agent(
 				id,
 				name,
-				new Arbellum[] {new Physical(0)},
+				new Arbellum[] {new Physical(0, true)},
 				new(100, 100, 100, 100, 100, 100, 100, 100, 3000, 1000),
 				position,
 				new(),
