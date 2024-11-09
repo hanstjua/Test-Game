@@ -1,4 +1,6 @@
 using Battle;
+using Cutscene.Actions;
+using Cutscene.Sequence;
 using System;
 using System.Linq;
 using UnityEditor.IMGUI.Controls;
@@ -32,7 +34,7 @@ public class CharacterTurn : IUiState
     {
         _pointer = Pointer.CreatePointer(battleProperties.map);
 
-        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
+        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel/Panel").GetComponent<CharacterPanel>();
         battleProperties.battleEvents.cursorSelectionChanged.AddListener((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
 
         _actionPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/ActionPanel");
@@ -101,6 +103,58 @@ public class CharacterTurn : IUiState
         if (Input.GetKey(KeyCode.F))
         {
             Camera.main.GetComponent<CameraControl>().FocusAtObject(battleProperties.characters[_agentId]);
+        }
+
+        // test play sequence
+        if (Input.GetKey(KeyCode.C))
+        {
+            var seq = new Sequence
+            {
+                Actions = new Cutscene.Action[]
+                {
+                    new CameraMove
+                    {
+                        Interval = 0,
+                        By = new Cutscene.Position
+                        {
+                            Coord = new int[] {1, 0}
+                        },
+                        Duration = 0.5
+                    },
+                    new CameraPan
+                    {
+                        Interval = 0.5,
+                        Degrees = 45,
+                        Duration = 0.6
+                    },
+                    new CameraPan
+                    {
+                        Interval = 0.7,
+                        Degrees = 45,
+                        Duration = 0.2
+                    },
+                    new Talk
+                    {
+                        Interval = 0.2,
+                        Position = Talk.BubblePosition.bottom,
+                        Target = "james",
+                        Speech = "You scoundrel!",
+                        Affiliation = Talk.SpeakerAffiliation.ally,
+                        Duration = 10
+                    },
+                    new Talk
+                    {
+                        Interval = 2,
+                        Position = Talk.BubblePosition.top,
+                        Target = "jane",
+                        Speech = "Hello, there. That's not a very nice way to greet a beautiful lady now, is it?",
+                        Affiliation = Talk.SpeakerAffiliation.ally,
+                        Duration = 8
+                    }
+                }
+            };
+
+            return new PlayCutscene(seq, this);
         }
 
         if (Input.GetMouseButtonDown(0))

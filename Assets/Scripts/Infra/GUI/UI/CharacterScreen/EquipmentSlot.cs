@@ -57,57 +57,71 @@ public abstract class EquipmentSlot : CharacterScreenSelectable
         // TODO: Update description
         if (Equipment != null)
         {
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = Equipment.Description;
+            CharacterScreen.SetDescription(Equipment.Description);
 
             var statsBoost = Equipment.StatsBoost;
             
             if (statsBoost.Strength != 0)
             {
                 var text = statsBoost.Strength > 0 ? $"STR: +{statsBoost.Strength}" : $"STR: {statsBoost.Strength}";
+                CharacterScreen.transform.Find("Bottom/Stats/Str").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Str").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Magic != 0)
             {
                 var text = statsBoost.Magic > 0 ? $"MAG: +{statsBoost.Magic}" : $"MAG: {statsBoost.Magic}";
+                CharacterScreen.transform.Find("Bottom/Stats/Mag").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Mag").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Defense != 0)
             {
                 var text = statsBoost.Defense > 0 ? $"DEF: +{statsBoost.Defense}" : $"DEF: {statsBoost.Defense}";
+                CharacterScreen.transform.Find("Bottom/Stats/Def").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Def").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.MagicDefense != 0)
             {
                 var text = statsBoost.MagicDefense > 0 ? $"MDEF: +{statsBoost.MagicDefense}" : $"MDEF: {statsBoost.MagicDefense}";
+                CharacterScreen.transform.Find("Bottom/Stats/Mdef").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Mdef").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Agility != 0)
             {
                 var text = statsBoost.Agility > 0 ? $"AGI: +{statsBoost.Agility}" : $"AGI: {statsBoost.Agility}";
+                CharacterScreen.transform.Find("Bottom/Stats/Agi").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Agi").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Accuracy != 0)
             {
                 var text = statsBoost.Accuracy > 0 ? $"ACC: +{statsBoost.Accuracy}" : $"ACC: {statsBoost.Accuracy}";
+                CharacterScreen.transform.Find("Bottom/Stats/Acc").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Acc").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Evasion != 0)
             {
                 var text = statsBoost.Evasion > 0 ? $"EVA: +{statsBoost.Evasion}" : $"EVA: {statsBoost.Evasion}";
+                CharacterScreen.transform.Find("Bottom/Stats/Eva").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Eva").GetComponent<TMP_Text>().text = text;
             }
 
             if (statsBoost.Luck != 0)
             {
                 var text = statsBoost.Luck > 0 ? $"LUK: +{statsBoost.Luck}" : $"LUK: {statsBoost.Luck}";
+                CharacterScreen.transform.Find("Bottom/Stats/Luk").gameObject.SetActive(true);
                 CharacterScreen.transform.Find("Bottom/Stats/Luk").GetComponent<TMP_Text>().text = text;
             }
+        }
+
+        if (CharacterScreen.ActivatedSelectable != this)
+        {
+            GetComponent<Image>().color = CharacterScreen.EquipmentSlotHighlightedColor;
+            GetComponentInChildren<TMP_Text>().color = CharacterScreen.EquipmentSlotHighlightedFontColor;
         }
     }
 
@@ -116,16 +130,30 @@ public abstract class EquipmentSlot : CharacterScreenSelectable
         // TODO: Clear description
         if (Equipment != null)
         {
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.SetDescription("");
 
             CharacterScreen.transform.Find("Bottom/Stats/Str").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Str").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Mag").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Mag").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Def").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Def").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Mdef").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Mdef").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Agi").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Agi").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Acc").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Acc").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Eva").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Eva").gameObject.SetActive(false);
             CharacterScreen.transform.Find("Bottom/Stats/Luk").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.transform.Find("Bottom/Stats/Luk").gameObject.SetActive(false);
+        }
+
+        if (CharacterScreen.ActivatedSelectable != this)
+        {
+            GetComponent<Image>().color = CharacterScreen.EquipmentSlotNormalColor;
+            GetComponentInChildren<TMP_Text>().color = CharacterScreen.EquipmentSlotNormalFontColor;
         }
     }
 

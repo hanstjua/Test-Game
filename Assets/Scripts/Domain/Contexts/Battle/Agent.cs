@@ -239,6 +239,9 @@ namespace Battle
 
             RightHand = handheld;
 
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
+
             return this;
         }
 
@@ -248,6 +251,9 @@ namespace Battle
             if (handheld != null) _augmentation = _augmentation.Augment(handheld.StatsBoost);
 
             LeftHand = handheld;
+
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
 
             return this;
         }
@@ -259,6 +265,9 @@ namespace Battle
 
             Armour = armour;
 
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
+
             return this;
         }
 
@@ -268,6 +277,9 @@ namespace Battle
             if (footwear != null) _augmentation = _augmentation.Augment(footwear.StatsBoost);
 
             Footwear = footwear;
+
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
 
             return this;
         }
@@ -279,6 +291,9 @@ namespace Battle
 
             Accessory1 = accessory;
 
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
+
             return this;
         }
 
@@ -289,6 +304,9 @@ namespace Battle
 
             Accessory2 = accessory;
 
+            if (Hp > Stats.MaxHp) Hp = Stats.MaxHp;
+            if (Mp > Stats.MaxMp) Mp = Stats.MaxMp;
+
             return this;
         }
 
@@ -297,6 +315,7 @@ namespace Battle
             var arbellum = Arbella.First(a => a.Type == arbellumType) ?? throw new ArgumentException($"Agent {Name} has Arbellum of type {arbellumType.Name}");
 
             arbellum.Activate();
+            _augmentation = _augmentation.Deaugment(new(0, 0, 0, 0, 0, 0, 0 , 0, 0, arbellum.MaxMpCost));
 
             return this;
         }
@@ -306,6 +325,7 @@ namespace Battle
             var arbellum = Arbella.First(a => a.Type == arbellumType) ?? throw new ArgumentException($"Agent {Name} has Arbellum of type {arbellumType.Name}");
 
             arbellum.Deactivate();
+            _augmentation = _augmentation.Augment(new(0, 0, 0, 0, 0, 0, 0 , 0, 0, arbellum.MaxMpCost));
 
             return this;
         }

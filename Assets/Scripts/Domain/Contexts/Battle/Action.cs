@@ -1,6 +1,9 @@
+using Battle.Statuses;
 using Common;
 using System;
 using System.Linq;
+
+#nullable enable
 
 namespace Battle
 {
@@ -39,6 +42,8 @@ namespace Battle
         public virtual StatType[] ActorRelevantStats => new StatType[] {};
         public virtual StatType[] TargetRelevantStats => new StatType[] {};
         public virtual int Cost => 0;
+        public virtual ElementType[]? Elements => null;
+        public virtual StatusType[]? Statuses => null;
 
         public abstract bool IsActorAbleToExecute(Agent actor, Battle battle, UnitOfWork unitOfWork);
         protected abstract ActionOutcome OnExecute(Agent actor, Agent[] targets, Battle battle, UnitOfWork unitOfWork);

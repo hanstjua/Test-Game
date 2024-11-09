@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Battle;
 using TMPro;
+using System;
 
 public class CharacterPanel : MonoBehaviour
 {
@@ -30,9 +31,9 @@ public class CharacterPanel : MonoBehaviour
             _character = value;
 
             // update attributes
-            transform.Find("Panel/Right/Name").GetComponent<TMP_Text>().text = value.Name;
+            transform.Find("Right/Name").GetComponent<TMP_Text>().text = value.Name;
 
-            var hpText = transform.Find("Panel/Right/Values/HP/Number").GetComponent<TMP_Text>();
+            var hpText = transform.Find("Right/Values/HP/Number").GetComponent<TMP_Text>();
             hpText.text = value.Hp.ToString();
             if (value.Hp == 0)
             {
@@ -44,7 +45,16 @@ public class CharacterPanel : MonoBehaviour
             }
             SetHpBar((float)value.Hp / value.Stats.MaxHp);
 
-            transform.Find("Panel/Right/Values/MP/Number").GetComponent<TMP_Text>().text = value.Mp.ToString();
+            var mpText = transform.Find("Right/Values/MP/Number").GetComponent<TMP_Text>();
+            mpText.text = value.Mp.ToString();
+            if (value.Mp == 0)
+            {
+                mpText.color = _palette.GetColor("Red4");
+            }
+            else
+            {
+                mpText.color = _palette.GetColor("Blue5");
+            }
             SetMpBar((float)value.Mp / value.Stats.MaxMp);
         }
     }
@@ -75,7 +85,7 @@ public class CharacterPanel : MonoBehaviour
         }
     }
 
-    public void UpdateChracterPanelByAgent(Agent agent)
+    public void UpdateCharacterPanelByAgent(Agent agent)
     {
         Character = agent;
         Show();
@@ -83,14 +93,61 @@ public class CharacterPanel : MonoBehaviour
 
     private void SetHpBar(float percentage)
     {
-        var size = transform.Find("Panel/Right/Values/HP/Gauge/BarContainer").GetComponent<RectTransform>().sizeDelta;
-        transform.Find("Panel/Right/Values/HP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
+        percentage = Math.Min(percentage, 1);  // cap to 100%
+        var size = transform.Find("Right/Values/HP/Gauge/Line").GetComponent<RectTransform>().sizeDelta;
+        transform.Find("Right/Values/HP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
     }
 
     private void SetMpBar(float percentage)
     {
-        var size = transform.Find("Panel/Right/Values/MP/Gauge/BarContainer").GetComponent<RectTransform>().sizeDelta;
-        transform.Find("Panel/Right/Values/MP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
-        Debug.Log($"% {percentage} {size.x} {percentage * size.x}");
+        percentage = Math.Min(percentage, 1);
+        var size = transform.Find("Right/Values/MP/Gauge/Line").GetComponent<RectTransform>().sizeDelta;
+        transform.Find("Right/Values/MP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new Vector2(percentage * size.x, size.y);
+    }
+
+    public void CompareStats(Stats stats)
+    {
+        var hpText = transform.Find("Right/Values/HP/Number").GetComponent<TMP_Text>();
+        var deltaMaxHp = stats.MaxHp - Character.Stats.MaxHp;
+        var deltaMaxHpSign = deltaMaxHp > 0 ? "+" : "";
+        var deltaMaxHpString = deltaMaxHp == 0 ? $"{Character.Hp}" : $" (MAX{deltaMaxHpSign}{deltaMaxHp})";
+        hpText.text = $"{deltaMaxHpString}";
+        if (deltaMaxHp < 0)
+        {
+            hpText.color = _palette.GetColor("Red4");
+        }
+        else if (deltaMaxHp > 0)
+        {
+            hpText.color = _palette.GetColor("Green4");
+        }
+        else
+        {
+            hpText.color = _palette.GetColor("Blue5");
+        }
+        SetHpBar((float)Character.Hp / stats.MaxHp);
+
+        var mpText = transform.Find("Right/Values/MP/Number").GetComponent<TMP_Text>();
+        var deltaMaxMp = stats.MaxMp - Character.Stats.MaxMp;
+        var deltaMaxMpSign = deltaMaxMp > 0 ? "+" : "";
+        var deltaMaxMpString = deltaMaxMp == 0 ? $"{Character.Mp}" : $" (MAX{deltaMaxMpSign}{deltaMaxMp})";
+        mpText.text = $"{deltaMaxMpString}";
+        if (deltaMaxMp < 0)
+        {
+            mpText.color = _palette.GetColor("Red4");
+        }
+        else if (deltaMaxMp > 0)
+        {
+            mpText.color = _palette.GetColor("Green4");
+        }
+        else
+        {
+            hpText.color = _palette.GetColor("Blue5");
+        }
+        SetMpBar((float)Character.Mp / stats.MaxMp);
+    }
+
+    public void RemoveStatsComparison()
+    {
+        Character = Character;
     }
 }

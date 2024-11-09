@@ -28,7 +28,7 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     private class NullAction : Action
     {
-        public NullAction() : base(null, "")
+        public NullAction() : base(new(""), "")
         {
         }
 
@@ -166,6 +166,9 @@ public class ActionButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public void SetNoAction()
     {
         _action = _null;
+
+        Debug.Log(_name.text);
+        Debug.Log(_action);
 
         _name.text = _action.Type.Name;
 

@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using System;
 using System.Linq;
+using Battle.Statuses;
 
 #nullable enable
 
@@ -41,6 +42,7 @@ public class CharacterScreen : MonoBehaviour
     [field: SerializeField] public Color ActionNormalFontColor { get; private set; }
     [field: SerializeField] public Color ActionHighlightedFontColor { get; private set; }
     [field: SerializeField] public Color ActionMutedFontColor { get; private set; }
+    [field: SerializeField] public Color DescriptionHighlightFontColor { get; private set; }
 
     public UnitOfWork? UnitOfWork { get; private set; }
     public Agent? Character { get; private set; }
@@ -54,6 +56,7 @@ public class CharacterScreen : MonoBehaviour
 
     private CharacterScreenSelectable? _activatedSelectable = null;
     private CharacterScreenSelectable? _focusedArbellum = null;
+    private CharacterPanel? _characterPanel = null;
 
     public CharacterScreenSelectable? ActivatedSelectable 
     { 
@@ -116,6 +119,8 @@ public class CharacterScreen : MonoBehaviour
             a.CharacterScreen = this;
         }
 
+        _characterPanel = GetComponentInChildren<CharacterPanel>();        
+
         _hasInit = true;
     }
 
@@ -135,6 +140,13 @@ public class CharacterScreen : MonoBehaviour
 
         Character = character;
 
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        Character = UnitOfWork!.AgentRepository.Get(Character!.Id() as AgentId);
+
         // character panel
         transform.Find("Top/Panel/Right/Name").GetComponent<TMP_Text>().text = Character.Name;
 
@@ -145,6 +157,8 @@ public class CharacterScreen : MonoBehaviour
         transform.Find("Top/Panel/Right/Values/MP/Number").GetComponent<TMP_Text>().text = Character.Mp.ToString();
         var maxMpBarSize = transform.Find("Top/Panel/Right/Values/MP/Gauge/BarContainer").GetComponent<RectTransform>().sizeDelta;
         transform.Find("Top/Panel/Right/Values/MP/Gauge/BarContainer/Bar").GetComponent<RectTransform>().sizeDelta = new(Character.Mp / Character.Stats.MaxMp * maxMpBarSize.x, maxMpBarSize.y);
+
+        _characterPanel!.UpdateCharacterPanelByAgent(Character);
 
         // TODO: Update statuses
         
@@ -160,7 +174,20 @@ public class CharacterScreen : MonoBehaviour
         transform.Find("Middle/Equipment/Equipped/Accessory2").GetComponent<EquipmentSlot>().Equipment = Character.Accessory2;
 
         // description panel
-        transform.Find($"Bottom/Description").GetComponent<TMP_Text>().text = "";
+        SetDescription("");
+        SetElements(null);
+        SetStatuses(null);
+        SetCost("");
+
+        // bottom stats
+        transform.Find("Bottom/Stats/Str").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Mag").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Def").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Mdef").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Agi").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Acc").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Eva").gameObject.SetActive(false);
+        transform.Find("Bottom/Stats/Luk").gameObject.SetActive(false);
 
         // active arbella
         UpdateActiveArbella();
@@ -171,9 +198,9 @@ public class CharacterScreen : MonoBehaviour
             a.ClearArbellum();
         }
 
-        foreach (var i in Enumerable.Range(0, character.Arbella.Length))
+        foreach (var i in Enumerable.Range(0, Character.Arbella.Length))
         {
-            ArbellumOptions[i].SetArbellum(character.Arbella[i]);
+            ArbellumOptions[i].SetArbellum(Character.Arbella[i]);
         }
 
         // TODO: update panels
@@ -206,6 +233,8 @@ public class CharacterScreen : MonoBehaviour
         SetStatValue("Eva", Character!.Stats.Evasion, maxStatsBarWidth / maxStats.Evasion);
         SetStatValue("Acc", Character!.Stats.Accuracy, maxStatsBarWidth / maxStats.Accuracy);
         SetStatValue("Luk", Character!.Stats.Luck, maxStatsBarWidth / maxStats.Luck);
+
+        _characterPanel!.RemoveStatsComparison();
     }
 
     private void SetStatValue(string initials, int statValue, float barScaler)
@@ -220,6 +249,11 @@ public class CharacterScreen : MonoBehaviour
         statBarObject = statBarObject == null ? transform.Find($"Top/Stats/Right/{initials}/Bar") : statBarObject;
         statBarObject.GetComponent<LayoutElement>()!.preferredWidth = Math.Max(1, statValue * barScaler);
         statBarObject.GetComponent<Image>()!.color = StatNormalColor;
+    }
+
+    public void PreviewArbellum(Arbellum? arbellum)
+    {
+        
     }
 
     public void PreviewEquipment(Equipment? current, Equipment? potential)
@@ -241,6 +275,8 @@ public class CharacterScreen : MonoBehaviour
         SetStatPreviewValue("Eva", potentialStat.Evasion, potentialStat.Evasion - currentStat.Evasion, maxStatsBarWidth / maxStats.Evasion);
         SetStatPreviewValue("Acc", potentialStat.Accuracy, potentialStat.Accuracy - currentStat.Accuracy, maxStatsBarWidth / maxStats.Accuracy);
         SetStatPreviewValue("Luk", potentialStat.Luck, potentialStat.Luck - currentStat.Luck, maxStatsBarWidth / maxStats.Luck);
+
+        _characterPanel!.CompareStats(potentialStat);
     }
 
     private void SetStatPreviewValue(string initials, int potentialValue, int valueChange, float barScaler)
@@ -305,6 +341,8 @@ public class CharacterScreen : MonoBehaviour
     {
         for (int i = 0; i < EquipmentOptions!.Length; i++) EquipmentOptions[i].Deactivate();
 
+        _characterPanel!.RemoveStatsComparison();
+
         _equipmentOptionHeadIndex = 0;
     }
 
@@ -368,5 +406,61 @@ public class CharacterScreen : MonoBehaviour
         }
 
         _actionsHeadIndex = 0;
+    }
+
+    public void SetDescription(string content)
+    {
+        var hex = $"#{ColorUtility.ToHtmlStringRGB(DescriptionHighlightFontColor)}";
+        transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = content.Replace("{{", $"<color={hex}>").Replace("}}", "</color>");
+    }
+
+    public void SetCost(string content)
+    {
+        var text = transform.Find("Bottom/Effects/Cost").GetComponent<TMP_Text>();
+
+        if (content != "")
+        {
+            text.text = $"COST: {content}";
+            text.gameObject.SetActive(true);
+        }
+        else
+        {
+            text.text = "";
+            text.gameObject.SetActive(false);
+        }
+    }
+
+    public void SetElements(ElementType[]? elements)
+    {
+        var text = transform.Find("Bottom/Effects/Element").GetComponent<TMP_Text>();
+
+        if (elements != null)
+        {
+            var content = string.Join(", ", elements.Select(e => e.Name));
+            text.text = $"ELEMENT: {content}";
+            text.gameObject.SetActive(true);
+        }
+        else
+        {
+            text.text = "";
+            text.gameObject.SetActive(false);
+        }
+    }
+
+    public void SetStatuses(StatusType[]? statuses)
+    {
+        var text = transform.Find("Bottom/Effects/Status").GetComponent<TMP_Text>();
+
+        if (statuses != null)
+        {
+            var content = string.Join(", ", statuses.Select(e => e.Name));
+            text.text = $"STATUS: {content}";
+            text.gameObject.SetActive(true);
+        }
+        else
+        {
+            text.text = "";
+            text.gameObject.SetActive(false);
+        }
     }
 }

@@ -26,6 +26,20 @@ public class CameraControl : MonoBehaviour
     private float _counter;
     private GameObject _pivot;
 
+    public void Rotate(double degrees, double duration)
+    {
+        while (LeanTween.isTweening(gameObject));  // wait until previous tweens are complete
+
+        LeanTween.sequence()
+        .insert(LeanTween.value(
+            gameObject,
+            i => transform.RotateAround(_pivot.transform.position, Vector3.up, GetDeltaAngle(i, (float)degrees)),
+            0,
+            1,
+            (float)duration
+        ).setEase(LeanTweenType.easeInOutExpo))
+        .append(() => _counter = 0);
+    }
 
     public void FocusAt(Vector3 position)
     {
@@ -131,14 +145,12 @@ public class CameraControl : MonoBehaviour
             break;
 
             case KeyCode.Q:
-            LeanTween.value(gameObject, i => transform.RotateAround(_pivot.transform.position, Vector3.up, GetDeltaAngle(i, 90f)), 0, 1, ROTATION_DURATION)
-            .setEase(LeanTweenType.easeInOutExpo);
+            Rotate(90, ROTATION_DURATION);
             _interval = ROTATION_INTERVAL;
             break;
 
             case KeyCode.E:
-            LeanTween.value(gameObject, i => transform.RotateAround(_pivot.transform.position, Vector3.up, GetDeltaAngle(i, -90f)), 0, 1, ROTATION_DURATION)
-            .setEase(LeanTweenType.easeInOutExpo);
+            Rotate(-90, ROTATION_DURATION);
             _interval = ROTATION_INTERVAL;
             break;
         }

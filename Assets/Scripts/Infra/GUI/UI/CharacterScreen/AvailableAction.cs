@@ -37,8 +37,12 @@ public class AvailableAction : CharacterScreenSelectable
     {
         if (Action != null)
         {
-            // TODO: Update desccription
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = Action.Description;
+            CharacterScreen.SetDescription(Action.Description);
+            CharacterScreen.SetCost($"{Action.Cost} MP");
+            CharacterScreen.SetElements(Action.Elements);
+            CharacterScreen.SetStatuses(Action.Statuses);
+
+            CharacterScreen.transform.Find("Bottom/Stats").gameObject.SetActive(false);
 
             GetComponent<Image>().color = CharacterScreen.ActionHighlightedColor;
             if (!IsMuted) transform.Find("Name").GetComponent<TMP_Text>().color = CharacterScreen.ActionHighlightedFontColor;
@@ -49,8 +53,12 @@ public class AvailableAction : CharacterScreenSelectable
     {
         if (Action != null)
         {
-            // TODO: Clear description
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.SetDescription("");
+            CharacterScreen.SetCost("");
+            CharacterScreen.SetElements(null);
+            CharacterScreen.SetStatuses(null);
+
+            CharacterScreen.transform.Find("Bottom/Stats").gameObject.SetActive(true);
 
             GetComponent<Image>().color = CharacterScreen.ActionNormalColor;
             if (!IsMuted) transform.Find("Name").GetComponent<TMP_Text>().color = CharacterScreen.ActionNormalFontColor;

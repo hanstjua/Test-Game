@@ -32,7 +32,7 @@ public class SelectAction : IUiState
         _actionPanel.GetComponent<CanvasGroup>().alpha = 1;
 
         _characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
-        _characterPanel.UpdateChracterPanelByAgent(battleProperties.unitOfWork.AgentRepository.Get(_agentId));
+        _characterPanel.UpdateCharacterPanelByAgent(battleProperties.unitOfWork.AgentRepository.Get(_agentId));
 
         var camera = Camera.main;
 

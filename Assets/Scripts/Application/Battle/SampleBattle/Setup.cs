@@ -98,7 +98,7 @@ namespace Battle.SampleBattle
 
 		public Agent CreateAgentByName(string name, Position position, UnitOfWork unitOfWork)
 		{
-			var id = new AgentId(Guid.NewGuid().ToString());
+			var id = new AgentId(name.ToLower());
 			var agent = new Agent(
 				id,
 				name,

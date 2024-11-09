@@ -20,7 +20,7 @@ public class CharacterSelection : IUiState
 
     private void Init(BattleProperties battleProperties)
     {
-        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CharacterPanel>();
+        var characterPanel = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel/Panel").GetComponent<CharacterPanel>();
         _characterPanelUpdater = new((_, newPos) => characterPanel.UpdateCharacterPanelByPosition(battleProperties, newPos));
         battleProperties.battleEvents.cursorSelectionChanged.AddListener(_characterPanelUpdater);
 
@@ -31,7 +31,7 @@ public class CharacterSelection : IUiState
     {
         battleProperties.battleEvents.cursorSelectionChanged.RemoveListener(_characterPanelUpdater);
 
-        battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel").GetComponent<CanvasGroup>().alpha = 0;
+        battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterPanel/Panel").GetComponent<CanvasGroup>().alpha = 0;
         battleProperties.cursor.Selection = Cursor.NullSelection;
 
         _hasInit = false;
@@ -53,6 +53,7 @@ public class CharacterSelection : IUiState
         if (Input.GetKeyDown(KeyCode.Return)) ret = OnKeyPress(KeyCode.Return, battleProperties);
         else if (Input.GetKeyDown(KeyCode.Space)) ret = OnKeyPress(KeyCode.Space, battleProperties);
         else if (Input.GetKeyDown(KeyCode.UpArrow)) ret = OnKeyPress(KeyCode.UpArrow, battleProperties);
+        else if (Input.GetKeyDown(KeyCode.C)) ret = OnKeyPress(KeyCode.C, battleProperties);
         else if (Input.GetMouseButtonDown(0)) ret = OnMouseClick(battleProperties.cursor.Selection, battleProperties);
         
         return ret;
@@ -110,6 +111,24 @@ public class CharacterSelection : IUiState
             case KeyCode.Return:
             Uninit(battleProperties);
             return new CharacterSelectionConfirmation(battleProperties.uiObjects, this);
+
+            case KeyCode.C:
+            // var speechBubbleBottom = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/SpeechBubbleBottom").GetComponent<SpeechBubble>();
+            // speechBubbleBottom.AttachToCharacter(battleProperties.characters[_selectedAgentId].GetComponent<Character>());
+
+            // var speechBubbleTop = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/SpeechBubbleTop").GetComponent<SpeechBubble>();
+            // speechBubbleTop.AttachToCharacter(battleProperties.characters[_selectedAgentId].GetComponent<Character>());
+            
+            var newBubble = SpeechBubble.Create(SpeechBubble.Variant.Bottom, battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage"));
+            newBubble.AttachToCharacter(battleProperties.characters[_selectedAgentId].GetComponent<Character>());
+            newBubble.PlayText("This is a test of long speech text that plays after a button press from the player, while the character may or may not be moving on the map itself.",
+            0.02,
+            SpeechBubble.Affiliation.Enemy,
+            Resources.Load<Sprite>("UI/Battle/a_portrait_of_young_male_knight__-_deformed_iris__deformed_pupils__semi_realistic__cgi__3d__render__sketch__cartoon__drawing__anime___text__cropped__out_of_frame__worst_quality__low_quali_74522291"));
+
+
+            Debug.Log("Character attached");
+            return this;
 
             case KeyCode.Space:
             var characterScreen = battleProperties.uiObjects.transform.Find("CameraCanvas/RawImage/CharacterScreen").GetComponent<CharacterScreen>();

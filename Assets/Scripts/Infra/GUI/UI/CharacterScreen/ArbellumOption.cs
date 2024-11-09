@@ -52,7 +52,9 @@ public class ArbellumOption : CharacterScreenSelectable
         if (Arbellum != null)
         {
             // TODO: Update description
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = Arbellum.Description;
+            CharacterScreen.SetDescription(Arbellum.Description);
+            CharacterScreen.SetCost($"{Arbellum.MaxMpCost} Max MP");
+            CharacterScreen.transform.Find("Bottom/Stats").gameObject.SetActive(false);
 
             // TODO: Update available actions
             CharacterScreen.SetAvailableActions(0, Arbellum);
@@ -66,8 +68,9 @@ public class ArbellumOption : CharacterScreenSelectable
     {
         if (Arbellum != null)
         {
-            // TODO: Clear description
-            CharacterScreen.transform.Find("Bottom/Description").GetComponent<TMP_Text>().text = "";
+            CharacterScreen.SetDescription("");
+            CharacterScreen.SetCost("");
+            CharacterScreen.transform.Find("Bottom/Stats").gameObject.SetActive(true);
         }
     }
 

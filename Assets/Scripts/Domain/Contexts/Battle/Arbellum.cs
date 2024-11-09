@@ -5,6 +5,8 @@ namespace Battle
 {
     public abstract class Arbellum : ValueObject<string>
     {
+        public const int MAX_EXP = 999;
+
         public override string Value()
         {
             return Type.Name;
@@ -33,6 +35,7 @@ namespace Battle
         public Action[] Actives { get; private set; }
         public Action[] Passives { get; private set; }
         public bool IsActive { get; private set; }
+        public virtual int MaxMpCost => Experience / 3;  // TODO: figure out proper cost formula
         
         public Arbellum(ArbellumType type, string description, int experience, Learnable[] learnables, bool isActive)
         {
@@ -72,7 +75,7 @@ namespace Battle
 
         public Arbellum ExperienceUp(int points)
         {
-            Experience += points;
+            Experience = Math.Min(MAX_EXP, Experience + points);
             Learn();
 
             return this;

@@ -1,8 +1,11 @@
+using Battle.Statuses;
 using Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
+#nullable enable
 
 namespace Battle
 {
@@ -19,6 +22,8 @@ namespace Battle
         public abstract string Description { get; }
 
         public virtual Stats StatsBoost => new(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        public virtual ElementType[]? Elements => null;
+        public virtual StatusType[]? Statuses => null;
 
         public Equipment() {}
 
